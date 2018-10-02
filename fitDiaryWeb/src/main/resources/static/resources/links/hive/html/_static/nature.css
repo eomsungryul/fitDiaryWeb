@@ -1,0 +1,289 @@
+/*
+ * nature.css_t
+ * ~~~~~~~~~~~~
+ *
+ * Sphinx stylesheet -- nature theme.
+ *
+ * :copyright: Copyright 2007-2011 by the Sphinx team, see AUTHORS.
+ * :license: BSD, see LICENSE for details.
+ *
+ */
+ 
+@import url("basic.css");
+/* -- page layout ----------------------------------------------------------- */
+ 
+html {
+	height:100% !important;
+	min-height:0;
+}
+body {
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 12px;
+	line-height: 1.4;
+	font-size: 100%;
+	color: #555;
+	margin: 0;
+	padding: 0;
+	height:100%;
+}
+div.documentwrapper {
+	float: left;
+	width: 100%;
+	height:100%;
+}
+div.bodywrapper {
+	margin: 0 0 0 240px;
+	height:100%;
+}
+hr {
+	border: 1px solid #B1B4B6;
+}
+div.document {
+	background-color: #eee;
+	box-sizing: border-box;
+}
+div.body {
+	background-color: #ffffff;
+	color: #3E4349;
+	font-size: 0.9em;
+	padding:10px 20px 20px 20px;
+	box-sizing:border-box;
+}
+div.footer {
+	color: #ccc;
+	width: 100%;
+	height:30px;
+	text-align: center;
+	font-size: 75%;
+	position:fixed;
+	margin-top:-45px;
+	background-color:#3d3d3d;
+	padding-top:15px;
+	display:none;
+}
+div.section {
+	overflow:hidden;
+}
+div.footer a {
+	color: #ccc;
+	text-decoration: underline;
+}
+div.related {
+	background:#0f0f0f;
+	line-height: 30px;
+	color: #fff;
+	font-size: 0.8em;
+	top:0px;
+	left:0px;
+	width:100%;
+}
+div.related a {
+	color: #fff;
+}
+div.sphinxsidebar {
+    font-size: 0.75em;
+    line-height: 1.5em;
+    position:absolute;
+}
+div.sphinxsidebarwrapper {
+	padding: 0 0;
+}
+div.sphinxsidebar h3, div.sphinxsidebar h4 {
+	font-family: Tahoma, Geneva, sans-serif;
+	color: #222;
+	font-size: 1.0em;
+	font-weight: bold;
+	margin: 0;
+	padding: 5px 10px 3px 10px;
+	margin-top:10px;
+}
+div.sphinxsidebar h4 {
+	font-size: 1.1em;
+}
+div.sphinxsidebar h3 a {
+	color: #029ccf;
+}
+div.sphinxsidebar p {
+	color: #888;
+	padding: 0 10px;
+}
+div.sphinxsidebar p.topless {
+}
+div.sphinxsidebar ul {
+	margin: 0px 10px;
+	padding: 0;
+	color: #000;
+}
+div.sphinxsidebar a {
+	color: #000;
+}
+div.sphinxsidebar input {
+	border: 1px solid #ccc;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 1em;
+	padding:0 3px;
+	box-sizing:border-box;
+}
+div.sphinxsidebar input[type=text] {
+	margin-left: 10px;
+}
+/* -- body styles ----------------------------------------------------------- */
+ 
+a {
+	color: #000;
+	text-decoration: none;
+}
+a:hover {
+	color: #000;
+	text-decoration: underline;
+}
+div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
+	font-family: Tahoma, Geneva, sans-serif;
+	/*background-color: #ddd;*/
+    font-weight: normal;
+	color: #000;
+	margin:0px;/*padding: 5px 0 5px 0;*/
+}
+div.body h1 {
+	border-top:0px;
+	font-size: 250%;
+	font-weight:bold;
+	color:#000;
+	line-height:42px;
+}
+div.body h2 {
+	font-size: 140%;
+	background:url(subtitle.png) left top no-repeat;
+	background-color: #eee;
+	padding:2px 10px;
+	border-bottom: solid #ddd 1px;
+	font-weight:bold;
+	margin-top:10px;
+}
+div.body h3 {
+	font-size: 100%;
+	background-color: none;
+	border-bottom: solid #ddd 1px;
+	font-weight: bold;
+	padding: 2px 10px;
+	background-color:#eee;
+}
+div.body h4 {
+	font-size: 100%;
+	margin-top: 8px;
+	border-bottom: solid #ddd 1px;
+	font-weight: bold;
+	padding:3px 0;
+	margin-top:10px;
+}
+div.body h5 {
+	font-size: 100%;
+	margin-top: 8px;
+	font-weight: bold;
+	padding:3px 0;
+	margin-top:10px;
+}
+div.body h6 {
+	font-size: 90%;
+	margin-top: 8px;
+	font-weight: bold;
+	padding:3px 0;
+	margin-top:10px;
+}
+a.headerlink {
+	color: #c60f0f;
+	font-size: 0.8em;
+	padding: 0 4px 0 4px;
+	text-decoration: none;
+}
+a.headerlink:hover {
+	background-color: #c60f0f;
+	color: white;
+}
+div.body p, div.body dd, div.body li {
+	line-height: 1.5em;
+}
+div.admonition p.admonition-title + p {
+	display: inline;
+}
+div.highlight {
+	background-color: white;
+}
+div.note {
+	background-color: #eee;
+	border: 1px solid #ccc;
+}
+div.seealso {
+	background-color: #ffc;
+	border: 1px solid #ff6;
+}
+div.topic {
+	background-color: #eee;
+}
+div.warning {
+	background-color: #ffe4e4;
+	border: 1px solid #f66;
+}
+p.admonition-title {
+	display: inline;
+}
+p.admonition-title:after {
+	content: ":";
+}
+pre {
+	padding: 10px;
+	background-color: #f0f8fb;
+	color: #222;
+	line-height: 1.2em;
+	border: 1px solid #d5e9f1;
+	font-size: 1.1em;
+	margin: 1.5em 0 1.5em 0;
+}
+tt {
+	background-color: #ecf0f3;
+	color: #222;
+	/* padding: 1px 2px; */
+    font-size: 1.1em;
+	font-family: monospace;
+}
+.viewcode-back {
+	font-family: Tahoma, Geneva, sans-serif;
+}
+div.viewcode-block:target {
+	background-color: #f4debf;
+	border-top: 1px solid #ac9;
+	border-bottom: 1px solid #ac9;
+}
+.related ul {
+	background:url(bi_ndap.png) no-repeat 6px 6px !important;
+	min-height:30px;
+}
+.related ul a {
+	margin-left:20px;
+	font-size:13px;
+}
+.related ul .right {
+	margin-left:-20px;
+}
+.bg {
+	background:url(bg.jpg) right bottom no-repeat;
+}
+.body p {
+	font-family:arial;
+}
+#search-results {
+	margin-top:10px;
+}
+#search-results h2 {
+	margin-top:10px;
+	font-size:14px;
+	line-height:40px;
+}
+input {
+	border: 1px solid #ccc;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 1em;
+	padding: 0 6px;
+	box-sizing: border-box;
+	height:20px;
+}

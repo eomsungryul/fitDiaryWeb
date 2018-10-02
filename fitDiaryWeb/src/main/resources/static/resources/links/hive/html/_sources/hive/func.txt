@@ -1,0 +1,695 @@
+:tocdepth: 3
+
+Hive Operators and Functions
+==============================
+
+Use the commands below to show the latest documentation:
+::
+
+    SHOW FUNCTIONS;
+    DESCRIBE FUNCTION <function_name>;
+    DESCRIBE FUNCTION EXTENDED <function_name>;
+
+==================
+Built-in Operators
+==================
+
+----------------------------------------
+Relational Operators
+----------------------------------------
+
+The following operators compare the passed operands and generate a TRUE or FALSE value depending on whether the comparison between the operands holds.
+
+
+======================= =================== =========================================================================================================================================================================
+Operator                Operand types       Description
+======================= =================== =========================================================================================================================================================================
+A = B                   All primitive types TRUE if expression A is equal to expression B otherwise FALSE
+A <=> B                 All primitive types Returns same result with EQUAL(=) operator for non-null operands, but returns TRUE if both are NULL, FALSE if one of the them is NULL (as of version 0.9.0)
+A == B                  None!               Fails because of invalid syntax. SQL uses =, not ==
+A <> B                  All primitive types NULL if A or B is NULL, TRUE if expression A is NOT equal to expression B otherwise FALSE
+A < B                   All primitive types NULL if A or B is NULL, TRUE if expression A is less than expression B otherwise FALSE
+A <= B                  All primitive types NULL if A or B is NULL, TRUE if expression A is less than or equal to expression B otherwise FALSE
+A > B                   All primitive types NULL if A or B is NULL, TRUE if expression A is greater than expression B otherwise FALSE
+A >= B                  All primitive types NULL if A or B is NULL, TRUE if expression A is greater than or equal to expression B otherwise FALSE
+A [NOT] BETWEEN B AND C All primitive types NULL if A, B or C is NULL, TRUE if A is greater than or equal to B AND A less than or equal to C otherwise FALSE. This can be inverted by using the NOT keyword. (as of version 0.9.0)
+A IS NULL               all types           TRUE if expression A evaluates to NULL otherwise FALSE
+A IS NOT NULL           All types           FALSE if expression A evaluates to NULL otherwise TRUE
+A LIKE B                strings             NULL if A or B is NULL, TRUE if string A matches the SQL simple regular expression B, otherwise FALSE. The comparison is done character by character. The _ character in B matches any character in A(similar to . in posix regular expressions) while the % character in B matches an arbitrary number of characters in A(similar to .* in posix regular expressions) e.g. 'foobar' like 'foo' evaluates to FALSE where as 'foobar' like 'foo_ _ _' evaluates to TRUE and so does 'foobar' like 'foo%'
+A RLIKE B               strings             NULL if A or B is NULL, TRUE if string A matches the Java regular expression B(See Java regular expressions syntax), otherwise FALSE e.g. 'foobar' rlike 'foo' evaluates to FALSE where as 'foobar' rlike '^f.*r$' evaluates to TRUE
+A REGEXP B              strings             Same as RLIKE
+======================= =================== =========================================================================================================================================================================
+
+
+----------------------------------------
+Arithmetic Operators
+----------------------------------------
+
+The following operators support various common arithmetic operations on the operands. All return number types; if any of the operands are NULL, then the result is also NULL.
+
+=========== =================== ======================
+Operator    Operand types       Description
+=========== =================== ======================
+A + B       All number types    Gives the result of adding A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands. e.g. since every integer is a float, therefore float is a containing type of integer so the + operator on a float and an int will result in a float.
+A - B       All number types    Gives the result of subtracting B from A. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.
+A * B       All number types    Gives the result of multiplying A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands. Note that if the multiplication causing overflow, you will have to cast one of the operators to a type higher in the type hierarchy.
+A / B       All number types    Gives the result of dividing B from A. The result is a double type.
+A % B       All number types    Gives the reminder resulting from dividing A by B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.
+A & B       All number types    Gives the result of bitwise AND of A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.
+A | B       All number types    Gives the result of bitwise OR of A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.
+A ^ B       All number types    Gives the result of bitwise XOR of A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.
+~A          All number types    Gives the result of bitwise NOT of A. The type of the result is the same as the type of A.
+=========== =================== ======================
+
+----------------------------------------
+Logical Operators
+----------------------------------------
+
+The following operators provide support for creating logical expressions. All of them return boolean TRUE, FALSE, or NULL depending upon the boolean values of the operands. NULL behaves as an "unknown" flag, so if the result depends on the state of an unknown, the result itself is unknown.
+
+=========== =============== =================
+Operator    Operand types   Description
+=========== =============== =================
+A AND B     boolean         TRUE if both A and B are TRUE, otherwise FALSE. NULL if A or B is NULL
+A && B      boolean         Same as A AND B
+A OR B      boolean         TRUE if either A or B or both are TRUE; FALSE OR NULL is NULL; otherwise FALSE
+A || B      boolean         Same as A OR B
+NOT A       boolean         TRUE if A is FALSE or NULL if A is NULL. Otherwise FALSE.
+! A         boolean         Same as NOT A
+=========== =============== =================
+
+----------------------------------------
+Complex Type Constructors
+----------------------------------------
+
+The following functions construct instances of complex types.
+
+===================== ================================= ============
+Constructor Function  Operands                          Description
+===================== ================================= ============
+map                   (key1, value1, key2, value2, ...) Creates a map with the given key/value pairs
+struct                (val1, val2, val3, ...)           Creates a struct with the given field values. Struct field names will be col1, col2, ...
+named_struct          (name1, val1, name2, val2, ...)   Creates a struct with the given field names and values.
+array                 (val1, val2, ...)                 Creates an array with the given elements
+create_union          (tag, val1, val2, ...)            Creates a union type with the value that is being pointed to by the tag parameter
+===================== ================================= ============
+
+----------------------------------------
+Operators on Complex Types
+----------------------------------------
+
+The following operators provide mechanisms to access elements in Complex Types
+
+======== ==================================== =================
+Operator Operand types                        Description
+======== ==================================== =================
+A[n]     A is an Array and n is an int        Returns the nth element in the array A. The first element has index 0 e.g. if A is an array comprising of ['foo', 'bar'] then A[0] returns 'foo' and A[1] returns 'bar'
+M[key]   M is a Map<K, V> and key has type K  Returns the value corresponding to the key in the map e.g. if M is a map comprising of {'f' -> 'foo', 'b' -> 'bar', 'all' -> 'foobar'} then M['all'] returns 'foobar'
+S.x      S is a struct                        Returns the x field of S. e.g for struct foobar {int foo, int bar} foobar.foo returns the integer stored in the foo field of the struct.
+======== ==================================== =================
+
+=======================
+Built-in Functions
+=======================
+
+-------------------------
+Mathematical Functions
+-------------------------
+
+The following built-in mathematical functions are supported in hive; most return NULL when the argument(s) are NULL:
+
+============ =========================================================================================== ======================
+Return Type  Name(Signature)                                                                             Description
+============ =========================================================================================== ======================
+BIGINT       round(double a)                                                                             Returns the rounded BIGINT value of the double
+DOUBLE       round(double a, int d)                                                                      Returns the double rounded to d decimal places
+BIGINT       floor(double a)                                                                             Returns the maximum BIGINT value that is equal or less than the double
+BIGINT       ceil(double a), ceiling(double a)                                                           Returns the minimum BIGINT value that is equal or greater than the double
+double       rand(), rand(int seed)                                                                      Returns a random number (that changes from row to row) that is distributed uniformly from 0 to 1. Specifiying the seed will make sure the generated random number sequence is deterministic.
+double       exp(double a)                                                                               Returns ea where e is the base of the natural logarithm
+double       ln(double a)                                                                                Returns the natural logarithm of the argument
+double       log10(double a)                                                                             Returns the base-10 logarithm of the argument
+double       log2(double a)                                                                              Returns the base-2 logarithm of the argument
+double       log(double base, double a)                                                                  Return the base "base" logarithm of the argument
+double       pow(double a, double p), power(double a, double p)                                          Return ap
+double       sqrt(double a)                                                                              Returns the square root of a
+string       bin(BIGINT a)                                                                               Returns the number in binary format (see [http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_bin])
+string       hex(BIGINT a) hex(string a)                                                                 If the argument is an int, hex returns the number as a string in hex format. Otherwise if the number is a string, it converts each character into its hex representation and returns the resulting string. (see [http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_hex])
+string       unhex(string a)                                                                             Inverse of hex. Interprets each pair of characters as a hexidecimal number and converts to the character represented by the number.
+string       conv(BIGINT num, int from_base, int to_base), conv(STRING num, int from_base, int to_base)  Converts a number from a given base to another (see [http://dev.mysql.com/doc/refman/5.0/en/mathematical-functions.html#function_conv])
+double       abs(double a)                                                                               Returns the absolute value
+int double   pmod(int a, int b)                                                                          pmod(double a, double b)     Returns the positive value of a mod b
+double       sin(double a)                                                                               Returns the sine of a (a is in radians)
+double       asin(double a)                                                                              Returns the arc sin of x if -1<=a<=1 or null otherwise
+double       cos(double a)                                                                               Returns the cosine of a (a is in radians)
+double       acos(double a)                                                                              Returns the arc cosine of x if -1<=a<=1 or null otherwise
+double       tan(double a)                                                                               Returns the tangent of a (a is in radians)
+double       atan(double a)                                                                              Returns the arctangent of a
+double       degrees(double a)                                                                           Converts value of a from radians to degrees
+double       radians(double a)                                                                           Converts value of a from degrees to radians
+int double   positive(int a),                                                                            positive(double a)     Returns a
+int double   negative(int a),                                                                            negative(double a)     Returns -a
+float        sign(double a)                                                                              Returns the sign of a as '1.0' or '-1.0'
+double       e()                                                                                         Returns the value of e
+double       pi()                                                                                        Returns the value of pi
+============ =========================================================================================== ======================
+
+-------------------------
+Collection Functions
+-------------------------
+
+The following built-in collection functions are supported in hive:
+
+============ ================================ ============
+Return Type  Name(Signature)                  Description
+============ ================================ ============
+int          size(Map<K.V>)                   Returns the number of elements in the map type
+int          size(Array<T>)                   Returns the number of elements in the array type
+array<K>     map_keys(Map<K.V>)               Returns an unordered array containing the keys of the input map
+array<V>     map_values(Map<K.V>)             Returns an unordered array containing the values of the input map
+boolean      array_contains(Array<T>, value)  Returns TRUE if the array contains value
+array<t>     sort_array(Array<T>)             Sorts the input array in ascending order according to the natural ordering of the array elements and returns it (as of version 0.9.0)
+============ ================================ ============
+
+-------------------------
+Type Conversion Functions
+-------------------------
+
+The following type conversion functions are supported in hive:
+
+============================== ======================= ==============
+Return Type                    Name(Signature)         Description
+============================== ======================= ==============
+binary                         binary(string|binary)   Casts the parameter into a binary
+Expected "=" to follow "type"  cast(expr as <type>)    Converts the results of the expression expr to <type> e.g. cast('1' as BIGINT) will convert the string '1' to it integral representation. A null is returned if the conversion does not succeed.
+============================== ======================= ==============
+
+-------------------------
+Date Functions
+-------------------------
+
+The following built-in date functions are supported in hive:
+
+============ =================================================== ===============
+Return Type  Name(Signature)                                     Description
+============ =================================================== ===============
+string       from_unixtime(bigint unixtime[, string format])     Converts the number of seconds from unix epoch (1970-01-01 00:00:00 UTC) to a string representing the timestamp of that moment in the current system time zone in the format of "1970-01-01 00:00:00"
+bigint       unix_timestamp()                                    Gets current time stamp using the default time zone.
+bigint       unix_timestamp(string date)                         Converts time string in format yyyy-MM-dd HH:mm:ss to Unix time stamp, return 0 if fail: unix_timestamp('2009-03-20 11:30:01') = 1237573801
+bigint       unix_timestamp(string date, string pattern)         Convert time string with given pattern (see [http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html]) to Unix time stamp, return 0 if fail: unix_timestamp('2009-03-20', 'yyyy-MM-dd') = 1237532400
+string       to_date(string timestamp)                           Returns the date part of a timestamp string: to_date("1970-01-01 00:00:00") = "1970-01-01"
+int          year(string date)                                   Returns the year part of a date or a timestamp string: year("1970-01-01 00:00:00") = 1970, year("1970-01-01") = 1970
+int          month(string date)                                  Returns the month part of a date or a timestamp string: month("1970-11-01 00:00:00") = 11, month("1970-11-01") = 11
+int          day(string date) dayofmonth(date)                   Return the day part of a date or a timestamp string: day("1970-11-01 00:00:00") = 1, day("1970-11-01") = 1
+int          hour(string date)                                   Returns the hour of the timestamp: hour('2009-07-30 12:58:59') = 12, hour('12:58:59') = 12
+int          minute(string date)                                 Returns the minute of the timestamp
+int          second(string date)                                 Returns the second of the timestamp
+int          weekofyear(string date)                             Return the week number of a timestamp string: weekofyear("1970-11-01 00:00:00") = 44, weekofyear("1970-11-01") = 44
+int          datediff(string enddate, string startdate)          Return the number of days from startdate to enddate: datediff('2009-03-01', '2009-02-27') = 2
+string       date_add(string startdate, int days)                Add a number of days to startdate: date_add('2008-12-31', 1) = '2009-01-01'
+string       date_sub(string startdate, int days)                Subtract a number of days to startdate: date_sub('2008-12-31', 1) = '2008-12-30'
+timestamp    from_utc_timestamp(timestamp, string timezone)      Assumes given timestamp ist UTC and converts to given timezone (as of Hive 0.8.0)
+timestamp    to_utc_timestamp(timestamp, string timezone)        Assumes given timestamp is in given timezone and converts to UTC (as of Hive 0.8.0)
+============ =================================================== ===============
+
+-------------------------
+Conditional Functions
+-------------------------
+
+=========== =========================================================== ====================
+Return Type Name(Signature)                                             Description
+=========== =========================================================== ====================
+T           if(boolean testCondition, T valueTrue, T valueFalseOrNull)  Return valueTrue when testCondition is true, returns valueFalseOrNull otherwise
+T           COALESCE(T v1, T v2, ...)                                   Return the first v that is not NULL, or NULL if all v's are NULL
+T           CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END          When a = b, returns c; when a = d, return e; else return f
+T           CASE WHEN a THEN b [WHEN c THEN d]* [ELSE e] END            When a = true, returns b; when c = true, return d; else return e
+=========== =========================================================== ====================
+
+-------------------------
+String Functions
+-------------------------
+
+The following are built-in String functions are supported in hive:
+
+============================= ========================================================================== ===============
+Return Type                   Name(Signature)                                                            Description
+============================= ========================================================================== ===============
+int                           ascii(string str)                                                          Returns the numeric value of the first character of str
+string                        concat(string|binary A, string|binary B...)                                Returns the string or bytes resulting from concatenating the strings or bytes passed in as parameters in order. e.g. concat('foo', 'bar') results in 'foobar'. Note that this function can take any number of input strings.
+array<struct<string,double>>  context_ngrams(array<array<string>>, array<string>, int K, int pf)         Returns the top-k contextual N-grams from a set of tokenized sentences, given a string of "context". See `StatisticsAndDataMining <https://cwiki.apache.org/confluence/display/Hive/StatisticsAndDataMining>`_ for more information.
+string                        concat_ws(string SEP, string A, string B...)                               Like concat() above, but with custom separator SEP.
+string                        concat_ws(string SEP, array<string>)                                       Like concat_ws() above, but taking an array of strings. (as of Hive 0.9.0)
+int                           find_in_set(string str, string strList)                                    Returns the first occurance of str in strList where strList is a comma-delimited string. Returns null if either argument is null. Returns 0 if the first argument contains any commas. e.g. find_in_set('ab', 'abc,b,ab,c,def') returns 3
+string                        format_number(number x, int     d)                                         Formats the number X to a format like '#,###,###.##', rounded to D decimal places, and returns the result as a string. If D is 0, the result has no decimal point or fractional part. (as of Hive 0.10.0)
+string                        get_json_object(string json_string, string path)                           Extract json object from a json string based on json path specified, and return json string of the extracted json object. It will return null if the input json string is invalid. NOTE: The json path can only have the characters [0-9a-z_], i.e., no upper-case or special characters. Also, the keys **cannot start with numbers.** This is due to restrictions on Hive column names.
+boolean                       in_file(string str, string filename)                                       Returns true if the string str appears as an entire line in filename.
+int                           instr(string str, string substr)                                           Returns the position of the first occurence of substr in str
+int                           length(string A)                                                           Returns the length of the string
+int                           locate(string substr, string str[, int pos])                               Returns the position of the first occurrence of substr in str after position pos
+string                        lower(string A) lcase(string A)                                            Returns the string resulting from converting all characters of B to lower case e.g. lower('fOoBaR') results in 'foobar'
+string                        lpad(string str, int     len, string pad)                                  Returns str, left-padded with pad to a length of len
+string                        ltrim(string A)                                                            Returns the string resulting from trimming spaces from the beginning(left hand side) of A e.g. ltrim(' foobar ') results in 'foobar '
+array<struct<string,double>>  ngrams(array<array<string>>, int     N, int K, int pf)                     Returns the top-k N-grams from a set of tokenized sentences, such as those returned by the sentences() UDAF. See `StatisticsAndDataMining <https://cwiki.apache.org/confluence/display/Hive/StatisticsAndDataMining>`_ for more information.
+string                        parse_url(string urlString, string partToExtract [, string keyToExtract])  Returns the specified part from the URL. Valid values for partToExtract include HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and USERINFO. e.g. parse_url('http://facebook.com/path1/p.php?k1=v1&k2=v2#Ref1', 'HOST') returns 'facebook.com'. Also a value of a particular key in QUERY can be extracted by providing the key as the third argument, e.g. parse_url('http://facebook.com/path1/p.php?k1=v1&k2=v2#Ref1', 'QUERY', 'k1') returns 'v1'.
+string                        printf(String format, Obj... args)                                         Returns the input formatted according do printf-style format strings (as of Hive 0.9.0)
+string                        regexp_extract(string subject, string pattern, int     index)              Returns the string extracted using the pattern. e.g. regexp_extract('foothebar', 'foo(.*?)(bar)', 2) returns 'bar.' Note that some care is necessary in using predefined character classes: using '\s' as the second argument will match the letter s; 's' is necessary to match whitespace, etc. The 'index' parameter is the Java regex Matcher group() method index. See docs/api/java/util/regex/Matcher.html for more information on the 'index' or Java regex group() method.
+string                        regexp_replace(string INITIAL_STRING, string PATTERN, string REPLACEMENT)  Returns the string resulting from replacing all substrings in INITIAL_STRING that match the java regular expression syntax defined in PATTERN with instances of REPLACEMENT, e.g. regexp_replace("foobar", "oo|ar", "") returns 'fb.' Note that some care is necessary in using predefined character classes: using '\s' as the second argument will match the letter s; 's' is necessary to match whitespace, etc.
+string                        repeat(string str, int n)                                                  Repeat str n times
+string                        reverse(string A)                                                          Returns the reversed string
+string                        rpad(string str, int len, string pad)                                      Returns str, right-padded with pad to a length of len
+string                        rtrim(string A)                                                            Returns the string resulting from trimming spaces from the end(right hand side) of A e.g. rtrim(' foobar ') results in ' foobar'
+array<array<string>>          sentences(string str, string lang, string locale)                          Tokenizes a string of natural language text int    o words and sentences, where each sentence is broken at the appropriate sentence boundary and returned as an array of words. The 'lang' and 'locale' are optional arguments. e.g. sentences('Hello there! How are you?') returns ( ("Hello", "there"), ("How", "are", "you") )
+string                        space(int n)                                                               Return a string of n spaces
+array                         split(string str, string pat)                                              Split str around pat (pat is a regular expression)
+map<string,string>            str_to_map(text[, delimiter1, delimiter2])                                 Splits text int    o key-value pairs using two delimiters. Delimiter1 separates text into K-V pairs, and Delimiter2 splits each K-V pair. Default delimiters are ',' for delimiter1 and '=' for delimiter2.
+string                        substr(string|binary A, int  start)                                        substring(string|binary A, int start)    Returns the substring or slice of the byte array of A starting from start position till the end of string A e.g. substr('foobar', 4) results in 'bar' (see [http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_substr])
+string                        substr(string|binary A, int  start, int len)                               substring(string|binary A, int start, int len)  Returns the substring or slice of the byte array of A starting from start position with length len e.g. substr('foobar', 4, 1) results in 'b' (see [http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_substr])
+string                        translate(string input, string from, string to)                            Translates the input string by replacing the characters present in the from string with the corresponding characters in the to string. This is similar to the translate function in `PostgreSQL <http://www.postgresql.org/docs/9.1/interactive/functions-string.html>`_. If any of the parameters to this UDF are NULL, the result is NULL as well (available as of Hive 0.10.0)
+string                        trim(string A)                                                             Returns the string resulting from trimming spaces from both ends of A e.g. trim(' foobar ') results in 'foobar'
+string                        upper(string A) ucase(string A)                                            Returns the string resulting from converting all characters of A to upper case e.g. upper('fOoBaR') results in 'FOOBAR'
+============================= ========================================================================== ===============
+
+----------------
+XPath Functions
+----------------
+
+..
+    The following functions are described in LanguageManual XPathUDF:
+
+    xpath, xpath_short, xpath_int, xpath_long, xpath_float, xpath_double, xpath_number, xpath_string
+
+The xpath family of UDFs are wrappers around the Java XPath library javax.xml.xpath provided by the JDK. The library is based on the XPath 1.0 specification. Please refer to http://java.sun.com/javase/6/docs/api/javax/xml/xpath/package-summary.html for detailed information on the Java XPath library.
+
+All functions follow the form: xpath_*(xml_string, xpath_expression_string). The XPath expression string is compiled and cached. It is reused if the expression in the next input row matches the previous. Otherwise, it is recompiled. So, the xml string is always parsed for every input row, but the xpath expression is precompiled and reused for the vast majority of use cases.
+
+Backward axes are supported. For example::
+
+    select xpath ('<a><b id="1"><c/></b><b id="2"><c/></b></a>','/descendant::c/ancestor::b/@id') from t1 limit 1 ;
+    [1","2]
+
+Each function returns a specific Hive type given the XPath expression:
+
+* xpath returns a Hive array of strings.
+* xpath_string returns a string.
+* xpath_boolean returns a boolean.
+* xpath_short returns a short integer.
+* xpath_int returns an integer.
+* xpath_long returns a long integer.
+* xpath_float returns a floating point number.
+* xpath_double,xpath_number returns a double-precision floating point number (xpath_number is an alias for xpath_double).
+
+The UDFs are schema agnostic - no XML validation is performed. However, malformed xml (e.g., <a><b>1</b></aa>) will result in a runtime exception being thrown.
+
+Following are specifics on each xpath UDF variant.
+
+^^^^^^
+xpath
+^^^^^^
+
+The xpath() function always returns a hive array of strings. If the expression results in a non-text value (e.g., another xml node) the function will return an empty array. There are 2 primary uses for this function: to get a list of node text values or to get a list of attribute values.
+
+Examples:
+
+Non-matching XPath expression::
+
+    select xpath('<a><b>b1</b><b>b2</b></a>','a/*') from src limit 1 ;
+    []
+
+Get a list of node text values::
+
+    select xpath('<a><b>b1</b><b>b2</b></a>','a/*/text()') from src limit 1 ;
+    [b1","b2]
+
+Get a list of values for attribute 'id'::
+
+    select xpath('<a><b id="foo">b1</b><b id="bar">b2</b></a>','//@id') from src limit 1 ; 
+    [foo","bar]
+
+Get a list of node texts for nodes where the 'class' attribute equals 'bb'::
+
+    SELECT xpath ('<a><b class="bb">b1</b><b>b2</b><b>b3</b><c class="bb">c1</c><c>c2</c></a>', 'a/*[@class="bb"]/text()') FROM src LIMIT 1 ;
+    [b1","c1]
+
+^^^^^^^^^^^^^
+xpath_string
+^^^^^^^^^^^^^
+
+The xpath_string() function returns the text of the first matching node.
+
+Get the text for node 'a/b'::
+
+    SELECT xpath_string ('<a><b>bb</b><c>cc</c></a>', 'a/b') FROM src LIMIT 1 ;
+    bb
+
+Get the text for node 'a'. Because 'a' has children nodes with text, the result is a composite of text from the children.
+::
+
+    SELECT xpath_string ('<a><b>bb</b><c>cc</c></a>', 'a') FROM src LIMIT 1 ;
+    bbcc
+
+Non-matching expression returns an empty string::
+
+    SELECT xpath_string ('<a><b>bb</b><c>cc</c></a>', 'a/d') FROM src LIMIT 1 ;
+
+Gets the text of the first node that matches '//b'::
+
+    SELECT xpath_string ('<a><b>b1</b><b>b2</b></a>', '//b') FROM src LIMIT 1 ;
+    b1
+
+Gets the second matching node::
+
+    SELECT xpath_string ('<a><b>b1</b><b>b2</b></a>', 'a/b[2]') FROM src LIMIT 1 ;
+    b2
+
+Gets the text from the first node that has an attribute 'id' with value 'b_2'::
+
+    SELECT xpath_string ('<a><b>b1</b><b id="b_2">b2</b></a>', 'a/b[@id="b_2"]') FROM src LIMIT 1 ;
+    b2
+
+^^^^^^^^^^^^^^
+xpath_boolean
+^^^^^^^^^^^^^^
+
+Returns true if the XPath expression evaluates to true, or if a matching node is found.
+
+Match found::
+
+    SELECT xpath_boolean ('<a><b>b</b></a>', 'a/b') FROM src LIMIT 1 ;
+    true
+
+No match found::
+
+    SELECT xpath_boolean ('<a><b>b</b></a>', 'a/c') FROM src LIMIT 1 ;
+    false
+
+Match found::
+
+    SELECT xpath_boolean ('<a><b>b</b></a>', 'a/b = "b"') FROM src LIMIT 1 ;
+    true
+
+No match found::
+
+    SELECT xpath_boolean ('<a><b>10</b></a>', 'a/b < 10') FROM src LIMIT 1 ;
+    false
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+xpath_short, xpath_int, xpath_long
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These functions return an integer numeric value, or the value zero if no match is found, or a match is found but the value is non-numeric.
+Mathematical operations are supported. In cases where the value overflows the return type, then the maximum value for the type is returned.
+
+No match::
+
+    SELECT xpath_int ('<a>b</a>', 'a = 10') FROM src LIMIT 1 ;
+    0
+
+Non-numeric match::
+
+    SELECT xpath_int ('<a>this is not a number</a>', 'a') FROM src LIMIT 1 ;
+    0
+
+    SELECT xpath_int ('<a>this 2 is not a number</a>', 'a') FROM src LIMIT 1 ;
+    0
+
+Adding values::
+
+    SELECT xpath_int ('<a><b class="odd">1</b><b class="even">2</b><b class="odd">4</b><c>8</c></a>', 'sum(a/*)') FROM src LIMIT 1 ;
+    15
+
+    SELECT xpath_int ('<a><b class="odd">1</b><b class="even">2</b><b class="odd">4</b><c>8</c></a>', 'sum(a/b)') FROM src LIMIT 1 ;
+    7
+
+    SELECT xpath_int ('<a><b class="odd">1</b><b class="even">2</b><b class="odd">4</b><c>8</c></a>', 'sum(a/b[@class="odd"])') FROM src LIMIT 1 ;
+    5
+
+Overflow::
+
+    SELECT xpath_int ('<a><b>2000000000</b><c>40000000000</c></a>', 'a/b * a/c') FROM src LIMIT 1 ;
+    2147483647
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+xpath_float, xpath_double, xpath_number
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Similar to xpath_short, xpath_int and xpath_long but with floating point semantics. Non-matches result in zero. However,
+non-numeric matches result in NaN. Note that xpath_number() is an alias for xpath_double().
+
+No match::
+
+    SELECT xpath_double ('<a>b</a>', 'a = 10') FROM src LIMIT 1 ;
+    0.0
+
+Non-numeric match::
+
+    SELECT xpath_double ('<a>this is not a number</a>', 'a') FROM src LIMIT 1 ;
+    NaN
+
+A very large number::
+
+    SELECT xpath_double ('<a><b>2000000000</b><c>40000000000</c></a>', 'a/b * a/c') FROM src LIMIT 1 ;
+    8.0E19
+
+-------------------
+JSON Functions
+-------------------
+
+^^^^^^^^^^^^^^^^
+get_json_object
+^^^^^^^^^^^^^^^^
+
+A limited version of JSONPath is supported:
+
+* $ : Root object
+* . : Child operator
+* [] : Subscript operator for array
+* \* : Wildcard for []
+
+Syntax not supported that's worth noticing:
+
+* : Zero length string as key
+* \.\. : Recursive descent
+* @ : Current object/element
+* () : Script expression
+* ?() : Filter (script) expression.
+* [,] : Union operator
+* [start:end.step] : array slice operator
+
+Example: src_json table is a single column (json), single row table::
+
+    +----+
+                                   json
+    +----+
+    {"store":
+      {"fruit":\[{"weight":8,"type":"apple"},{"weight":9,"type":"pear"}],
+       "bicycle":{"price":19.95,"color":"red"}
+      },
+     "email":"amy@only_for_json_udf_test.net",
+     "owner":"amy"
+    }
+    +----+
+
+The fields of the json object can be extracted using these queries::
+
+    hive> SELECT get_json_object(src_json.json, '$.owner') FROM src_json;
+    amy
+
+    hive> SELECT get_json_object(src_json.json, '$.store.fruit\[0]') FROM src_json;
+    {"weight":8,"type":"apple"}
+
+    hive> SELECT get_json_object(src_json.json, '$.non_exist_key') FROM src_json;
+    NULL
+
+-------------------------
+Misc. Functions
+-------------------------
+
+=========== =============================================== ==================
+Return Type Name(Signature)                                 Description
+=========== =============================================== ==================
+varies      java_method(class, method[, arg1[, arg2..]])    Synonym for reflect (as of Hive 0.9.0)
+varies      reflect(class, method[, arg1[, arg2..]])        Use this UDF to call Java methods by matching the argument signature (uses reflection). (as of Hive 0.7.0)
+=========== =============================================== ==================
+
+
+=======================================
+Built-in Aggregate Functions (UDAF)
+=======================================
+
+The following are built-in aggregate functions are supported in Hive:
+
+======================== ======================================================== ===========
+Return Type              Name(Signature)                                          Description
+======================== ======================================================== ===========
+bigint                   count(*), count(expr), count(DISTINCT expr[, expr_.])    count(*) - Returns the total number of retrieved rows, including rows containing NULL values; count(expr) - Returns the number of rows for which the supplied expression is non-NULL; count(DISTINCT expr[, expr]) - Returns the number of rows for which the supplied expression(s) are unique and non-NULL.
+double                   sum(col), sum(DISTINCT col)                              Returns the sum of the elements in the group or the sum of the distinct values of the column in the group
+double                   avg(col), avg(DISTINCT col)                              Returns the average of the elements in the group or the average of the distinct values of the column in the group
+double                   min(col)                                                 Returns the minimum of the column in the group
+double                   max(col)                                                 Returns the maximum value of the column in the group
+double                   variance(col), var_pop(col)                              Returns the variance of a numeric column in the group
+double                   var_samp(col)                                            Returns the unbiased sample variance of a numeric column in the group
+double                   stddev_pop(col)                                          Returns the standard deviation of a numeric column in the group
+double                   stddev_samp(col)                                         Returns the unbiased sample standard deviation of a numeric column in the group
+double                   covar_pop(col1, col2)                                    Returns the population covariance of a pair of numeric columns in the group
+double                   covar_samp(col1, col2)                                   Returns the sample covariance of a pair of a numeric columns in the group
+double                   corr(col1, col2)                                         Returns the Pearson coefficient of correlation of a pair of a numeric columns in the group
+double                   percentile(BIGINT col, p)                                Returns the exact pth percentile of a column in the group (does not work with floating point types). p must be between 0 and 1. NOTE: A true percentile can only be computed for integer values. Use PERCENTILE_APPROX if your input is non-integral.
+array<double>            percentile(BIGINT col, array(p1 [, p2]...))              Returns the exact percentiles p1, p2, ... of a column in the group (does not work with floating point types). pi must be between 0 and 1. NOTE: A true percentile can only be computed for integer values. Use PERCENTILE_APPROX if your input is non-integral.
+double                   percentile_approx(DOUBLE col, p [, B])                   Returns an approximate pth percentile of a numeric column (including floating point types) in the group. The B parameter controls approximation accuracy at the cost of memory. Higher values yield better approximations, and the default is 10,000. When the number of distinct values in col is smaller than B, this gives an exact percentile value.
+array<double>            percentile_approx(DOUBLE col, array(p1 [, p2]...) [, B]) Same as above, but accepts and returns an array of percentile values instead of a single one.
+array<struct {'x','y'}>  histogram_numeric(col, b)                                Computes a histogram of a numeric column in the group using b non-uniformly spaced bins. The output is an array of size b of double-valued (x,y) coordinates that represent the bin centers and heights
+array                    collect_set(col)                                         Returns a set of objects with duplicate elements eliminated
+======================== ======================================================== ===========
+
+.. _udtf:
+
+=============================================
+Built-in Table-Generating Functions (UDTF)
+=============================================
+
+Normal user-defined functions, such as concat(), take in a single input row and output a single output row. In contrast, table-generating functions transform a single input row to multiple output rows.
+
+================================ ====================
+Name (Signature)                 Description
+================================ ====================
+inline(ARRAY<STRUCT[,STRUCT]>)   Explodes an array of structs into a table (as of Hive 0.10)
+================================ ====================
+
+.. _explode:
+
+-------------
+explode
+-------------
+
+explode() takes in an array as an input and outputs the elements of the array as separate rows. UDTF's can be used in the SELECT expression list and as a part of LATERAL VIEW.
+
+An example use of explode() in the SELECT expression list is as follows:
+
+Consider a table named myTable that has a single column (myCol) and two rows:
+
++------------------+
+| Array<int> myCol |
++==================+
+| [1,2,3]          |
++------------------+
+| [4,5,6]          |
++------------------+
+
+Then running the query:
+
+SELECT explode(myCol) AS myNewCol FROM myTable;
+
+Will produce:
+
++------------------+
+| (int) myNewCol   |
++==================+
+| 1                |
++------------------+
+| 2                |
++------------------+
+| 3                |
++------------------+
+| 4                |
++------------------+
+| 5                |
++------------------+
+| 6                |
++------------------+
+
+Using the syntax "SELECT udtf(col) AS colAlias..." has a few limitations:
+
+* No other expressions are allowed in SELECT
+
+  * SELECT pageid, explode(adid_list) AS myCol... is not supported
+* UDTF's can't be nested
+
+  * SELECT explode(explode(adid_list)) AS myCol... is not supported
+* GROUP BY / CLUSTER BY / DISTRIBUTE BY / SORT BY is not supported
+
+  * SELECT explode(adid_list) AS myCol ... GROUP BY myCol is not supported
+
+Please see :doc:`LanguageManual LateralView <lateralview>` for an alternative syntax that does not have these limitations.
+
+The following are built-in table-generating functions are supported in Hive:
+
+============ ================================== =============
+Return Type  Name(Signature)                    Description
+============ ================================== =============
+Array Type   explode(array<TYPE> a)             For each element in a, explode() generates a row containing that element
+             stack(INT n, v_1, v_2, ..., v_k)   Breaks up v_1, ..., v_k into n rows. Each row will have k/n columns. n must be constant.
+============ ================================== =============
+
+^^^^^^^^^^^^^
+json_tuple
+^^^^^^^^^^^^^
+
+A new json_tuple() UDTF is introduced in hive 0.7. It takes a set of names (keys) and a JSON string, and returns a tuple of values using one function. This is much more efficient than calling GET_JSON_OBJECT to retrieve more than one key from a single JSON string. In any case where a single JSON string would be parsed more than once, your query will be more efficient if you parse it once, which is what JSON_TUPLE is for. As JSON_TUPLE is a UDTF, you will need to use the LATERAL VIEW syntax in order to achieve the same goal.
+
+For example,
+::
+
+    select a.timestamp, get_json_object(a.appevents, '$.eventid'), get_json_object(a.appenvets, '$.eventname') from log a;
+
+should be changed to
+::
+
+    select a.timestamp, b.*
+    from log a lateral view json_tuple(a.appevent, 'eventid', 'eventname') b as f1, f2;
+
+^^^^^^^^^^^^^^^^^
+parse_url_tuple
+^^^^^^^^^^^^^^^^^
+
+The parse_url_tuple() UDTF is similar to parse_url(), but can extract multiple parts of a given URL, returning the data in a tuple. Values for a particular key in QUERY can be extracted by appending a colon and the key to the partToExtract argument, e.g. parse_url_tuple('http://facebook.com/path1/p.php?k1=v1&k2=v2#Ref1', 'QUERY:k1', 'QUERY:k2') returns a tuple with values of 'v1','v2'. This is more efficient than calling parse_url() multiple times. All the input parameters and output column types are string.
+::
+
+    SELECT b.*
+    FROM src LATERAL VIEW parse_url_tuple(fullurl, 'HOST', 'PATH', 'QUERY', 'QUERY:id') b as host, path, query, query_id LIMIT 1;
+
+====================================
+GROUPing and SORTing on f(column)
+====================================
+
+A typical OLAP pattern is that you have a timestamp column and you want to group by daily or other less granular date windows than by second. So you might want to select concat(year(dt),month(dt)) and then group on that concat(). But if you attempt to GROUP BY or SORT BY a column on which you've applied a function and alias, like this:
+::
+
+    select f(col) as fc, count(*) from table_name group by fc;
+
+You will get an error:
+::
+    
+    FAILED: Error in semantic analysis: line 1:69 Invalid Table Alias or Column Reference fc
+
+Because you are not able to GROUP BY or SORT BY a column alias on which a function has been applied. There are two workarounds. First, you can reformulate this query with subqueries, which is somewhat complicated:
+::
+
+    select sq.fc,col1,col2,...,colN,count(*) from
+      (select f(col) as fc,col1,col2,...,colN from table_name) sq
+     group by sq.fc,col1,col2,...,colN;
+
+Or you can make sure not to use a column alias, which is simpler:
+::
+
+    select f(col) as fc, count(*) from table_name group by f(col);
+
+Contact Tim Ellis (tellis) at RiotGames dot com if you would like to discuss this in further detail.
+
+=====================
+UDF internals
+=====================
+
+The context of a UDF's evaluate method is one row at a time. A simple invocation of a UDF like
+::
+
+    SELECT length(string_col) FROM table_name;
+
+would evaluate the length of each of the string_col's values in the map portion of the job. The side effect of the UDF being evaluated on the map-side is that you can't control the order of rows which get sent to the mapper. It is the same order in which the file split sent to the mapper gets deserialized. Any reduce side operation (e.g. SORT BY, ORDER BY, regular JOIN, etc.) would apply to the UDFs output as if it is just another column of the table. This is fine since the context of the UDF's evaluate method is meant to be one row at a time.
+
+If you would like to control which rows get sent to the same UDF (and possibly in what order), you will have the urge to make the UDF evaluate during the reduce phase. This is achievable by making use of :ref:`DISTRIBUTE BY , DISTRIBUTE BY + SORT BY, CLUSTER BY<cluster-by>`. An example query would be:
+::
+
+    SELECT reducer_udf(my_col, distribute_col, sort_col) FROM
+    (SELECT my_col, distribute_col, sort_col FROM table_name DISTRIBUTE BY distribute_col SORT BY distribute_col, sort_col) t
+
+However, one could argue that the very premise of your requirement to control the set of rows sent to the same UDF is to do aggregation in that UDF. In such a case, using a User Defined Aggregate Function (UDAF) is a better choice. You can read more about writing a UDAF `here <https://cwiki.apache.org/confluence/display/Hive/GenericUDAFCaseStudy>`_. Alternatively, you can user a custom reduce script to accomplish the same using `Hive's Transform functionality <https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Transform>`_. Both of these options would do aggregations on the reduce side.

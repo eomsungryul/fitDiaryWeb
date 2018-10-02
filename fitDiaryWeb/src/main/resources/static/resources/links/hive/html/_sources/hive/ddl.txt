@@ -1,0 +1,833 @@
+:tocdepth: 3
+
+Hive Data Definition Statements
+===============================
+
+====================
+Create/Drop Database
+====================
+
+---------------
+Create Database
+---------------
+
+::
+
+    CREATE (DATABASE|SCHEMA) [IF NOT EXISTS] database_name
+      [COMMENT database_comment]
+      [LOCATION hdfs_path]
+      [WITH DBPROPERTIES (property_name=property_value, ...)];
+
+The use of SCHEMA and DATABASE are interchangeable - they mean the same thing.
+
+---------------
+Drop Database
+---------------
+
+::
+
+    DROP (DATABASE|SCHEMA) [IF EXISTS] database_name [RESTRICT|CASCADE];
+
+The use of SCHEMA and DATABASE are interchangeable - they mean the same thing.
+
+===========================
+Create/Drop/Truncate Table
+===========================
+
+.. _create-table:
+
+---------------------------
+Create Table
+---------------------------
+
+::
+
+    CREATE [EXTERNAL] TABLE [IF NOT EXISTS] [db_name.]table_name
+      [(col_name data_type [COMMENT col_comment], ...)]
+      [COMMENT table_comment]
+      [PARTITIONED BY (col_name data_type [COMMENT col_comment], ...)]
+      [CLUSTERED BY (col_name, col_name, ...) [SORTED BY (col_name [ASC|DESC], ...)] INTO num_buckets BUCKETS]
+      [SKEWED BY (col_name, col_name, ...) ON ([(col_value, col_value, ...), ...|col_value, col_value, ...]) (Note: only available starting with 0.10.0)]
+      [
+       [ROW FORMAT row_format] [STORED AS file_format]
+       | STORED BY 'storage.handler.class.name' [WITH SERDEPROPERTIES (...)]  (Note: only available starting with 0.6.0)
+      ]
+      [LOCATION hdfs_path]
+      [TBLPROPERTIES (property_name=property_value, ...)]  (Note: only available starting with 0.6.0)
+      [AS select_statement]  (Note: this feature is only available starting with 0.5.0, and is not supported when creating external tables.)
+
+    CREATE [EXTERNAL] TABLE [IF NOT EXISTS] [db_name.]table_name
+      LIKE existing_table_or_view_name
+      [LOCATION hdfs_path]
+
+    data_type
+      : primitive_type
+      | array_type
+      | map_type
+      | struct_type
+      | union_type (Note: Only available starting with Hive 0.7.0) - needs documentation
+
+    primitive_type
+      : TINYINT
+      | SMALLINT
+      | INT
+      | BIGINT
+      | BOOLEAN
+      | FLOAT
+      | DOUBLE
+      | STRING
+      | BINARY (Note: Only available starting with Hive 0.8.0)
+      | TIMESTAMP (Note: Only available starting with Hive 0.8.0)
+
+    array_type
+      : ARRAY < data_type >
+
+    map_type
+      : MAP < primitive_type, data_type >
+
+    struct_type
+      : STRUCT < col_name : data_type [COMMENT col_comment], ...>
+
+    union_type
+       : UNIONTYPE < data_type, data_type, ... >
+
+    row_format
+      : DELIMITED [FIELDS TERMINATED BY char] [COLLECTION ITEMS TERMINATED BY char]
+            [MAP KEYS TERMINATED BY char] [LINES TERMINATED BY char]
+      | SERDE serde_name [WITH SERDEPROPERTIES (property_name=property_value, property_name=property_value, ...)]
+
+    file_format:
+      : SEQUENCEFILE
+      | TEXTFILE
+      | RCFILE     (Note: only available starting with 0.6.0)
+      | INPUTFORMAT input_format_classname OUTPUTFORMAT output_format_classname
+
+CREATE TABLE creates a table with the given name. An error is thrown if a table or view with the same name already exists. You can use IF NOT EXISTS to skip the error.
+
+The EXTERNAL keyword lets you create a table and provide a LOCATION so that Hive does not use a default location for this table. This comes in handy if you already have data generated. When dropping an EXTERNAL table, data in the table is NOT deleted from the file system.
+
+The LIKE form of CREATE TABLE allows you to copy an existing table definition exactly (without copying its data). Before 0.8.0, CREATE TABLE LIKE view_name would make a copy of the view. From 0.8.0, CREATE TABLE LIKE view_name creates a table by adopting the schema of view_name (fields and partition columns) using defaults for serde and file formats.
+
+You can create tables with custom SerDe or using native SerDe. A native SerDe is used if ROW FORMAT is not specified or ROW FORMAT DELIMITED is specified. You can use the DELIMITED clause to read delimited files. Use the SERDE clause to create a table with custom SerDe. Refer to SerDe section of the User Guide for more information on SerDe.
+
+You must specify a list of a columns for tables that use a native SerDe. Refer to the :doc:`Types <datatypes>` part of the User Guide for the allowable column types. A list of columns for tables that use a custom SerDe may be specified but Hive will query the SerDe to determine the actual list of columns for this table.
+
+..
+    Use STORED AS TEXTFILE if the data needs to be stored as plain text files. Use STORED AS SEQUENCEFILE if the data needs to be compressed. Please read more about CompressedStorage if you are planning to keep data compressed in your Hive tables. Use INPUTFORMAT and OUTPUTFORMAT to specify the name of a corresponding InputFormat and OutputFormat class as a string literal, e.g. 'org.apache.hadoop.hive.contrib.fileformat.base64.Base64TextInputFormat'.
+
+..
+    Use STORED BY to create a non-native table, for example in HBase. See StorageHandlers for more information on this option.
+
+.. _partition:
+
+^^^^^^^^^^^^^^^^^^^^
+Partitioned tables
+^^^^^^^^^^^^^^^^^^^^
+
+Partitioned tables can be created using the PARTITIONED BY clause. A table can have one or more partition columns and a separate data directory is created for each distinct value combination in the partition columns. Further, tables or partitions can be bucketed using CLUSTERED BY columns, and data can be sorted within that bucket via SORT BY columns. This can improve performance on certain kinds of queries.
+
+If, when creating a partitioned table, you get this error: "FAILED: Error in semantic analysis: Column repeated in partitioning columns," it means you are trying to include the partitioned column in the data of the table itself. You probably really do have the column defined. However, the partition you create makes a pseudocolumn on which you can query, so you must rename your table column to something else (that users should not query on!).
+
+Here is an example. Suppose your original table was this::
+
+    id     int,
+    date   date,
+    name   varchar
+
+Now you want to partition on date. Your Hive definition would be this::
+
+    create table table_name (
+      id                int,
+      dtDontQuery       string,
+      name              string
+    )
+    partitioned by (date string)
+
+Now your users will still query on "where date = '...'" but the 2nd column will be the original values.
+
+
+Table names and column names are case insensitive but SerDe and property names are case sensitive. Table and column comments are string literals (single-quoted). The TBLPROPERTIES clause allows you to tag the table definition with your own metadata key/value pairs.
+
+Tables can also be created and populated by the results of a query in one create-table-as-select (CTAS) statement. The table created by CTAS is atomic, meaning that the table is not seen by other users until all the query results are populated. So other users will either see the table with the complete results of the query or will not see the table at all.
+
+There are two parts in CTAS, the SELECT part can be any :doc:`SELECT statement <select>` supported by HiveQL. The CREATE part of the CTAS takes the resulting schema from the SELECT part and creates the target table with other table properties such as the SerDe and storage format. The only restrictions in CTAS is that the target table cannot be a partitioned table (nor can it be an external table).
+
+Examples:
+
+Here's an example statement to create a table::
+
+    CREATE TABLE page_view(viewTime INT, userid BIGINT,
+         page_url STRING, referrer_url STRING,
+         ip STRING COMMENT 'IP Address of the User')
+     COMMENT 'This is the page view table'
+     PARTITIONED BY(dt STRING, country STRING)
+     STORED AS SEQUENCEFILE;
+
+The statement above creates the page_view table with viewTime, userid, page_url, referrer_url, and ip columns (including comments). The table is also partitioned and data is stored in sequence files. The data format in the files is assumed to be field-delimited by ctrl-A and row-delimited by newline.
+
+::
+
+    CREATE TABLE page_view(viewTime INT, userid BIGINT,
+         page_url STRING, referrer_url STRING,
+         ip STRING COMMENT 'IP Address of the User')
+     COMMENT 'This is the page view table'
+     PARTITIONED BY(dt STRING, country STRING)
+     ROW FORMAT DELIMITED
+       FIELDS TERMINATED BY '\u0001'
+    STORED AS SEQUENCEFILE;
+
+The above statement lets you create the same table as the previous table.
+
+::
+
+    CREATE TABLE page_view(viewTime INT, userid BIGINT,
+         page_url STRING, referrer_url STRING,
+         ip STRING COMMENT 'IP Address of the User')
+     COMMENT 'This is the page view table'
+     PARTITIONED BY(dt STRING, country STRING)
+     CLUSTERED BY(userid) SORTED BY(viewTime) INTO 32 BUCKETS
+     ROW FORMAT DELIMITED
+       FIELDS TERMINATED BY '\u0001'
+       COLLECTION ITEMS TERMINATED BY '\u0002'
+       MAP KEYS TERMINATED BY '\u0003'
+     STORED AS SEQUENCEFILE;
+
+In the example above, the page_view table is bucketed (clustered by) userid and within each bucket the data is sorted in increasing order of viewTime. Such an organization allows the user to do efficient sampling on the clustered column - in this case userid. The sorting property allows internal operators to take advantage of the better-known data structure while evaluating queries, also increasing efficiency. MAP KEYS and COLLECTION ITEMS keywords can be used if any of the columns are lists or maps.
+
+In all the examples until now the data is stored in <hive.metastore.warehouse.dir>/page_view. Specify a value for the key hive.metastore.warehouse.dir in Hive config file hive-site.xml.
+
+::
+
+    CREATE EXTERNAL TABLE page_view(viewTime INT, userid BIGINT,
+         page_url STRING, referrer_url STRING,
+         ip STRING COMMENT 'IP Address of the User',
+         country STRING COMMENT 'country of origination')
+     COMMENT 'This is the staging page view table'
+     ROW FORMAT DELIMITED FIELDS TERMINATED BY '\054'
+     STORED AS TEXTFILE
+     LOCATION '<hdfs_location>';
+
+You can use the above statement to create a page_view table which points to any hdfs location for its storage. But you still have to make sure that the data is delimited as specified in the query above.
+
+::
+
+    CREATE TABLE new_key_value_store
+       ROW FORMAT SERDE "org.apache.hadoop.hive.serde2.columnar.ColumnarSerDe"
+       STORED AS RCFile AS
+    SELECT (key % 1024) new_key, concat(key, value) key_value_pair
+    FROM key_value_store
+    SORT BY new_key, key_value_pair;
+
+The above CTAS statement creates the target table new_key_value_store with the schema (new_key DOUBLE, key_value_pair STRING) derived from the results of the SELECT statement. If the SELECT statement does not specify column aliases, the column names will be automatically assigned to _col0, _col1, and _col2 etc. In addition, the new target table is created using a specific SerDe and a storage format independent of the source tables in the SELECT statement.
+
+::
+
+    CREATE TABLE empty_key_value_store
+    LIKE key_value_store;
+
+In contrast, the statement above creates a new empty_key_value_store table whose definition exactly matches the existing key_value_store in all particulars other than table name. The new table contains no rows.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Inserting Data Into Bucketed Tables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The CLUSTERED BY and SORTED BY creation commands do not affect how data is inserted into a table - only how it is read. This means that users must be careful to insert data correctly by specifying the number of reducers to be equal to the number of buckets, and using CLUSTER BY and SORT BY commands in their query.
+
+.. Instead of this refering line, I inserted the referenced document
+.. 
+    There is also an example of `creating and populating bucketed tables <https://cwiki.apache.org/Hive/languagemanual-ddl-bucketedtables.html>`_.
+
+This is a brief example on creating and populating bucketed tables. Bucketed tables are fantastic in that they allow much more efficient sampling than do non-bucketed tables, and they may later allow for time saving operations such as mapside joins. However, the bucketing specified at table creation is not enforced when the table is written to, and so it is possible for the table's metadata to advertise properties which are not upheld by the table's actual layout. This should obviously be avoided. Here's how to do it right.
+
+First, table creation::
+
+    CREATE TABLE user_info_bucketed(user_id BIGINT, firstname STRING, lastname STRING)
+    COMMENT 'A bucketed copy of user_info'
+    PARTITIONED BY(ds STRING)
+    CLUSTERED BY(user_id) INTO 256 BUCKETS;
+
+Note that we specify a column (user_id) to base the bucketing.
+
+Then we populate the table
+::
+
+    set hive.enforce.bucketing = true;  
+    FROM user_id
+    INSERT OVERWRITE TABLE user_info_bucketed
+    PARTITION (ds='2009-02-25')
+    SELECT userid, firstname, lastname WHERE ds='2009-02-25';
+
+The command set hive.enforce.bucketing = true; allows the correct number of reducers and the cluster by column to be automatically selected based on the table. Otherwise, you would need to set the number of reducers to be the same as the number of buckets a la set mapred.reduce.tasks = 256; and have a CLUSTER BY ... clause in the select.
+
+How does Hive distribute the rows across the buckets? In general, the bucket number is determined by the expression hash_function(bucketing_column) mod num_buckets. (There's a '0x7FFFFFFF in there too, but that's not that important). The hash_function depends on the type of the bucketing column. For an int, it's easy, hash_int(i) == i. For example, if user_id were an int, and there were 10 buckets, we would expect all user_id's that end in 0 to be in bucket 1, all user_id's that end in a 1 to be in bucket 2, etc. For other datatypes, it's a little tricky. In particular, the hash of a BIGINT is not the same as the BIGINT. And the hash of a string or a complex datatype will be some number that's derived from the value, but not anything humanly-recognizable. For example, if user_id were a STRING, then the user_id's in bucket 1 would probably not end in 0. In general, distributing rows based on the hash will give you a even distribution in the buckets.
+
+So, what can go wrong? As long as you set hive.enforce.bucketing = true, and use the syntax above, the tables should be populated properly. Things can go wrong if the bucketing column type is different during the insert and on read, or if you manually cluster by a value that's different from the table definition.
+
+^^^^^^^^^^^^^^^^^^^^^^^
+Skewed tables
+^^^^^^^^^^^^^^^^^^^^^^^
+
+This feature can be used to improve performance for tables where one or more columns have skewed values. By specifying the values that appear very often (heavy skew) Hive will split those out into separate files automatically and take this fact into account during queries so that it can skip (or include) whole files if possible.
+
+This can be specified on a per-table level during table creation.
+
+This is an example where we have one column with three skewed values::
+
+    CREATE TABLE list_bucket_single (key STRING, value STRING) SKEWED BY (key) ON (1,5,6);
+
+And here is an example of a table with two skewed columns::
+
+    CREATE TABLE list_bucket_multiple (col1 STRING, col2 int, col3 STRING) SKEWED BY (col1, col2) ON (('s1',1), ('s3',3), ('s13',13), ('s78',78));
+
+--------------
+Drop Table
+--------------
+
+::
+
+    DROP TABLE [IF EXISTS] table_name
+
+DROP TABLE removes metadata and data for this table. The data is actually moved to the .Trash/Current directory if Trash is configured. The metadata is completely lost.
+
+When dropping an EXTERNAL table, data in the table will NOT be deleted from the file system.
+
+When dropping a table referenced by views, no warning is given (the views are left dangling as invalid and must be dropped or recreated by the user).
+
+See the next section on ALTER TABLE for how to drop partitions.
+
+Otherwise, the table information is removed from the metastore and the raw data is removed as if by 'hadoop dfs -rm'. In many cases, this results in the table data being moved into the user's .Trash folder in their home directory; users who mistakenly DROP TABLEs mistakenly may thus be able to recover their lost data by re-creating a table with the same schema, re-creating any necessary partitions, and then moving the data back into place manually using Hadoop. This solution is subject to change over time or across installations as it relies on the underlying implementation; users are strongly encouraged not to drop tables capriciously.
+
+In Hive 0.70 or later, DROP returns an error if the table doesn't exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.
+
+--------------
+Truncate Table
+--------------
+
+::
+
+    TRUNCATE TABLE table_name [PARTITION partition_spec];
+
+    partition_spec:
+      : (partition_col = partition_col_value, partition_col = partiton_col_value, ...)
+
+Removes all rows from a table or partition(s). Currently target table should be native/managed table or exception will be thrown.
+User can specify partial partition spec for truncating multiple partitions at once and omitting partition spec will truncate all partitions in the table.
+
+================================
+Alter Table/Partition Statements
+================================
+
+Alter table statements enable you to change the structure of an existing table. You can add columns/partitions, change serde, add table and serde properties, or rename the table itself. Similarly, alter table partition statements allow you change the properties of a specific partition in the named table.
+
+---------------
+Add Partitions
+---------------
+
+::
+
+    ALTER TABLE table_name ADD [IF NOT EXISTS] PARTITION partition_spec [LOCATION 'location1'] partition_spec [LOCATION 'location2'] ...
+
+    partition_spec:
+      : (partition_col = partition_col_value, partition_col = partiton_col_value, ...)
+
+You can use ALTER TABLE ADD PARTITION to add partitions to a table. Partition values should be quoted only if they are strings. The location must be a directory inside of which data files reside.
+
+Note that it is proper syntax to have multiple partition_spec in a single ALTER TABLE, but if you do this in version 0.7, your partitioning scheme will fail. That is, every query specifying a partition will always use only the first partition. Instead, you should use the following form if you want to add many partitions:
+
+::
+
+    ALTER TABLE table_name ADD PARTITION (partCol = 'value1') location 'loc1';
+    ALTER TABLE table_name ADD PARTITION (partCol = 'value2') location 'loc2';
+    ...
+    ALTER TABLE table_name ADD PARTITION (partCol = 'valueN') location 'locN';
+
+Specifically, the following example (which was the default example before) will FAIL silently and without error, and all queries will go only to dt='2008-08-08' partition, no matter which partition you specify.
+
+::
+
+    ALTER TABLE page_view ADD PARTITION (dt='2008-08-08', country='us') location '/path/to/us/part080808' PARTITION (dt='2008-08-09', country='us') location '/path/to/us/part080809';
+
+An error is thrown if the partition_spec for the table already exists. You can use IF NOT EXISTS to skip the error.
+
+-------------------
+Recover partitions
+-------------------
+
+Hive stores a list of partitions for each table in its metastore. If, however, new partitions are directly added to HDFS (say by using hadoop fs -put command), the metastore (and hence Hive) will not be aware of these partitions unless the user runs ALTER TABLE table_name ADD PARTITION commands on each of the newly added partitions.
+
+However, users can run
+
+::
+
+    MSCK REPAIR TABLE table_name;
+
+which will add metadata about partitions to the Hive metastore for partitions for which such metadata doesn't already exist. In other words, it will add any partitions that exist on HDFS but not in metastore to the metastore. See `HIVE-874 <https://issues.apache.org/jira/browse/HIVE-874>`_ for more details.
+
+The equivalent command on Amazon Elastic MapReduce (EMR)'s version of Hive is
+
+::
+
+    ALTER TABLE table_name RECOVER PARTITIONS;
+
+----------------
+Drop Partitions
+----------------
+
+::
+
+    ALTER TABLE table_name DROP [IF EXISTS] partition_spec, partition_spec,...
+
+You can use ALTER TABLE DROP PARTITION to drop a partition for a table. This removes the data and metadata for this partition.
+
+For tables that are protected by NO DROP CASCADE, you can use the predicate IGNORE PROTECTION to drop a specified partition or set of partitions (for example, when splitting a table between two Hadoop clusters).
+
+::
+
+    ALTER TABLE table_name DROP [IF EXISTS] partition_spec IGNORE PROTECTION;
+
+The above command will drop that partition regardless of protection stats.
+
+In Hive 0.70 or later, DROP returns an error if the partition doesn't exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.
+
+::
+
+    ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us');
+
+------------
+Rename Table
+------------
+
+::
+
+    ALTER TABLE table_name RENAME TO new_table_name
+
+This statement lets you change the name of a table to a different name.
+
+As of version 0.6, a rename on a managed table moves its HDFS location as well. (Older Hive versions just renamed the table in the metastore without moving the HDFS location.)
+
+----------------------------------------
+Change Column Name/Type/Position/Comment
+----------------------------------------
+
+::
+
+    ALTER TABLE table_name CHANGE [COLUMN] col_old_name col_new_name column_type [COMMENT col_comment] [FIRST|AFTER column_name]
+
+This command will allow users to change a column's name, data type, comment, or position, or an arbitrary combination of them.
+
+Example::
+
+    CREATE TABLE test_change (a int, b int, c int);
+
+    // will change column a's name to a1
+    ALTER TABLE test_change CHANGE a a1 INT; 
+
+    // will change column a's name to a1, a's data type to string, and put it after column b. The new table's structure is: b int, a1 string, c int
+    ALTER TABLE test_change CHANGE a a1 STRING AFTER b; 
+
+    // will change column b's name to b1, and put it as the first column. The new table's structure is: b1 int, a string, c int
+    ALTER TABLE test_change CHANGE b b1 INT FIRST; 
+
+NOTE: The column change command will only modify Hive's metadata, and will NOT touch data. Users should make sure the actual data layout conforms with the metadata definition.
+
+--------------------
+Add/Replace Columns
+--------------------
+
+::
+
+    ALTER TABLE table_name ADD|REPLACE COLUMNS (col_name data_type [COMMENT col_comment], ...)
+
+ADD COLUMNS lets you add new columns to the end of the existing columns but before the partition columns.
+
+REPLACE COLUMNS removes all existing columns and adds the new set of columns. This can be done only for tables with native serde (DynamicSerDe or MetadataTypedColumnsetSerDe). Refer to SerDe section of User Guide for more information. REPLACE COLUMNS can also be used to drop columns. For example:
+
+"ALTER TABLE test_change REPLACE COLUMNS (a int, b int);" will remove column 'c' from test_change's schema. Note that this does not delete underlying data, it just changes the schema.
+
+-------------------------
+Alter Table Properties
+-------------------------
+
+::
+
+    ALTER TABLE table_name SET TBLPROPERTIES table_properties
+
+    table_properties:
+      : (property_name = property_value, property_name = property_value, ... )
+
+You can use this statement to add your own metadata to the tables. Currently last_modified_user, last_modified_time properties are automatically added and managed by Hive. Users can add their own properties to this list. You can do DESCRIBE EXTENDED TABLE to get this information.
+
+--------------------
+Add Serde Properties
+--------------------
+
+::
+
+    ALTER TABLE table_name SET SERDE serde_class_name [WITH SERDEPROPERTIES serde_properties]
+    ALTER TABLE table_name SET SERDEPROPERTIES serde_properties
+
+    serde_properties:
+      : (property_name = property_value, property_name = property_value, ... )
+
+This statement enables you to add user defined metadata to table SerDe object. The serde properties are passed to the table's SerDe when it is being initialized by Hive to serialize and deserialize data. So users can store any information required for their custom serde here. Refer to SerDe section of Users Guide for more information.
+
+Example, note that both property_name and property_value must be quoted::
+
+    ALTER TABLE table_name SET SERDEPROPERTIES ('field.delim' = ',');
+
+-----------------------------------
+Alter Table/Partition File Format
+-----------------------------------
+
+::
+
+    ALTER TABLE table_name [PARTITION partitionSpec] SET FILEFORMAT file_format
+
+This statement changes the table's (or partition's) file format. For available file_format options, see the section above on CREATE TABLE.
+
+--------------------------------
+Alter Table Storage Properties
+--------------------------------
+
+::
+
+    ALTER TABLE table_name CLUSTERED BY (col_name, col_name, ...) [SORTED BY (col_name, ...)] INTO num_buckets BUCKETS
+
+These statements change the table's physical storage properties.
+
+NOTE: These commands will only modify Hive's metadata, and will NOT reorganize or reformat existing data. Users should make sure the actual data layout conforms with the metadata definition.
+
+--------------------------------
+Alter Table/Partition Location
+--------------------------------
+
+::
+
+    ALTER TABLE table_name [PARTITION partitionSpec] SET LOCATION "new location"
+
+-----------------
+Alter Table Touch
+-----------------
+
+::
+
+    ALTER TABLE table_name TOUCH [PARTITION partitionSpec];
+
+TOUCH reads the metadata, and writes it back. This has the effect of causing the pre/post execute hooks to fire. An example use case is if you have a hook that logs all the tables/partitions that were modified, along with an external script that alters the files on HDFS directly. Since the script modifies files outside of hive, the modification wouldn't be logged by the hook. The external script could call TOUCH to fire the hook and mark the said table or partition as modified.
+
+Also, it may be useful later if we incorporate reliable last modified times. Then touch would update that time as well.
+
+Note that TOUCH doesn't create a table or partition if it doesn't already exist. (See :ref:`Create Table <create-table>`)
+
+-------------------------
+Alter Table (Un)Archive
+-------------------------
+
+::
+
+    ALTER TABLE table_name ARCHIVE PARTITION partition_spec;
+    ALTER TABLE table_name UNARCHIVE PARTITION partition_spec;
+
+Archiving is a feature to moves a partition's files into a Hadoop Archive (HAR). Note that only the file count will be reduced; HAR does not provide any compression. See `LanguageManual Archiving <https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Archiving>`_ for more information
+
+----------------------------------
+Alter Table/Partition Protections
+----------------------------------
+
+::
+
+    ALTER TABLE table_name [PARTITION partition_spec] ENABLE|DISABLE NO_DROP;
+    ALTER TABLE table_name [PARTITION partition_spec] ENABLE|DISABLE OFFLINE;
+
+Protection on data can be set at either the table or partition level. Enabling NO_DROP prevents a table or partition from being dropped. Enabling OFFLINE prevents the data in a table or partition from being queried, but the metadata can still be accessed. Note, if any partition in a table has NO_DROP enabled, the table cannot be dropped either.
+
+----------------------------------
+Alter Table Rename Partition
+----------------------------------
+
+::
+
+    ALTER TABLE table_name PARTITION partition_spec RENAME TO PARTITION partition_spec;
+
+Available starting in Hive 0.9
+This statement lets you change the value of a partition column.
+
+.. _view:
+
+==================
+Create/Drop View
+==================
+
+Note: View support is only available starting in Hive 0.6.
+
+-------------------
+Create View
+-------------------
+
+::
+
+    CREATE VIEW [IF NOT EXISTS] view_name [(column_name [COMMENT column_comment], ...) ]
+    [COMMENT view_comment]
+    [TBLPROPERTIES (property_name = property_value, ...)]
+    AS SELECT ...
+
+CREATE VIEW creates a view with the given name. An error is thrown if a table or view with the same name already exists. You can use IF NOT EXISTS to skip the error.
+
+If no column names are supplied, the names of the view's columns will be derived automatically from the defining SELECT expression. (If the SELECT contains unaliased scalar expressions such as x+y, the resulting view column names will be generated in the form _C0, _C1, etc.) When renaming columns, column comments can also optionally be supplied. (Comments are not automatically inherited from underlying columns.)
+
+A CREATE VIEW statement will fail if the view's defining SELECT expression is invalid.
+
+Note that a view is a purely logical object with no associated storage. (No support for materialized views is currently available in Hive.) When a query references a view, the view's definition is evaluated in order to produce a set of rows for further processing by the query. (This is a conceptual description; in fact, as part of query optimization, Hive may combine the view's definition with the query's, e.g. pushing filters from the query down into the view.)
+
+A view's schema is frozen at the time the view is created; subsequent changes to underlying tables (e.g. adding a column) will not be reflected in the view's schema. If an underlying table is dropped or changed in an incompatible fashion, subsequent attempts to query the invalid view will fail.
+
+Views are read-only and may not be used as the target of LOAD/INSERT/ALTER. For changing metadata, see :ref:`ALTER VIEW <alter-view>`.
+
+A view may contain ORDER BY and LIMIT clauses. If a referencing query also contains these clauses, the query-level clauses are evaluated after the view clauses (and after any other operations in the query). For example, if a view specifies LIMIT 5, and a referencing query is executed as (select * from v LIMIT 10), then at most 5 rows will be returned.
+
+Example of view creation::
+
+    CREATE VIEW onion_referrers(url COMMENT 'URL of Referring page')
+    COMMENT 'Referrers to The Onion website'
+    AS
+    SELECT DISTINCT referrer_url
+    FROM page_view
+    WHERE page_url='http://www.theonion.com';
+
+-------------------
+Drop View
+-------------------
+
+::
+
+    DROP VIEW [IF EXISTS] view_name
+
+DROP VIEW removes metadata for the specified view. (It is illegal to use DROP TABLE on a view.)
+
+When dropping a view referenced by other views, no warning is given (the dependent views are left dangling as invalid and must be dropped or recreated by the user).
+
+In Hive 0.70 or later, DROP returns an error if the view doesn't exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.
+
+Example::
+
+    DROP VIEW onion_referrers;
+
+.. _alter-view:
+
+-----------------------
+Alter View Properties
+-----------------------
+
+::
+
+    ALTER VIEW view_name SET TBLPROPERTIES table_properties
+
+    table_properties:
+      : (property_name = property_value, property_name = property_value, ...)
+
+As with ALTER TABLE, you can use this statement to add your own metadata to a view.
+
+
+
+.. The following is intentionally skipped
+..
+    =======================
+    Create/Drop Function
+    =======================
+
+    -----------------------
+    Create Function
+    -----------------------
+
+    ::
+
+        CREATE TEMPORARY FUNCTION function_name AS class_name
+
+    This statement lets you create a function that is implemented by the class_name. You can use this function in Hive queries as long as the session lasts. You can use any class that is in the class path of Hive. You can add jars to class path by executing 'ADD FILES' statements. Please refer to the CLI section in the User Guide for more information on how to add/delete files from the Hive classpath. Using this, you can register User Defined Functions (UDF's).
+
+    -----------------------
+    Drop Function
+    -----------------------
+
+    You can unregister a UDF as follows:
+
+    ::
+
+        DROP TEMPORARY FUNCTION [IF EXISTS] function_name
+
+    In Hive 0.70 or later, DROP returns an error if the function doesn't exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.
+
+=======================
+Create/Drop Index
+=======================
+
+Not available until 0.7 release
+
+----------------------------
+Create Index
+----------------------------
+
+::
+
+    CREATE INDEX index_name
+    ON TABLE base_table_name (col_name, ...)
+    AS index_type
+    [WITH DEFERRED REBUILD]
+    [IDXPROPERTIES (property_name=property_value, ...)]
+    [IN TABLE index_table_name]
+    [
+       [ ROW FORMAT ...] STORED AS ...
+       | STORED BY ...
+    ]
+    [LOCATION hdfs_path]
+    [TBLPROPERTIES (...)]
+    [COMMENT "index comment"]
+
+CREATE INDEX creates an index on a table using the given list of columns as keys. See http://wiki.apache.org/hadoop/Hive/IndexDev#CREATE_INDEX
+
+----------------------------
+Drop Index
+----------------------------
+
+::
+
+    DROP INDEX [IF EXISTS] index_name ON table_name
+    DROP INDEX drops the index, as well as deleting the index table.
+
+In Hive 0.70 or later, DROP returns an error if the index doesn't exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.
+
+===========================
+Show/Describe Statements
+===========================
+
+These statements provide a way to query the Hive metastore for existing data and metadata accessible to this Hive system.
+
+----------------------------
+Show Databases
+----------------------------
+
+::
+
+    SHOW (DATABASES|SCHEMAS) [LIKE identifier_with_wildcards];
+
+SHOW DATABASES lists all of the databases defined in the metastore. The optional LIKE clause allows the list of databases to be filtered using a regular expression. The regular expression may only contain '' for any characters or '|' for a choice. Examples are 'employees', 'emp', "emp*|*ees', all of which will match the database named 'employees'.
+
+----------------------------
+Show Tables
+----------------------------
+
+SHOW TABLES identifier_with_wildcards;
+SHOW TABLES lists all the base tables and views with names matching the given regular expression. Regular expression can contain only '' for any characters or '|' for a choice. Examples are 'page_view', 'page_v', 'view|page', all which will match 'page_view' table. Matching tables are listed in alphabetical order. It is not an error if there are no matching tables found in metastore.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Show Table Properties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    SHOW TBLPROPERTIES tblname;
+    SHOW TBLPROPERTIES tblname("foo");
+
+The first form lists all of the table properties for the table in question one per row separated by tabs. The second form of the command prints only the value for the property that's being asked for.
+
+----------------------------
+Show Partitions
+----------------------------
+
+::
+
+    SHOW PARTITIONS table_name
+
+SHOW PARTITIONS lists all the existing partitions for a given base table. Partitions are listed in alphabetical order.
+
+It is also possible to specify parts of a partition specification to filter the resulting list. Note: This feature is only available starting in version 0.6.
+
+::
+
+    SHOW PARTITIONS table_name PARTITION(ds='2010-03-03');
+    SHOW PARTITIONS table_name PARTITION(hr='12');
+    SHOW PARTITIONS table_name PARTITION(ds='2010-03-03', hr='12');
+
+-------------------------------
+Show Table/Partitions Extended
+-------------------------------
+
+::
+
+    SHOW TABLE EXTENDED [IN|FROM database_name] LIKE identifier_with_wildcards [PARTITION(partition_desc)]
+
+SHOW TABLE EXTENDED will list information for all tables matching the given regular expression. Users can not use regular expression for table name if a partition specification is present. This command's output includes basic table information and file system information like totalNumberFiles, totalFileSize, maxFileSize, minFileSize,lastAccessTime, and lastUpdateTime. If partition is present, it will output the given partition's file system information instead of table's file system information.
+
+----------------------------
+Show Functions
+----------------------------
+
+::
+
+    SHOW FUNCTIONS "a.*"
+
+SHOW FUNCTIONS lists all the user defined and builtin functions matching the regular expression. To get all functions use ".*"
+
+----------------------------
+Show Indexes
+----------------------------
+
+::
+
+    SHOW [FORMATTED] (INDEX|INDEXES) ON table_with_index [(FROM|IN) db_name]
+
+SHOW INDEXES shows all of the indexes on a certain column, as well as information about them: index name, table name, names of the columns used as keys, index table name, index type, and comment. If the FORMATTED keyword is used, then column titles are printed for each column. Not available until 0.7 release.
+
+----------------------------
+Show Columns
+----------------------------
+
+::
+
+    SHOW COLUMNS (FROM|IN) table_name [(FROM|IN) db_name]
+
+SHOW COLUMNS shows all the columns in a table including partition columns.
+
+----------------------------
+Show Create Table
+----------------------------
+
+::
+
+    SHOW CREATE TABLE ([db_name.]table_name|view_name)
+
+SHOW CREATE TABLE shows the CREATE TABLE statement that creates a given table, or the CREATE VIEW statement that creates a given view.
+
+----------------------------
+Describe Database
+----------------------------
+
+::
+
+    DESCRIBE DATABASE db_name
+
+DESCRIBE DATABASE will show the name of the database, its comment (if one has been set), and its root location on the filesystem. Not available until the 0.7 release.
+
+----------------------------
+Describe Table/Column
+----------------------------
+
+::
+
+    DESCRIBE [EXTENDED|FORMATTED] table_name[DOT col_name ( [DOT field_name] | [DOT '$elem$'] | [DOT '$key$'] | [DOT '$value$'] )* ]
+
+DESCRIBE shows the list of columns including partition columns for the given table. If the EXTENDED keyword is specified then it will show all the metadata for the table in Thrift serialized form. This is generally only useful for debugging and not for general use. If the FORMATTED keyword is specified, then it will show the metadata in a tabular format.
+
+If a table has complex column then you can examine the attributes of this column by specifying table_name.complex_col_name (and '$elem$' for array element, '$key$' for map key, and '$value$' for map value). You can specify this recursively to explore the complex column type.
+
+For a view, DESCRIBE EXTENDED or FORMATTED can be used to retrieve the view's definition. Two relevant attributes are provided: both the original view definition as specified by the user, and an expanded definition used internally by Hive.
+
+::
+
+    DESCRIBE [EXTENDED|FORMATTED] table_name partition_spec
+
+This statement lists metadata for a given partition. The output is similar to that of DESCRIBE. Presently, the column information associated with a particular partition is not used while preparing plans.
+
+Example::
+
+    DESCRIBE page_view PARTITION (ds='2008-08-08');

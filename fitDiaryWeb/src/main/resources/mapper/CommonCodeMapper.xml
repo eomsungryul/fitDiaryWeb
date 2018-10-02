@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dwebss.child.dao.CommonCodeMapper">
+
+  <resultMap id="codeVo" type="kr.co.dwebss.child.model.CommonCode">
+    <id column="CODE" jdbcType="INTEGER" property="code" />
+    <result column="CODE_CATEGORY_ID" jdbcType="INTEGER" property="codeCategoryId" />
+    <result column="CODE_NM" jdbcType="VARCHAR" property="codeNm" />
+    <result column="CODE_ENG_NM" jdbcType="VARCHAR" property="codeEngNm" />
+    <result column="CODE_USE_YN" jdbcType="CHAR" property="codeUseYn" />
+  </resultMap>
+  
+  
+	<sql id="WhereQuery">
+	WHERE 1=1
+		<if test="searchCondition=='codeCategory' and searchKeyword!='' and searchKeyword!=null">
+			AND CODE_CATEGORY_ID LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+		<if test="searchCondition=='codeValue' and searchKeyword!='' and searchKeyword!=null">
+			AND CODE_NM LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+	</sql>
+	
+	
+	<sql id="SelectWhereQuery">
+	WHERE 1=1
+		<if test="searchCondition!='mappingCategory' and code!='' and code!=null">
+			AND CODE = #{code}
+		</if>	
+		<if test="searchCondition=='mappingCategory' and searchKeyword!='' and searchKeyword!=null">
+			AND CODE_CATEGORY_ID LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+	</sql>
+    
+    <select id="selectList" parameterType="kr.co.dwebss.child.model.CommonCode" resultType="hashMap">
+    	SELECT A.* FROM (
+			SELECT 
+				@rownum := @rownum + 1 as rownum,
+			    CODE, 
+			    CODE_CATEGORY_ID, 
+			    CODE_NM,
+			    CODE_ENG_NM
+			FROM COMMON_CODE, (select @rownum :=0) r
+			<include refid="kr.co.dwebss.child.dao.CommonCodeMapper.WhereQuery" />
+			ORDER BY CODE DESC
+		) A
+		where A.rownum LIMIT #{firstIndex}, #{recordCountPerPage}
+    </select>
+    
+    <select id="selectListCnt" parameterType="kr.co.dwebss.child.model.CommonCode" resultType="INTEGER">
+    	SELECT COUNT(*) FROM (
+			SELECT 
+				@rownum := @rownum + 1 as rownum,
+			    CODE, 
+			    CODE_CATEGORY_ID, 
+			    CODE_NM,
+			    CODE_ENG_NM
+			FROM COMMON_CODE
+			<include refid="kr.co.dwebss.child.dao.CommonCodeMapper.WhereQuery" />
+			ORDER BY CODE
+		) A
+    </select>
+    
+    <select id="selectCommonCode" parameterType="kr.co.dwebss.child.model.CommonCode" resultType="kr.co.dwebss.child.model.CommonCode">
+    	SELECT 
+		    CODE, 
+		    CODE_CATEGORY_ID, 
+		    CODE_NM,
+		    CODE_ENG_NM
+		FROM COMMON_CODE
+		<include refid="kr.co.dwebss.child.dao.CommonCodeMapper.SelectWhereQuery" />
+    </select>
+    
+    <select id="selectPart" parameterType="kr.co.dwebss.child.model.CommonCode" resultMap="codeVo">
+    	select 
+		  code,
+		  code_category_id,
+		  code_nm,
+		  code_eng_nm,
+		  code_use_yn,
+		  IF((select count(*) from exercise_info where EXERCISE_EQUIP_CD=#{code} and EXERCISE_RANGE_CD = c.code AND USE_YN='Y') > 0 ,'Y','N') mapping_yn
+		from common_code c
+		<include refid="kr.co.dwebss.child.dao.CommonCodeMapper.SelectWhereQuery" />
+    </select>
+  
+  
+</mapper>

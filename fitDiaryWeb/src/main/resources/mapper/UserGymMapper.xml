@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dwebss.child.dao.UserGymMapper">
+  <resultMap id="BaseResultMap" type="kr.co.dwebss.child.model.UserGym">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="USER_GYM_ID" jdbcType="INTEGER" property="userGymId" />
+    <result column="GYM_ID" jdbcType="INTEGER" property="gymId" />
+    <result column="USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="USER_ROLE_CD" jdbcType="INTEGER" property="userRoleCd" />
+    <result column="USER_EXERCISE_CD" jdbcType="INTEGER" property="userExerciseCd" />
+    <result column="USER_MEMBERSHIP_CD" jdbcType="INTEGER" property="userMembershipCd" />
+    <result column="DORMANCY_YN" jdbcType="CHAR" property="dormancyYn" />
+    <result column="LOCKER_NUM" jdbcType="INTEGER" property="lockerNum" />
+    <result column="PT_YN" jdbcType="CHAR" property="ptYn" />
+    <result column="OT_YN" jdbcType="CHAR" property="otYn" />
+    <result column="GYM_START_D" jdbcType="DATE" property="gymStartD" />
+    <result column="GYM_END_D" jdbcType="DATE" property="gymEndD" />
+    <result column="USER_EXERCISING_D" jdbcType="VARCHAR" property="userExercisingD" />
+    <result column="GYM_USER_IMAGE" jdbcType="VARCHAR" property="gymUserImage" />
+    <result column="DEVICE_APP_ID" jdbcType="VARCHAR" property="deviceAppId" />
+    <result column="APPROVAL_YN" jdbcType="CHAR" property="approvalYn" />
+    <result column="USER_CARDIO_RATIO" jdbcType="DECIMAL" property="userCardioRatio" />
+  </resultMap>
+</mapper>

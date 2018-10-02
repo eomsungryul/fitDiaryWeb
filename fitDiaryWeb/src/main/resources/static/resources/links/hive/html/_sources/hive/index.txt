@@ -1,0 +1,16 @@
+Hive Query Language Reference Manual
+====================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   datatypes
+   ddl
+   dml
+   select
+   func
+   explain
+   lateralview
+   virtualcolumn

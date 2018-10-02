@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dwebss.child.dao.UserMapper">
+  <resultMap id="userVo" type="kr.co.dwebss.child.model.User">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="USER_LOGIN_ID" jdbcType="VARCHAR" property="userLoginId" />
+    <result column="USER_PASSWORD" jdbcType="VARCHAR" property="userPassword" />
+    <result column="USER_NM" jdbcType="VARCHAR" property="userNm" />
+    <result column="USER_HEIGHT" jdbcType="DECIMAL" property="userHeight" />
+    <result column="USER_WEIGHT" jdbcType="DECIMAL" property="userWeight" />
+    <result column="USER_PHONE" jdbcType="VARCHAR" property="userPhone" />
+    <result column="AUTH_CD" jdbcType="INTEGER" property="authCd" />
+    <result column="USER_SEX" jdbcType="CHAR" property="userSex" />
+    <result column="USER_EMAIL_GMAIL" jdbcType="VARCHAR" property="userEmailGmail" />
+    <result column="USER_EMAIL_FACEBOOK" jdbcType="VARCHAR" property="userEmailFacebook" />
+    <result column="PUSH_TOKEN" jdbcType="VARCHAR" property="pushToken" />
+  </resultMap>
+  
+  
+	<sql id="WhereQuery">
+	WHERE 1=1
+		<if test="searchCondition=='userNm' and searchKeyword!='' and searchKeyword!=null">
+			AND USER_NM LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+		<if test="searchCondition=='userRoleTypeCd' and searchKeyword!='' and searchKeyword!=null">
+			AND USER_ROLE_CD = #{ searchKeyword }
+		</if>	
+		<if test="searchCondition=='approvalYn' and searchKeyword!='' and searchKeyword!=null">
+			AND APPROVAL_YN = #{ searchKeyword }
+		</if>	
+	</sql>
+	
+	<sql id="SelectWhereQuery">
+	WHERE 1=1
+		<if test="userLoginId !='' and  userLoginId !=null">
+			AND USER_LOGIN_ID = #{userLoginId}
+		</if>	
+		<if test="userPassword !='' and  userPassword !=null">
+			AND USER_PASSWORD = #{userPassword}
+		</if>	
+	</sql>
+    
+    <select id="selectList" parameterType="kr.co.dwebss.child.model.User" resultType="hashMap">
+    	SELECT A.* FROM (
+			SELECT 
+				@rownum := @rownum + 1 as rownum,
+				USER_ID ,
+				USER_PASSWORD , 
+				USER_NM , 
+				USER_HEIGHT , 
+				USER_WEIGHT , 
+				USER_PHONE , 
+				USER_ROLE_TYPE_CD , 
+<!-- 				(SELECT ) USER_ROLE_TYPE_CD_NM ,  -->
+				USER_SEX , 
+				USER_EMAIL_GMAIL
+			FROM USER, (select @rownum :=0) r
+			<include refid="kr.co.dwebss.child.dao.UserMapper.WhereQuery" />
+			ORDER BY USER_ID DESC
+		) A
+		where A.rownum LIMIT #{firstIndex}, #{recordCountPerPage}
+    </select>
+    
+    <select id="selectCnt" parameterType="kr.co.dwebss.child.model.User" resultType="INTEGER">
+		SELECT 
+			COUNT(*)
+		FROM USER
+		<include refid="kr.co.dwebss.child.dao.UserMapper.WhereQuery" />
+    </select>
+    
+    <select id="selectUser" parameterType="kr.co.dwebss.child.model.User" resultMap="userVo">
+    	SELECT 
+			USER_ID ,
+			USER_LOGIN_ID , 
+			USER_PASSWORD , 
+			USER_NM , 
+			USER_HEIGHT , 
+			USER_WEIGHT , 
+			USER_PHONE , 
+			AUTH_CD , 
+			USER_SEX , 
+			USER_EMAIL_GMAIL
+		FROM USER
+		<include refid="kr.co.dwebss.child.dao.UserMapper.SelectWhereQuery" />
+    </select>
+  
+  
+</mapper>

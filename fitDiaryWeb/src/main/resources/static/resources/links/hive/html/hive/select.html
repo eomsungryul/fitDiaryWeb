@@ -1,0 +1,724 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hive Select Statement &mdash; NDAP  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/ndap-help.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="NDAP  documentation" href="../index.html" />
+    <link rel="up" title="Hive Query Language Reference Manual" href="index.html" />
+    <link rel="next" title="Hive Operators and Functions" href="func.html" />
+    <link rel="prev" title="Hive Data Manipulation Statements" href="dml.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="func.html" title="Hive Operators and Functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dml.html" title="Hive Data Manipulation Statements"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Hive Query Language Reference Manual</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hive-select-statement">
+<h1>Hive Select Statement<a class="headerlink" href="#hive-select-statement" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="select-syntax">
+<h2>Select Syntax<a class="headerlink" href="#select-syntax" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="p">[</span><span class="n">ALL</span> <span class="o">|</span> <span class="n">DISTINCT</span><span class="p">]</span> <span class="n">select_expr</span><span class="p">,</span> <span class="n">select_expr</span><span class="p">,</span> <span class="o">...</span>
+<span class="n">FROM</span> <span class="n">table_reference</span>
+<span class="p">[</span><span class="n">WHERE</span> <span class="n">where_condition</span><span class="p">]</span>
+<span class="p">[</span><span class="n">GROUP</span> <span class="n">BY</span> <span class="n">col_list</span><span class="p">]</span>
+<span class="p">[</span><span class="n">CLUSTER</span> <span class="n">BY</span> <span class="n">col_list</span>
+  <span class="o">|</span> <span class="p">[</span><span class="n">DISTRIBUTE</span> <span class="n">BY</span> <span class="n">col_list</span><span class="p">]</span> <span class="p">[</span><span class="n">SORT</span> <span class="n">BY</span> <span class="n">col_list</span><span class="p">]</span>
+<span class="p">]</span>
+<span class="p">[</span><span class="n">LIMIT</span> <span class="n">number</span><span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>A SELECT statement can be part of a <a class="reference internal" href="#union"><em>union</em></a> query or a <a class="reference internal" href="#subquery"><em>subquery</em></a> of another query.</li>
+<li>table_reference indicates the input to the query. It can be a regular table, a <a class="reference internal" href="ddl.html#view"><em>view</em></a>, a <a class="reference internal" href="#join"><em>join construct</em></a> or a <a class="reference internal" href="#subquery"><em>subquery</em></a>.</li>
+<li>Simple query. For example, the following query retrieves all columns and all rows from table t1.</li>
+</ul>
+<div class="section" id="where-clause">
+<h3>WHERE Clause<a class="headerlink" href="#where-clause" title="Permalink to this headline">¶</a></h3>
+<p>The where condition is a boolean [expression]. For example, the following query returns only those sales records which have an amount greater than 10 from the US region. Hive does not support IN, EXISTS or subqueries in the WHERE clause.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">sales</span> <span class="n">WHERE</span> <span class="n">amount</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="n">AND</span> <span class="n">region</span> <span class="o">=</span> <span class="s">&quot;US&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="all-and-distinct-clauses">
+<h3>ALL and DISTINCT Clauses<a class="headerlink" href="#all-and-distinct-clauses" title="Permalink to this headline">¶</a></h3>
+<p>The ALL and DISTINCT options specify whether duplicate rows should be returned. If none of these options are given, the default is ALL (all matching rows are returned). DISTINCT specifies removal of duplicate rows from the result set.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">hive</span><span class="o">&gt;</span> <span class="n">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="n">FROM</span> <span class="n">t1</span>
+    <span class="mi">1</span> <span class="mi">3</span>
+    <span class="mi">1</span> <span class="mi">3</span>
+    <span class="mi">1</span> <span class="mi">4</span>
+    <span class="mi">2</span> <span class="mi">5</span>
+<span class="n">hive</span><span class="o">&gt;</span> <span class="n">SELECT</span> <span class="n">DISTINCT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="n">FROM</span> <span class="n">t1</span>
+    <span class="mi">1</span> <span class="mi">3</span>
+    <span class="mi">1</span> <span class="mi">4</span>
+    <span class="mi">2</span> <span class="mi">5</span>
+<span class="n">hive</span><span class="o">&gt;</span> <span class="n">SELECT</span> <span class="n">DISTINCT</span> <span class="n">col1</span> <span class="n">FROM</span> <span class="n">t1</span>
+    <span class="mi">1</span>
+    <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="partition-based-queries">
+<h3>Partition Based Queries<a class="headerlink" href="#partition-based-queries" title="Permalink to this headline">¶</a></h3>
+<p>In general, a SELECT query scans the entire table (other than for <a class="reference internal" href="#sampling"><em>sampling</em></a>). If a table created using the <a class="reference internal" href="ddl.html#partition"><em>PARTITIONED BY</em></a> clause, a query can do partition pruning and scan only a fraction of the table relevant to the partitions specified by the query. Hive currently does partition pruning if the partition predicates are specified in the WHERE clause or the ON clause in a JOIN. For example, if table page_views is partitioned on column date, the following query retrieves rows for just days between 2008-03-01 and 2008-03-31.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">page_views</span><span class="o">.*</span>
+<span class="n">FROM</span> <span class="n">page_views</span>
+<span class="n">WHERE</span> <span class="n">page_views</span><span class="o">.</span><span class="n">date</span> <span class="o">&gt;=</span> <span class="s">&#39;2008-03-01&#39;</span> <span class="n">AND</span> <span class="n">page_views</span><span class="o">.</span><span class="n">date</span> <span class="o">&lt;=</span> <span class="s">&#39;2008-03-31&#39;</span>
+</pre></div>
+</div>
+<p>If a table page_views is joined with another table dim_users, you can specify a range of partitions in the ON clause as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">page_views</span><span class="o">.*</span>
+<span class="n">FROM</span> <span class="n">page_views</span> <span class="n">JOIN</span> <span class="n">dim_users</span>
+  <span class="n">ON</span> <span class="p">(</span><span class="n">page_views</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">dim_users</span><span class="o">.</span><span class="n">id</span> <span class="n">AND</span> <span class="n">page_views</span><span class="o">.</span><span class="n">date</span> <span class="o">&gt;=</span> <span class="s">&#39;2008-03-01&#39;</span> <span class="n">AND</span> <span class="n">page_views</span><span class="o">.</span><span class="n">date</span> <span class="o">&lt;=</span> <span class="s">&#39;2008-03-31&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>See also <a class="reference internal" href="#group-by"><em>Group By</em></a></li>
+<li>See also <a class="reference internal" href="#sort-by"><em>Sort By</em></a> / <a class="reference internal" href="#cluster-by"><em>Cluster By</em></a> / <a class="reference internal" href="#cluster-by"><em>Distribute By</em></a> / <a class="reference internal" href="#order-by"><em>Order By</em></a></li>
+</ul>
+</div>
+<div class="section" id="having-clause">
+<h3>HAVING Clause<a class="headerlink" href="#having-clause" title="Permalink to this headline">¶</a></h3>
+<p>Hive added support for the HAVING clause in version 0.7.0. In older versions of Hive it is possible to achieve the same effect by using a subquery, e.g:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">col1</span> <span class="n">FROM</span> <span class="n">t1</span> <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">col1</span> <span class="n">HAVING</span> <span class="n">SUM</span><span class="p">(</span><span class="n">col2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>can also be expressed as</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">col1</span> <span class="n">FROM</span> <span class="p">(</span><span class="n">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">SUM</span><span class="p">(</span><span class="n">col2</span><span class="p">)</span> <span class="n">AS</span> <span class="n">col2sum</span> <span class="n">FROM</span> <span class="n">t1</span> <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">col1</span><span class="p">)</span> <span class="n">t2</span> <span class="n">WHERE</span> <span class="n">t2</span><span class="o">.</span><span class="n">col2sum</span> <span class="o">&gt;</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="limit-clause">
+<h3>LIMIT Clause<a class="headerlink" href="#limit-clause" title="Permalink to this headline">¶</a></h3>
+<p>Limit indicates the number of rows to be returned. The rows returned are chosen at random. The following query returns 5 rows from t1 at random.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">t1</span> <span class="n">LIMIT</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<p>Top k queries. The following query returns the top 5 sales records wrt amount.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SET</span> <span class="n">mapred</span><span class="o">.</span><span class="n">reduce</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">sales</span> <span class="n">SORT</span> <span class="n">BY</span> <span class="n">amount</span> <span class="n">DESC</span> <span class="n">LIMIT</span> <span class="mi">5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="regex-column-specification">
+<h3>REGEX Column Specification<a class="headerlink" href="#regex-column-specification" title="Permalink to this headline">¶</a></h3>
+<p>A SELECT statement can take regex-based column specification.</p>
+<ul class="simple">
+<li>We use java regex syntax. Try <a class="reference external" href="http://www.fileformat.info/tool/regex.htm">http://www.fileformat.info/tool/regex.htm</a> for testing purposes.</li>
+<li>The following query select all columns except ds and hr.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="sb">`(ds|hr)?+.+`</span> <span class="n">FROM</span> <span class="n">sales</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="group-by">
+<span id="id1"></span><h2>Group By<a class="headerlink" href="#group-by" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="group-by-syntax">
+<h3>Group By Syntax<a class="headerlink" href="#group-by-syntax" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>groupByClause: GROUP BY groupByExpression (, groupByExpression)*
+
+groupByExpression: expression
+
+groupByQuery: SELECT expression (, expression)* FROM src groupByClause?</pre>
+</div>
+</div>
+<div class="section" id="simple-examples">
+<h3>Simple Examples<a class="headerlink" href="#simple-examples" title="Permalink to this headline">¶</a></h3>
+<p>In order to count the number of rows in a table:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">table2</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In order to count the number of distinct users by gender one could write the following query:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSERT</span> <span class="n">OVERWRITE</span> <span class="n">TABLE</span> <span class="n">pv_gender_sum</span>
+<span class="n">SELECT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">gender</span><span class="p">,</span> <span class="n">count</span> <span class="p">(</span><span class="n">DISTINCT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">userid</span><span class="p">)</span>
+<span class="n">FROM</span> <span class="n">pv_users</span>
+<span class="n">GROUP</span> <span class="n">BY</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">gender</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Multiple aggregations can be done at the same time, however, no two aggregations can have different DISTINCT columns .e.g while the following is possible</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSERT</span> <span class="n">OVERWRITE</span> <span class="n">TABLE</span> <span class="n">pv_gender_agg</span>
+<span class="n">SELECT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">gender</span><span class="p">,</span> <span class="n">count</span><span class="p">(</span><span class="n">DISTINCT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">userid</span><span class="p">),</span> <span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">),</span> <span class="nb">sum</span><span class="p">(</span><span class="n">DISTINCT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">userid</span><span class="p">)</span>
+<span class="n">FROM</span> <span class="n">pv_users</span>
+<span class="n">GROUP</span> <span class="n">BY</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">gender</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>However, the following query is not allowed. We don&#8217;t allow multiple DISTINCT expressions in the same query.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSERT</span> <span class="n">OVERWRITE</span> <span class="n">TABLE</span> <span class="n">pv_gender_agg</span>
+<span class="n">SELECT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">gender</span><span class="p">,</span> <span class="n">count</span><span class="p">(</span><span class="n">DISTINCT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">userid</span><span class="p">),</span> <span class="n">count</span><span class="p">(</span><span class="n">DISTINCT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">ip</span><span class="p">)</span>
+<span class="n">FROM</span> <span class="n">pv_users</span>
+<span class="n">GROUP</span> <span class="n">BY</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">gender</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="select-statement-and-group-by-clause">
+<h3>Select statement and group by clause<a class="headerlink" href="#select-statement-and-group-by-clause" title="Permalink to this headline">¶</a></h3>
+<p>When using group by clause, the select statement can only include columns included in the group by clause. Of course, you can have as many aggregation functions (e.g. count) in the select statement as well.
+Let&#8217;s take a simple example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">t1</span><span class="p">(</span><span class="n">a</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="n">b</span> <span class="n">INTGER</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>A group by query on the above table could look like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span>
+   <span class="n">a</span><span class="p">,</span>
+   <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">FROM</span>
+   <span class="n">t1</span>
+<span class="n">GROUP</span> <span class="n">BY</span>
+   <span class="n">a</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The above query works because the select clause contains a (the group by key) and an aggregation function (sum(b)).</p>
+<p>However, the query below <strong>DOES NOT</strong> work:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span>
+   <span class="n">a</span><span class="p">,</span>
+   <span class="n">b</span>
+<span class="n">FROM</span>
+   <span class="n">t1</span>
+<span class="n">GROUP</span> <span class="n">BY</span>
+   <span class="n">a</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This is because the select clause has an additional column (b) that is not included in the group by clause (and it&#8217;s not an aggregation function either). This is because, if the table t1 looked like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span>    <span class="n">b</span>
+<span class="o">------</span>
+<span class="mi">100</span>  <span class="mi">1</span>
+<span class="mi">100</span>  <span class="mi">2</span>
+<span class="mi">100</span>  <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Since the grouping is only done on a, what value of b should Hive display for the group a=100? One can argue that it should be the first value or the lowest value but we all agree that there are multiple possible options. Hive does away with this guessing by making it invalid SQL (HQL, to be precise) to have a column in the select clause that is not included in the group by clause.</p>
+</div>
+<div class="section" id="advanced-features">
+<h3>Advanced Features<a class="headerlink" href="#advanced-features" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="multi-group-by-inserts">
+<h4>Multi-Group-By Inserts<a class="headerlink" href="#multi-group-by-inserts" title="Permalink to this headline">¶</a></h4>
+<p>The output of the aggregations or simple selects can be further sent into multiple tables or even to hadoop dfs files (which can then be manipulated using hdfs utilitites). e.g. if along with the gender breakdown, one needed to find the breakdown of unique page views by age, one could accomplish that with the following query:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">FROM</span> <span class="n">pv_users</span>
+<span class="n">INSERT</span> <span class="n">OVERWRITE</span> <span class="n">TABLE</span> <span class="n">pv_gender_sum</span>
+  <span class="n">SELECT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">gender</span><span class="p">,</span> <span class="n">count</span><span class="p">(</span><span class="n">DISTINCT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">userid</span><span class="p">)</span>
+  <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">gender</span>
+<span class="n">INSERT</span> <span class="n">OVERWRITE</span> <span class="n">DIRECTORY</span> <span class="s">&#39;/user/facebook/tmp/pv_age_sum&#39;</span>
+  <span class="n">SELECT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">age</span><span class="p">,</span> <span class="n">count</span><span class="p">(</span><span class="n">DISTINCT</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">userid</span><span class="p">)</span>
+  <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">age</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="map-side-aggregation-for-group-by">
+<h4>Map-side Aggregation for Group By<a class="headerlink" href="#map-side-aggregation-for-group-by" title="Permalink to this headline">¶</a></h4>
+<p>hive.map.aggr controls how we do aggregations. The default is false. If it is set to true, Hive will do the first-level aggregation directly in the map task.
+This usually provides better efficiency, but may require more memory to run successfully.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">set</span> <span class="n">hive</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">aggr</span><span class="o">=</span><span class="n">true</span><span class="p">;</span>
+<span class="n">SELECT</span> <span class="n">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">table2</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="order-by">
+<span id="id2"></span><h2>Order By<a class="headerlink" href="#order-by" title="Permalink to this headline">¶</a></h2>
+<p>The ORDER BY syntax in Hive QL is similar to the syntax of ORDER BY in SQL language.</p>
+<div class="highlight-python"><pre>colOrder: ( ASC | DESC )
+orderBy: ORDER BY colName colOrder? (',' colName colOrder?)*
+query: SELECT expression (',' expression)* FROM src orderBy</pre>
+</div>
+<p>There are some limitations in the &#8220;order by&#8221; clause. In the strict mode (i.e., hive.mapred.mode=strict), the order by clause has to be followed by a &#8220;limit&#8221; clause. The limit clause is not necessary if you set hive.mapred.mode to nonstrict. The reason is that in order to impose total order of all results, there has to be one reducer to sort the final output. If the number of rows in the output is too large, the single reducer could take a very long time to finish.</p>
+</div>
+<div class="section" id="sort-by">
+<span id="id3"></span><h2>Sort By<a class="headerlink" href="#sort-by" title="Permalink to this headline">¶</a></h2>
+<p>The SORT BY syntax is similar to the syntax of ORDER BY in SQL language.</p>
+<div class="highlight-python"><pre>colOrder: ( ASC | DESC )
+sortBy: SORT BY colName colOrder? (',' colName colOrder?)*
+query: SELECT expression (',' expression)* FROM src sortBy</pre>
+</div>
+<p>Hive uses the columns in SORT BY to sort the rows before feeding the rows to a reducer. The sort order will be dependent on the column types. If the column is of numeric type, then the sort order is also in numeric order. If the column is of string type, then the sort order will be lexicographical order.</p>
+<div class="section" id="difference-between-sort-by-and-order-by">
+<h3>Difference between Sort By and Order By<a class="headerlink" href="#difference-between-sort-by-and-order-by" title="Permalink to this headline">¶</a></h3>
+<p>Hive supports SORT BY which sorts the data per reducer. The difference between &#8220;order by&#8221; and &#8220;sort by&#8221; is that the former guarantees total order in the output while the latter only guarantees ordering of the rows within a reducer. If there are more than one reducer, &#8220;sort by&#8221; may give partially ordered final results.</p>
+<p>Note: It may be confusing as to the difference between SORT BY alone of a single column and CLUSTER BY. The difference is that CLUSTER BY partitions by the field and SORT BY if there are multiple reducers partitions randomly in order to distribute data (and load) uniformly across the reducers.</p>
+<p>Basically, the data in each reducer will be sorted according to the order that the user specified. The following example shows</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">SORT</span> <span class="n">BY</span> <span class="n">key</span> <span class="n">ASC</span><span class="p">,</span> <span class="n">value</span> <span class="n">DESC</span>
+</pre></div>
+</div>
+<p>The query had 2 reducers, and the output of each is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="mi">0</span>   <span class="mi">5</span>
+<span class="mi">0</span>   <span class="mi">3</span>
+<span class="mi">3</span>   <span class="mi">6</span>
+<span class="mi">9</span>   <span class="mi">1</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="mi">0</span>   <span class="mi">4</span>
+<span class="mi">0</span>   <span class="mi">3</span>
+<span class="mi">1</span>   <span class="mi">1</span>
+<span class="mi">2</span>   <span class="mi">5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-types-for-sort-by">
+<h3>Setting Types for Sort By<a class="headerlink" href="#setting-types-for-sort-by" title="Permalink to this headline">¶</a></h3>
+<p>After a transform, variable types are generally considered to be strings, meaning that numeric data will be sorted lexicographically. To overcome this, a second SELECT statement with casts can be used before using SORT BY.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">FROM</span> <span class="p">(</span><span class="n">FROM</span> <span class="p">(</span><span class="n">FROM</span> <span class="n">src</span>
+            <span class="n">SELECT</span> <span class="n">TRANSFORM</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">USING</span> <span class="s">&#39;mapper&#39;</span>
+            <span class="n">AS</span> <span class="n">value</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="n">mapped</span>
+      <span class="n">SELECT</span> <span class="n">cast</span><span class="p">(</span><span class="n">value</span> <span class="k">as</span> <span class="n">double</span><span class="p">)</span> <span class="n">AS</span> <span class="n">value</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">count</span> <span class="k">as</span> <span class="nb">int</span><span class="p">)</span> <span class="n">AS</span> <span class="n">count</span>
+      <span class="n">SORT</span> <span class="n">BY</span> <span class="n">value</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="nb">sorted</span>
+<span class="n">SELECT</span> <span class="n">TRANSFORM</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+<span class="n">USING</span> <span class="s">&#39;reducer&#39;</span>
+<span class="n">AS</span> <span class="n">whatever</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="distribute-by-and-cluster-by">
+<span id="cluster-by"></span><h2>Distribute By and Cluster By<a class="headerlink" href="#distribute-by-and-cluster-by" title="Permalink to this headline">¶</a></h2>
+<p>Cluster By and Distribute By are used mainly with the <a class="reference external" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Transform">Transform/Map-Reduce Scripts</a> . But, it is sometimes useful in SELECT statements if there is a need to partition and sort the output of a query for subsequent queries.</p>
+<p>Cluster By is a short-cut for both Distribute By and Sort By.</p>
+<p>Hive uses the columns in Distribute By to distribute the rows among reducers. All rows with the same Distribute By columns will go to the same reducer. However, Distribute By does not guarantee clustering or sorting properties on the distributed keys.</p>
+<p>For example, we are Distributing By x on the following 5 rows to 2 reducer:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span>
+<span class="n">x2</span>
+<span class="n">x4</span>
+<span class="n">x3</span>
+<span class="n">x1</span>
+</pre></div>
+</div>
+<p>Reducer 1 got</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span>
+<span class="n">x2</span>
+<span class="n">x1</span>
+</pre></div>
+</div>
+<p>Reducer 2 got</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x4</span>
+<span class="n">x3</span>
+</pre></div>
+</div>
+<p>Note that all rows with the same key x1 is guaranteed to be distributed to the same reducer (reducer 1 in this case), but they are not guaranteed to be clustered in adjacent positions.</p>
+<p>In contrast, if we use Cluster By x, the two reducers will further sort rows on x:</p>
+<p>Reducer 1 got</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span>
+<span class="n">x1</span>
+<span class="n">x2</span>
+</pre></div>
+</div>
+<p>Reducer 2 got</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x3</span>
+<span class="n">x4</span>
+</pre></div>
+</div>
+<p>Instead of specifying Cluster By, the user can specify Distribute By and Sort By, so the partition columns and sort columns can be different. The usual case is that the partition columns are a prefix of sort columns, but that is not required.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="n">FROM</span> <span class="n">t1</span> <span class="n">CLUSTER</span> <span class="n">BY</span> <span class="n">col1</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="n">FROM</span> <span class="n">t1</span> <span class="n">DISTRIBUTE</span> <span class="n">BY</span> <span class="n">col1</span>
+
+<span class="n">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="n">FROM</span> <span class="n">t1</span> <span class="n">DISTRIBUTE</span> <span class="n">BY</span> <span class="n">col1</span> <span class="n">SORT</span> <span class="n">BY</span> <span class="n">col1</span> <span class="n">ASC</span><span class="p">,</span> <span class="n">col2</span> <span class="n">DESC</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">FROM</span> <span class="p">(</span>
+  <span class="n">FROM</span> <span class="n">pv_users</span>
+  <span class="n">MAP</span> <span class="p">(</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">userid</span><span class="p">,</span> <span class="n">pv_users</span><span class="o">.</span><span class="n">date</span> <span class="p">)</span>
+  <span class="n">USING</span> <span class="s">&#39;map_script&#39;</span>
+  <span class="n">AS</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span>
+  <span class="n">DISTRIBUTE</span> <span class="n">BY</span> <span class="n">c2</span>
+  <span class="n">SORT</span> <span class="n">BY</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c1</span><span class="p">)</span> <span class="n">map_output</span>
+<span class="n">INSERT</span> <span class="n">OVERWRITE</span> <span class="n">TABLE</span> <span class="n">pv_users_reduced</span>
+  <span class="n">REDUCE</span> <span class="p">(</span> <span class="n">map_output</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">map_output</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">map_output</span><span class="o">.</span><span class="n">c3</span> <span class="p">)</span>
+  <span class="n">USING</span> <span class="s">&#39;reduce_script&#39;</span>
+  <span class="n">AS</span> <span class="n">date</span><span class="p">,</span> <span class="n">count</span><span class="p">;</span>
+</pre></div>
+</div>
+<blockquote>
+<div></div></blockquote>
+</div>
+<div class="section" id="joins">
+<span id="join"></span><h2>Joins<a class="headerlink" href="#joins" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="join-syntax">
+<h3>Join Syntax<a class="headerlink" href="#join-syntax" title="Permalink to this headline">¶</a></h3>
+<p>Hive supports the following syntax for joining tables:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">join_table</span><span class="p">:</span>
+    <span class="n">table_reference</span> <span class="n">JOIN</span> <span class="n">table_factor</span> <span class="p">[</span><span class="n">join_condition</span><span class="p">]</span>
+  <span class="o">|</span> <span class="n">table_reference</span> <span class="p">{</span><span class="n">LEFT</span><span class="o">|</span><span class="n">RIGHT</span><span class="o">|</span><span class="n">FULL</span><span class="p">}</span> <span class="p">[</span><span class="n">OUTER</span><span class="p">]</span> <span class="n">JOIN</span> <span class="n">table_reference</span> <span class="n">join_condition</span>
+  <span class="o">|</span> <span class="n">table_reference</span> <span class="n">LEFT</span> <span class="n">SEMI</span> <span class="n">JOIN</span> <span class="n">table_reference</span> <span class="n">join_condition</span>
+  <span class="o">|</span> <span class="n">table_reference</span> <span class="n">CROSS</span> <span class="n">JOIN</span> <span class="n">table_reference</span> <span class="p">[</span><span class="n">join_condition</span><span class="p">]</span> <span class="p">(</span><span class="k">as</span> <span class="n">of</span> <span class="n">Hive</span> <span class="mf">0.10</span><span class="p">)</span>
+
+<span class="n">table_reference</span><span class="p">:</span>
+    <span class="n">table_factor</span>
+  <span class="o">|</span> <span class="n">join_table</span>
+
+<span class="n">table_factor</span><span class="p">:</span>
+    <span class="n">tbl_name</span> <span class="p">[</span><span class="n">alias</span><span class="p">]</span>
+  <span class="o">|</span> <span class="n">table_subquery</span> <span class="n">alias</span>
+  <span class="o">|</span> <span class="p">(</span> <span class="n">table_references</span> <span class="p">)</span>
+
+<span class="n">join_condition</span><span class="p">:</span>
+    <span class="n">ON</span> <span class="n">equality_expression</span> <span class="p">(</span> <span class="n">AND</span> <span class="n">equality_expression</span> <span class="p">)</span><span class="o">*</span>
+
+<span class="n">equality_expression</span><span class="p">:</span>
+    <span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
+</pre></div>
+</div>
+<p>Only equality joins, outer joins, and left semi joins are supported in Hive. Hive does not support join conditions that are not equality conditions as it is very difficult to express such conditions as a map/reduce job. Also, more than two tables can be joined in Hive.</p>
+</div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>Some salient points to consider when writing join queries are as follows:</p>
+<p>Only equality joins are allowed e.g.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.*</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.*</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">id</span> <span class="n">AND</span> <span class="n">a</span><span class="o">.</span><span class="n">department</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">department</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>are both valid joins, however</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.*</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="o">&lt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is NOT allowed</p>
+<p>More than 2 tables can be joined in the same query e.g.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span> <span class="n">JOIN</span> <span class="n">c</span> <span class="n">ON</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is a valid join.</p>
+<p>Hive converts joins over multiple tables into a single map/reduce job if for every table the same column is used in the join clauses e.g.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span> <span class="n">JOIN</span> <span class="n">c</span> <span class="n">ON</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is converted into a single map/reduce job as only key1 column for b is involved in the join. On the other hand</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span> <span class="n">JOIN</span> <span class="n">c</span> <span class="n">ON</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is converted into two map/reduce jobs because key1 column from b is used in the first join condition and key2 column from b is used in the second one. The first map/reduce job joins a with b and the results are then joined with c in the second map/reduce job.</p>
+<p>In every map/reduce stage of the join, the last table in the sequence is streamed through the reducers where as the others are buffered. Therefore, it helps to reduce the memory needed in the reducer for buffering the rows for a particular value of the join key by organizing the tables such that the largest tables appear last in the sequence. e.g. in</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span> <span class="n">JOIN</span> <span class="n">c</span> <span class="n">ON</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>all the three tables are joined in a single map/reduce job and the values for a particular value of the key for tables a and b are buffered in the memory in the reducers. Then for each row retrieved from c, the join is computed with the buffered rows. Similarly for</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span> <span class="n">JOIN</span> <span class="n">c</span> <span class="n">ON</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>there are two map/reduce jobs involved in computing the join. The first of these joins a with b and buffers the values of a while streaming the values of b in the reducers. The second of one of these jobs buffers the results of the first join while streaming the values of c through the reducers.</p>
+<p>In every map/reduce stage of the join, the table to be streamed can be specified via a hint. e.g. in</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">/*+</span> <span class="n">STREAMTABLE</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*/</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span> <span class="n">JOIN</span> <span class="n">c</span> <span class="n">ON</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>all the three tables are joined in a single map/reduce job and the values for a particular value of the key for tables b and c are buffered in the memory in the reducers. Then for each row retrieved from a, the join is computed with the buffered rows.</p>
+<p>LEFT, RIGHT, and FULL OUTER joins exist in order to provide more control over ON clauses for which there is no match. For example, this query:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">LEFT</span> <span class="n">OUTER</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>will return a row for every row in a. This output row will be a.val,b.val when there is a b.key that equals a.key, and the output row will be a.val,NULL when there is no corresponding b.key. Rows from b which have no corresponding a.key will be dropped. The syntax &#8220;FROM a LEFT OUTER JOIN b&#8221; must be written on one line in order to understand how it works&#8211;a is to the LEFT of b in this query, and so all rows from a are kept; a RIGHT OUTER JOIN will keep all rows from b, and a FULL OUTER JOIN will keep all rows from a and all rows from b. OUTER JOIN semantics should conform to standard SQL specs.</p>
+<p>Joins occur BEFORE WHERE CLAUSES. So, if you want to restrict the OUTPUT of a join, a requirement should be in the WHERE clause, otherwise it should be in the JOIN clause. A big point of confusion for this issue is partitioned tables:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">LEFT</span> <span class="n">OUTER</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+<span class="n">WHERE</span> <span class="n">a</span><span class="o">.</span><span class="n">ds</span><span class="o">=</span><span class="s">&#39;2009-07-07&#39;</span> <span class="n">AND</span> <span class="n">b</span><span class="o">.</span><span class="n">ds</span><span class="o">=</span><span class="s">&#39;2009-07-07&#39;</span>
+</pre></div>
+</div>
+<p>will join a on b, producing a list of a.val and b.val. The WHERE clause, however, can also reference other columns of a and b that are in the output of the join, and then filter them out. However, whenever a row from the JOIN has found a key for a and no key for b, all of the columns of b will be NULL, including the ds column. This is to say, you will filter out all rows of join output for which there was no valid b.key, and thus you have outsmarted your LEFT OUTER requirement. In other words, the LEFT OUTER part of the join is irrelevant if you reference any column of b in the WHERE clause. Instead, when OUTER JOINing, use this syntax:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span> <span class="n">FROM</span> <span class="n">a</span> <span class="n">LEFT</span> <span class="n">OUTER</span> <span class="n">JOIN</span> <span class="n">b</span>
+<span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">key</span> <span class="n">AND</span> <span class="n">b</span><span class="o">.</span><span class="n">ds</span><span class="o">=</span><span class="s">&#39;2009-07-07&#39;</span> <span class="n">AND</span> <span class="n">a</span><span class="o">.</span><span class="n">ds</span><span class="o">=</span><span class="s">&#39;2009-07-07&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>..the result is that the output of the join is pre-filtered, and you won&#8217;t get post-filtering trouble for rows that have a valid a.key but no matching b.key. The same logic applies to RIGHT and FULL joins.</p>
+<p>Joins are NOT commutative! Joins are left-associative regardless of whether they are LEFT or RIGHT joins.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">val1</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">val2</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">val</span>
+<span class="n">FROM</span> <span class="n">a</span>
+<span class="n">JOIN</span> <span class="n">b</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+<span class="n">LEFT</span> <span class="n">OUTER</span> <span class="n">JOIN</span> <span class="n">c</span> <span class="n">ON</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>...first joins a on b, throwing away everything in a or b that does not have a corresponding key in the other table. The reduced table is then joined on c. This provides unintuitive results if there is a key that exists in both a and c but not b: The whole row (including a.val1, a.val2, and a.key) is dropped in the &#8220;a JOIN b&#8221; step because it is not in b. The result does not have a.key in it, so when it is LEFT OUTER JOINed with c, c.val does not make it in because there is no c.key that matches an a.key (because that row from a was removed). Similarly, if this were a RIGHT OUTER JOIN (instead of LEFT), we would end up with an even weirder effect: NULL, NULL, NULL, c.val, because even though we specified a.key=c.key as the join key, we dropped all rows of a that did not match the first JOIN.
+To achieve the more intuitive effect, we should instead do FROM c LEFT OUTER JOIN a ON (c.key = a.key) LEFT OUTER JOIN b ON (c.key = b.key).</p>
+<p>LEFT SEMI JOIN implements the correlated IN/EXISTS subquery semantics in an efficient way. Since Hive currently does not support IN/EXISTS subqueries, you can rewrite your queries using LEFT SEMI JOIN. The restrictions of using LEFT SEMI JOIN is that the right-hand-side table should only be referenced in the join condition (ON-clause), but not in WHERE- or SELECT-clauses etc.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">value</span>
+<span class="n">FROM</span> <span class="n">a</span>
+<span class="n">WHERE</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span>
+ <span class="p">(</span><span class="n">SELECT</span> <span class="n">b</span><span class="o">.</span><span class="n">key</span>
+  <span class="n">FROM</span> <span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>can be rewritten to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">val</span>
+<span class="n">FROM</span> <span class="n">a</span> <span class="n">LEFT</span> <span class="n">SEMI</span> <span class="n">JOIN</span> <span class="n">b</span> <span class="n">on</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If all but one of the tables being joined are small, the join can be performed as a map only job. The query</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">/*+</span> <span class="n">MAPJOIN</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">*/</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">value</span>
+<span class="n">FROM</span> <span class="n">a</span> <span class="n">join</span> <span class="n">b</span> <span class="n">on</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key</span>
+</pre></div>
+</div>
+<p>does not need a reducer. For every mapper of A, B is read completely. The restriction is that a FULL/RIGHT OUTER JOIN b cannot be performed</p>
+<p>If the tables being joined are bucketized on the join columns, and the number of buckets in one table is a multiple of the number of buckets in the other table, the buckets can be joined with each other. If table A has 4 buckets and table B has 4 buckets, the following join</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">/*+</span> <span class="n">MAPJOIN</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">*/</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">value</span>
+<span class="n">FROM</span> <span class="n">a</span> <span class="n">join</span> <span class="n">b</span> <span class="n">on</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key</span>
+</pre></div>
+</div>
+<p>can be done on the mapper only. Instead of fetching B completely for each mapper of A, only the required buckets are fetched. For the query above, the mapper processing bucket 1 for A will only fetch bucket 1 of B. It is not the default behavior, and is governed by the following parameter</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">set</span> <span class="n">hive</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">bucketmapjoin</span> <span class="o">=</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>If the tables being joined are sorted and bucketized on the join columns, and they have the same number of buckets, a sort-merge join can be performed. The corresponding buckets are joined with each other at the mapper. If both And B have 4 buckets,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">/*+</span> <span class="n">MAPJOIN</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">*/</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">value</span>
+<span class="n">FROM</span> <span class="n">A</span> <span class="n">a</span> <span class="n">join</span> <span class="n">B</span> <span class="n">b</span> <span class="n">on</span> <span class="n">a</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">key</span>
+</pre></div>
+</div>
+<p>can be done on the mapper only. The mapper for the bucket for A will traverse the corresponding bucket for B. This is not the default behavior, and the following parameters need to be set:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">set</span> <span class="n">hive</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">format</span><span class="o">=</span><span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">hive</span><span class="o">.</span><span class="n">ql</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BucketizedHiveInputFormat</span><span class="p">;</span>
+<span class="nb">set</span> <span class="n">hive</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">bucketmapjoin</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="nb">set</span> <span class="n">hive</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">bucketmapjoin</span><span class="o">.</span><span class="n">sortedmerge</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="union">
+<span id="id4"></span><h2>Union<a class="headerlink" href="#union" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">select_statement</span> <span class="n">UNION</span> <span class="n">ALL</span> <span class="n">select_statement</span> <span class="n">UNION</span> <span class="n">ALL</span> <span class="n">select_statement</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>UNION is used to combine the result from multiple SELECT statements into a single result set. We currently only support UNION ALL (bag union) i.e. duplicates are not eliminated. The number and names of columns returned by each select_statement has to be the same. Otherwise, a schema error is thrown.</p>
+<p>If some additional processing has to be done on the result of the UNION, the entire statement expression can be embedded in a FROM clause like below:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">*</span>
+<span class="n">FROM</span> <span class="p">(</span>
+  <span class="n">select_statement</span>
+  <span class="n">UNION</span> <span class="n">ALL</span>
+  <span class="n">select_statement</span>
+<span class="p">)</span> <span class="n">unionResult</span>
+</pre></div>
+</div>
+<p>For example, if we suppose there are two different tables that track which user has published a video and which user has published a comment, the following query joins the results of a union all with the user table to create a single annotated stream for all the video publishing and comment publishing events:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">u</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">actions</span><span class="o">.</span><span class="n">date</span>
+<span class="n">FROM</span> <span class="p">(</span>
+    <span class="n">SELECT</span> <span class="n">av</span><span class="o">.</span><span class="n">uid</span> <span class="n">AS</span> <span class="n">uid</span>
+    <span class="n">FROM</span> <span class="n">action_video</span> <span class="n">av</span>
+    <span class="n">WHERE</span> <span class="n">av</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="s">&#39;2008-06-03&#39;</span>
+    <span class="n">UNION</span> <span class="n">ALL</span>
+    <span class="n">SELECT</span> <span class="n">ac</span><span class="o">.</span><span class="n">uid</span> <span class="n">AS</span> <span class="n">uid</span>
+    <span class="n">FROM</span> <span class="n">action_comment</span> <span class="n">ac</span>
+    <span class="n">WHERE</span> <span class="n">ac</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="s">&#39;2008-06-03&#39;</span>
+ <span class="p">)</span> <span class="n">actions</span> <span class="n">JOIN</span> <span class="n">users</span> <span class="n">u</span> <span class="n">ON</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">uid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="subqueries">
+<span id="subquery"></span><h2>SubQueries<a class="headerlink" href="#subqueries" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">...</span> <span class="n">FROM</span> <span class="p">(</span><span class="n">subquery</span><span class="p">)</span> <span class="n">name</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Hive supports subqueries only in the FROM clause. The subquery has to be given a name because every table in a FROM clause must have a name. Columns in the subquery select list must have unique names. The columns in the subquery select list are available in the outer query just like columns of a table. The subquery can also be a query expression with UNION. Hive supports arbitrary levels of sub-queries.</p>
+<p>Example with simple subquery:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">col</span>
+<span class="n">FROM</span> <span class="p">(</span>
+  <span class="n">SELECT</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span> <span class="n">AS</span> <span class="n">col</span>
+  <span class="n">FROM</span> <span class="n">t1</span>
+<span class="p">)</span> <span class="n">t2</span>
+</pre></div>
+</div>
+<p>Example with subquery containing a UNION ALL:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">t3</span><span class="o">.</span><span class="n">col</span>
+<span class="n">FROM</span> <span class="p">(</span>
+  <span class="n">SELECT</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span> <span class="n">AS</span> <span class="n">col</span>
+  <span class="n">FROM</span> <span class="n">t1</span>
+  <span class="n">UNION</span> <span class="n">ALL</span>
+  <span class="n">SELECT</span> <span class="n">c</span><span class="o">+</span><span class="n">d</span> <span class="n">AS</span> <span class="n">col</span>
+  <span class="n">FROM</span> <span class="n">t2</span>
+<span class="p">)</span> <span class="n">t3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sampling">
+<span id="id5"></span><h2>Sampling<a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sampling-bucketized-table">
+<h3>Sampling Bucketized Table<a class="headerlink" href="#sampling-bucketized-table" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">table_sample</span><span class="p">:</span> <span class="n">TABLESAMPLE</span> <span class="p">(</span><span class="n">BUCKET</span> <span class="n">x</span> <span class="n">OUT</span> <span class="n">OF</span> <span class="n">y</span> <span class="p">[</span><span class="n">ON</span> <span class="n">colname</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The TABLESAMPLE clause allows the users to write queries for samples of the data instead of the whole table. The TABLESAMPLE clause can be added to any table in the FROM clause. The buckets are numbered starting from 1. colname indicates the column on which to sample each row in the table. colname can be one of the non-partition columns in the table or rand() indicating sampling on the entire row instead of an individual column. The rows of the table are &#8216;bucketed&#8217; on the colname randomly into y buckets numbered 1 through y. Rows which belong to bucket x are returned.</p>
+<p>In the following example the 3rd bucket out of the 32 buckets of the table source. &#8216;s&#8217; is the table alias.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">*</span>
+<span class="n">FROM</span> <span class="n">source</span> <span class="n">TABLESAMPLE</span><span class="p">(</span><span class="n">BUCKET</span> <span class="mi">3</span> <span class="n">OUT</span> <span class="n">OF</span> <span class="mi">32</span> <span class="n">ON</span> <span class="n">rand</span><span class="p">())</span> <span class="n">s</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Input pruning: Typically, TABLESAMPLE will scan the entire table and fetch the sample. But, that is not very efficient. Instead, the table can be created with a CLUSTERED BY clause which indicates the set of columns on which the table is hash-partitioned/clustered on. If the columns specified in the TABLESAMPLE clause match the columns in the CLUSTERED BY clause, TABLESAMPLE scans only the required hash-partitions of the table.</p>
+<p>Example:</p>
+<p>So in the above example, if table &#8216;source&#8217; was created with &#8216;CLUSTERED BY id INTO 32 BUCKETS&#8217;</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">TABLESAMPLE</span><span class="p">(</span><span class="n">BUCKET</span> <span class="mi">3</span> <span class="n">OUT</span> <span class="n">OF</span> <span class="mi">16</span> <span class="n">ON</span> <span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would pick out the 3rd and 19th clusters as each bucket would be composed of (32/16)=2 clusters.</p>
+<p>On the other hand the tablesample clause</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">TABLESAMPLE</span><span class="p">(</span><span class="n">BUCKET</span> <span class="mi">3</span> <span class="n">OUT</span> <span class="n">OF</span> <span class="mi">64</span> <span class="n">ON</span> <span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would pick out half of the 3rd cluster as each bucket would be composed of (32/64)=1/2 of a cluster.</p>
+</div>
+<div class="section" id="block-sampling">
+<h3>Block Sampling<a class="headerlink" href="#block-sampling" title="Permalink to this headline">¶</a></h3>
+<p>Block sampling is available starting with Hive 0.8. Addressed under JIRA - <a class="reference external" href="https://issues.apache.org/jira/browse/HIVE-2121">HIVE-2121</a></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">block_sample</span><span class="p">:</span> <span class="n">TABLESAMPLE</span> <span class="p">(</span><span class="n">n</span> <span class="n">PERCENT</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will allow Hive to pick up at least n% data size (notice it doesn&#8217;t necessarily mean number of rows) as inputs. Only CombineHiveInputFormat is supported and some special compression formats are not handled. If we fail to sample it, the input of MapReduce job will be the whole table/partition. We do it in HDFS block level so that the sampling granularity is block size. For example, if block size is 256MB, even if n% of input size is only 100MB, you get 256MB of data.</p>
+<p>In the following example the input size 0.1% or more will be used for the query.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">*</span>
+<span class="n">FROM</span> <span class="n">source</span> <span class="n">TABLESAMPLE</span><span class="p">(</span><span class="mf">0.1</span> <span class="n">PERCENT</span><span class="p">)</span> <span class="n">s</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Sometimes you want to sample the same data with different blocks, you can change this seed number:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">set</span> <span class="n">hive</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">seednumber</span><span class="o">=&lt;</span><span class="n">INTEGER</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Or user can specify total length to be read, but it has same limitation with PERCENT sampling. (As of Hive 0.10.0 - <a class="reference external" href="https://issues.apache.org/jira/browse/HIVE-3401">HIVE-3401</a>)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">block_sample</span><span class="p">:</span> <span class="n">TABLESAMPLE</span> <span class="p">(</span><span class="n">ByteLengthLiteral</span><span class="p">)</span>
+
+<span class="n">ByteLengthLiteral</span> <span class="p">:</span> <span class="p">(</span><span class="n">Digit</span><span class="p">)</span><span class="o">+</span> <span class="p">(</span><span class="s">&#39;b&#39;</span> <span class="o">|</span> <span class="s">&#39;B&#39;</span> <span class="o">|</span> <span class="s">&#39;k&#39;</span> <span class="o">|</span> <span class="s">&#39;K&#39;</span> <span class="o">|</span> <span class="s">&#39;m&#39;</span> <span class="o">|</span> <span class="s">&#39;M&#39;</span> <span class="o">|</span> <span class="s">&#39;g&#39;</span> <span class="o">|</span> <span class="s">&#39;G&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the following example the input size 100M or more will be used for the query.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">*</span>
+<span class="n">FROM</span> <span class="n">source</span> <span class="n">TABLESAMPLE</span><span class="p">(</span><span class="mi">100</span><span class="n">M</span><span class="p">)</span> <span class="n">s</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Hive also supports limiting input by row count basis, but it acts differently with above two. First, it does not need CombineHiveInputFormat which means this can be used with non-native tables. Second, the row count given by user is applied to each split. So total row count can be vary by number of input splits. (As of Hive 0.10.0 - <a class="reference external" href="https://issues.apache.org/jira/browse/HIVE-3401">HIVE-3401</a>)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">block_sample</span><span class="p">:</span> <span class="n">TABLESAMPLE</span> <span class="p">(</span><span class="n">n</span> <span class="n">ROWS</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example, the following query will take the first 10 rows from each input split.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">source</span> <span class="n">TABLESAMPLE</span><span class="p">(</span><span class="mi">10</span> <span class="n">ROWS</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Hive Select Statement</a><ul>
+<li><a class="reference internal" href="#select-syntax">Select Syntax</a><ul>
+<li><a class="reference internal" href="#where-clause">WHERE Clause</a></li>
+<li><a class="reference internal" href="#all-and-distinct-clauses">ALL and DISTINCT Clauses</a></li>
+<li><a class="reference internal" href="#partition-based-queries">Partition Based Queries</a></li>
+<li><a class="reference internal" href="#having-clause">HAVING Clause</a></li>
+<li><a class="reference internal" href="#limit-clause">LIMIT Clause</a></li>
+<li><a class="reference internal" href="#regex-column-specification">REGEX Column Specification</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#group-by">Group By</a><ul>
+<li><a class="reference internal" href="#group-by-syntax">Group By Syntax</a></li>
+<li><a class="reference internal" href="#simple-examples">Simple Examples</a></li>
+<li><a class="reference internal" href="#select-statement-and-group-by-clause">Select statement and group by clause</a></li>
+<li><a class="reference internal" href="#advanced-features">Advanced Features</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#order-by">Order By</a></li>
+<li><a class="reference internal" href="#sort-by">Sort By</a><ul>
+<li><a class="reference internal" href="#difference-between-sort-by-and-order-by">Difference between Sort By and Order By</a></li>
+<li><a class="reference internal" href="#setting-types-for-sort-by">Setting Types for Sort By</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#distribute-by-and-cluster-by">Distribute By and Cluster By</a></li>
+<li><a class="reference internal" href="#joins">Joins</a><ul>
+<li><a class="reference internal" href="#join-syntax">Join Syntax</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#union">Union</a></li>
+<li><a class="reference internal" href="#subqueries">SubQueries</a></li>
+<li><a class="reference internal" href="#sampling">Sampling</a><ul>
+<li><a class="reference internal" href="#sampling-bucketized-table">Sampling Bucketized Table</a></li>
+<li><a class="reference internal" href="#block-sampling">Block Sampling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dml.html"
+                        title="previous chapter">Hive Data Manipulation Statements</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="func.html"
+                        title="next chapter">Hive Operators and Functions</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="func.html" title="Hive Operators and Functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dml.html" title="Hive Data Manipulation Statements"
+             >previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Hive Query Language Reference Manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, joe.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

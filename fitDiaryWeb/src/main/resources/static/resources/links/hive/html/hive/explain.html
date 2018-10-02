@@ -1,0 +1,235 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hive Explain Statement &mdash; NDAP  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/ndap-help.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="NDAP  documentation" href="../index.html" />
+    <link rel="up" title="Hive Query Language Reference Manual" href="index.html" />
+    <link rel="next" title="Hive Lateral Views" href="lateralview.html" />
+    <link rel="prev" title="Hive Operators and Functions" href="func.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="lateralview.html" title="Hive Lateral Views"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="func.html" title="Hive Operators and Functions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Hive Query Language Reference Manual</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hive-explain-statement">
+<h1>Hive Explain Statement<a class="headerlink" href="#hive-explain-statement" title="Permalink to this headline">¶</a></h1>
+<p>Hive provides an EXPLAIN command that shows the execution plan for a query. The syntax for this statement is as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">EXPLAIN</span> <span class="p">[</span><span class="n">EXTENDED</span><span class="p">]</span> <span class="n">query</span>
+</pre></div>
+</div>
+<p>The use of EXTENDED in the EXPLAIN statement produces extra information about the operators in the plan. This is typically physical information like file names.</p>
+<p>A Hive query gets converted into a sequence (it is more an Directed Acyclic Graph) of stages. These stages may be map/reduce stages or they may even be stages that do metastore or file system operations like move and rename. The explain output comprises of three parts:</p>
+<ul class="simple">
+<li>The Abstract Syntax Tree for the query</li>
+<li>The dependencies between the different stages of the plan</li>
+<li>The description of each of the stages</li>
+</ul>
+<p>The description of the stages itself shows a sequence of operators with the metadata associated with the operators. The metadata may comprise of things like filter expressions for the FilterOperator or the select expressions for the SelectOperator or the output file names for the FileSinkOperator.</p>
+<p>As an example, consider the following EXPLAIN query:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">EXPLAIN</span>
+<span class="n">FROM</span> <span class="n">src</span> <span class="n">INSERT</span> <span class="n">OVERWRITE</span> <span class="n">TABLE</span> <span class="n">dest_g1</span> <span class="n">SELECT</span> <span class="n">src</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">substr</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">value</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">src</span><span class="o">.</span><span class="n">key</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The output of this statement contains the following parts:</p>
+<p>The Abstract Syntax Tree</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ABSTRACT</span> <span class="n">SYNTAX</span> <span class="n">TREE</span><span class="p">:</span>
+  <span class="p">(</span><span class="n">TOK_QUERY</span> <span class="p">(</span><span class="n">TOK_FROM</span> <span class="p">(</span><span class="n">TOK_TABREF</span> <span class="n">src</span><span class="p">))</span> <span class="p">(</span><span class="n">TOK_INSERT</span> <span class="p">(</span><span class="n">TOK_DESTINATION</span> <span class="p">(</span><span class="n">TOK_TAB</span> <span class="n">dest_g1</span><span class="p">))</span> <span class="p">(</span><span class="n">TOK_SELECT</span> <span class="p">(</span><span class="n">TOK_SELEXPR</span> <span class="p">(</span><span class="n">TOK_COLREF</span> <span class="n">src</span> <span class="n">key</span><span class="p">))</span> <span class="p">(</span><span class="n">TOK_SELEXPR</span> <span class="p">(</span><span class="n">TOK_FUNCTION</span> <span class="nb">sum</span> <span class="p">(</span><span class="n">TOK_FUNCTION</span> <span class="n">substr</span> <span class="p">(</span><span class="n">TOK_COLREF</span> <span class="n">src</span> <span class="n">value</span><span class="p">)</span> <span class="mi">4</span><span class="p">))))</span> <span class="p">(</span><span class="n">TOK_GROUPBY</span> <span class="p">(</span><span class="n">TOK_COLREF</span> <span class="n">src</span> <span class="n">key</span><span class="p">))))</span>
+</pre></div>
+</div>
+<p>The Dependency Graph</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">STAGE</span> <span class="n">DEPENDENCIES</span><span class="p">:</span>
+  <span class="n">Stage</span><span class="o">-</span><span class="mi">1</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">root</span> <span class="n">stage</span>
+  <span class="n">Stage</span><span class="o">-</span><span class="mi">2</span> <span class="n">depends</span> <span class="n">on</span> <span class="n">stages</span><span class="p">:</span> <span class="n">Stage</span><span class="o">-</span><span class="mi">1</span>
+  <span class="n">Stage</span><span class="o">-</span><span class="mi">0</span> <span class="n">depends</span> <span class="n">on</span> <span class="n">stages</span><span class="p">:</span> <span class="n">Stage</span><span class="o">-</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>This shows that Stage-1 is the root stage, Stage-2 is executed after Stage-1 is done and Stage-0 is executed after Stage-2 is done.</p>
+<p>The plans of each Stage</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">STAGE</span> <span class="n">PLANS</span><span class="p">:</span>
+  <span class="n">Stage</span><span class="p">:</span> <span class="n">Stage</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">Map</span> <span class="n">Reduce</span>
+      <span class="n">Alias</span> <span class="o">-&gt;</span> <span class="n">Map</span> <span class="n">Operator</span> <span class="n">Tree</span><span class="p">:</span>
+        <span class="n">src</span>
+            <span class="n">Reduce</span> <span class="n">Output</span> <span class="n">Operator</span>
+              <span class="n">key</span> <span class="n">expressions</span><span class="p">:</span>
+                    <span class="n">expr</span><span class="p">:</span> <span class="n">key</span>
+                    <span class="nb">type</span><span class="p">:</span> <span class="n">string</span>
+              <span class="n">sort</span> <span class="n">order</span><span class="p">:</span> <span class="o">+</span>
+              <span class="n">Map</span><span class="o">-</span><span class="nb">reduce</span> <span class="n">partition</span> <span class="n">columns</span><span class="p">:</span>
+                    <span class="n">expr</span><span class="p">:</span> <span class="n">rand</span><span class="p">()</span>
+                    <span class="nb">type</span><span class="p">:</span> <span class="n">double</span>
+              <span class="n">tag</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+              <span class="n">value</span> <span class="n">expressions</span><span class="p">:</span>
+                    <span class="n">expr</span><span class="p">:</span> <span class="n">substr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                    <span class="nb">type</span><span class="p">:</span> <span class="n">string</span>
+      <span class="n">Reduce</span> <span class="n">Operator</span> <span class="n">Tree</span><span class="p">:</span>
+        <span class="n">Group</span> <span class="n">By</span> <span class="n">Operator</span>
+          <span class="n">aggregations</span><span class="p">:</span>
+                <span class="n">expr</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">UDFToDouble</span><span class="p">(</span><span class="n">VALUE</span><span class="o">.</span><span class="mi">0</span><span class="p">))</span>
+          <span class="n">keys</span><span class="p">:</span>
+                <span class="n">expr</span><span class="p">:</span> <span class="n">KEY</span><span class="o">.</span><span class="mi">0</span>
+                <span class="nb">type</span><span class="p">:</span> <span class="n">string</span>
+          <span class="n">mode</span><span class="p">:</span> <span class="n">partial1</span>
+          <span class="n">File</span> <span class="n">Output</span> <span class="n">Operator</span>
+            <span class="n">compressed</span><span class="p">:</span> <span class="n">false</span>
+            <span class="n">table</span><span class="p">:</span>
+                <span class="nb">input</span> <span class="n">format</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">mapred</span><span class="o">.</span><span class="n">SequenceFileInputFormat</span>
+                <span class="n">output</span> <span class="n">format</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">mapred</span><span class="o">.</span><span class="n">SequenceFileOutputFormat</span>
+                <span class="n">name</span><span class="p">:</span> <span class="n">binary_table</span>
+
+  <span class="n">Stage</span><span class="p">:</span> <span class="n">Stage</span><span class="o">-</span><span class="mi">2</span>
+    <span class="n">Map</span> <span class="n">Reduce</span>
+      <span class="n">Alias</span> <span class="o">-&gt;</span> <span class="n">Map</span> <span class="n">Operator</span> <span class="n">Tree</span><span class="p">:</span>
+        <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">hive</span><span class="o">-</span><span class="n">zshao</span><span class="o">/</span><span class="mi">67494501</span><span class="o">/</span><span class="mf">106593589.10001</span>
+          <span class="n">Reduce</span> <span class="n">Output</span> <span class="n">Operator</span>
+            <span class="n">key</span> <span class="n">expressions</span><span class="p">:</span>
+                  <span class="n">expr</span><span class="p">:</span> <span class="mi">0</span>
+                  <span class="nb">type</span><span class="p">:</span> <span class="n">string</span>
+            <span class="n">sort</span> <span class="n">order</span><span class="p">:</span> <span class="o">+</span>
+            <span class="n">Map</span><span class="o">-</span><span class="nb">reduce</span> <span class="n">partition</span> <span class="n">columns</span><span class="p">:</span>
+                  <span class="n">expr</span><span class="p">:</span> <span class="mi">0</span>
+                  <span class="nb">type</span><span class="p">:</span> <span class="n">string</span>
+            <span class="n">tag</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">value</span> <span class="n">expressions</span><span class="p">:</span>
+                  <span class="n">expr</span><span class="p">:</span> <span class="mi">1</span>
+                  <span class="nb">type</span><span class="p">:</span> <span class="n">double</span>
+      <span class="n">Reduce</span> <span class="n">Operator</span> <span class="n">Tree</span><span class="p">:</span>
+        <span class="n">Group</span> <span class="n">By</span> <span class="n">Operator</span>
+          <span class="n">aggregations</span><span class="p">:</span>
+                <span class="n">expr</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">VALUE</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+          <span class="n">keys</span><span class="p">:</span>
+                <span class="n">expr</span><span class="p">:</span> <span class="n">KEY</span><span class="o">.</span><span class="mi">0</span>
+                <span class="nb">type</span><span class="p">:</span> <span class="n">string</span>
+          <span class="n">mode</span><span class="p">:</span> <span class="n">final</span>
+          <span class="n">Select</span> <span class="n">Operator</span>
+            <span class="n">expressions</span><span class="p">:</span>
+                  <span class="n">expr</span><span class="p">:</span> <span class="mi">0</span>
+                  <span class="nb">type</span><span class="p">:</span> <span class="n">string</span>
+                  <span class="n">expr</span><span class="p">:</span> <span class="mi">1</span>
+                  <span class="nb">type</span><span class="p">:</span> <span class="n">double</span>
+            <span class="n">Select</span> <span class="n">Operator</span>
+              <span class="n">expressions</span><span class="p">:</span>
+                    <span class="n">expr</span><span class="p">:</span> <span class="n">UDFToInteger</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
+                    <span class="n">expr</span><span class="p">:</span> <span class="mi">1</span>
+                    <span class="nb">type</span><span class="p">:</span> <span class="n">double</span>
+              <span class="n">File</span> <span class="n">Output</span> <span class="n">Operator</span>
+                <span class="n">compressed</span><span class="p">:</span> <span class="n">false</span>
+                <span class="n">table</span><span class="p">:</span>
+                    <span class="nb">input</span> <span class="n">format</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">mapred</span><span class="o">.</span><span class="n">TextInputFormat</span>
+                    <span class="n">output</span> <span class="n">format</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">hive</span><span class="o">.</span><span class="n">ql</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">IgnoreKeyTextOutputFormat</span>
+                    <span class="n">serde</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">hive</span><span class="o">.</span><span class="n">serde2</span><span class="o">.</span><span class="n">dynamic_type</span><span class="o">.</span><span class="n">DynamicSerDe</span>
+                    <span class="n">name</span><span class="p">:</span> <span class="n">dest_g1</span>
+
+  <span class="n">Stage</span><span class="p">:</span> <span class="n">Stage</span><span class="o">-</span><span class="mi">0</span>
+    <span class="n">Move</span> <span class="n">Operator</span>
+      <span class="n">tables</span><span class="p">:</span>
+            <span class="n">replace</span><span class="p">:</span> <span class="n">true</span>
+            <span class="n">table</span><span class="p">:</span>
+                <span class="nb">input</span> <span class="n">format</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">mapred</span><span class="o">.</span><span class="n">TextInputFormat</span>
+                <span class="n">output</span> <span class="n">format</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">hive</span><span class="o">.</span><span class="n">ql</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">IgnoreKeyTextOutputFormat</span>
+                <span class="n">serde</span><span class="p">:</span> <span class="n">org</span><span class="o">.</span><span class="n">apache</span><span class="o">.</span><span class="n">hadoop</span><span class="o">.</span><span class="n">hive</span><span class="o">.</span><span class="n">serde2</span><span class="o">.</span><span class="n">dynamic_type</span><span class="o">.</span><span class="n">DynamicSerDe</span>
+                <span class="n">name</span><span class="p">:</span> <span class="n">dest_g1</span>
+</pre></div>
+</div>
+<p>In this example there are 2 map/reduce stages (Stage-1 and Stage-2) and 1 File System related stage (Stage-0). Stage-0 basically moves the results from a temporary directory to the directory corresponding to the table dest_g1.</p>
+<p>A map/reduce stage itself comprises of 2 parts:</p>
+<ul class="simple">
+<li>A mapping from table alias to Map Operator Tree - This mapping tells the mappers which operator tree to call in order to process the rows from a particular table or result of a previous map/reduce stage. In Stage-1 in the above example, the rows from src table are processed by the operator tree rooted at a Reduce Output Operator. Similarly, in Stage-2 the rows of the results of Stage-1 are processed by another operator tree rooted at another Reduce Output Operator. Each of these Reduce Output Operators partitions the data to the reducers according to the criteria shown in the metadata.</li>
+<li>A Reduce Operator Tree - This is the operator tree which processes all the rows on the reducer of the map/reduce job. In Stage-1 for example, the Reducer Operator Tree is carrying out a partial aggregation where as the Reducer Operator Tree in Stage-2 computes the final aggregation from the partial aggregates computed in Stage-1</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="func.html"
+                        title="previous chapter">Hive Operators and Functions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lateralview.html"
+                        title="next chapter">Hive Lateral Views</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="lateralview.html" title="Hive Lateral Views"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="func.html" title="Hive Operators and Functions"
+             >previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Hive Query Language Reference Manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, joe.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

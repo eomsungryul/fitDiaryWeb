@@ -1,0 +1,109 @@
+.. _hive:
+
+Hive Data Types
+===============
+
+============
+Column types
+============
+
+These are all the supported column types in Hive:
+
+Primitive types:
+
+* TINYINT
+* SMALLINT
+* INT
+* BIGINT
+* BOOLEAN
+* FLOAT
+* DOUBLE
+* STRING
+* BINARY (Note: Only available starting with Hive 0.8.0)
+* TIMESTAMP (Note: Only available starting with Hive 0.8.0)
+
+Complex types:
+
+* arrays: ARRAY<data_type>
+* maps: MAP<primitive_type, data_type>
+* structs: STRUCT<col_name : data_type [COMMENT col_comment], ...>
+* union: UNIONTYPE<data_type, data_type, ...>
+
+----------
+Timestamps
+----------
+
+Supports traditional UNIX timestamp with optional nanosecond precision.
+
+Supported conversions:
+
+* Integer numeric types: Interpreted as UNIX timestamp in seconds
+* Floating point numeric types: Intepreted as UNIX timestamp in seconds with decimal precision
+* Strings: JDBC compliant java.sql.Timestamp format "YYYY-MM-DD HH:MM:SS.fffffffff" (9 decimal place precision)
+
+Timestamps are interpreted to be timezoneless and stored as an offset from the UNIX epoch. Convenience UDFs for conversion to and from timezones are provided (to_utc_timestamp, from_utc_timestamp). 
+
+All existing datetime UDFs (month, day, year, hour, etc.) work with the TIMESTAMP data type.
+
+-----------
+Union types
+-----------
+
+Union types can at any one point hold exactly one of their specified data types. You can create an instance of this type using the create_union UDF::
+
+    CREATE TABLE union_test(foo UNIONTYPE<int, double, array<string>, struct<a:int,b:string>>);
+    SELECT foo FROM union_test;
+
+    {0:1}
+    {1:2.0}
+    {2:["three","four"]}
+    {3:{"a":5,"b":"five"}}
+    {2:["six","seven"]}
+    {3:{"a":8,"b":"eight"}}
+    {0:9}
+    {1:10.0}
+
+The first part in the deserialized union is the tag which lets us know which part of the union is being used. In this example 0 means the first data_type from the definition which is an int and so on.
+
+To create a union you have to provide this tag to the create_union UDF::
+
+    SELECT create_union(0, key), create_union(if(key<100, 0, 1), 2.0, value), create_union(1, "a", struct(2, "b")) FROM src LIMIT 2;
+
+    {0:"238"}   {1:"val_238"}   {1:{"col1":2,"col2":"b"}}
+    {0:"86"}    {0:2.0} {1:{"col1":2,"col2":"b"}}
+
+========
+Literals
+========
+
+--------------
+Integral types
+--------------
+
+Integral literals are assumed to be INT by default, unless the number exceeds the range of INT in which case it is interpreted as a BIGINT, or if one of the following postfixes is present on the number.
+
+========== ========= =========
+ Type       Postfix   Example 
+========== ========= =========
+ TINYINT    Y         100Y    
+ SMALLINT   S         100S    
+ BIGINT     L         100L    
+========== ========= =========
+
+------------
+String types
+------------
+
+String literals can be expressed with either single quotes (') or double quotes ("). Hive uses C-style escaping within the strings.
+
+--------------------
+Floating point types
+--------------------
+
+Floating point literals are assumed to be DOUBLE. Scientific notation is not yet supported.
+
+=======================
+Handling of NULL values
+=======================
+
+Missing values are represented by the special value NULL. To import data with NULL fields, check documentation of the SerDe used by the table. (The default Text Format uses LazySimpleSerDe which interprets the string \\N as NULL when importing.)

@@ -1,0 +1,167 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hive Query Language Reference Manual &mdash; NDAP  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/ndap-help.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="NDAP  documentation" href="../index.html" />
+    <link rel="next" title="Hive Data Types" href="datatypes.html" />
+    <link rel="prev" title="Welcome to NDAP documentation!" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="datatypes.html" title="Hive Data Types"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to NDAP documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hive-query-language-reference-manual">
+<h1>Hive Query Language Reference Manual<a class="headerlink" href="#hive-query-language-reference-manual" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="datatypes.html">Hive Data Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datatypes.html#column-types">Column types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datatypes.html#literals">Literals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datatypes.html#handling-of-null-values">Handling of NULL values</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ddl.html">Hive Data Definition Statements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ddl.html#create-drop-database">Create/Drop Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ddl.html#create-drop-truncate-table">Create/Drop/Truncate Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ddl.html#alter-table-partition-statements">Alter Table/Partition Statements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ddl.html#create-drop-view">Create/Drop View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ddl.html#create-drop-index">Create/Drop Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ddl.html#show-describe-statements">Show/Describe Statements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dml.html">Hive Data Manipulation Statements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dml.html#loading-files-into-tables">Loading files into tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dml.html#inserting-data-into-hive-tables-from-queries">Inserting data into Hive Tables from queries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dml.html#writing-data-into-filesystem-from-queries">Writing data into filesystem from queries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="select.html">Hive Select Statement</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="select.html#select-syntax">Select Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#group-by">Group By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#order-by">Order By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#sort-by">Sort By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#distribute-by-and-cluster-by">Distribute By and Cluster By</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#joins">Joins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#union">Union</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#subqueries">SubQueries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select.html#sampling">Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="func.html">Hive Operators and Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="func.html#built-in-operators">Built-in Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func.html#built-in-functions">Built-in Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func.html#built-in-aggregate-functions-udaf">Built-in Aggregate Functions (UDAF)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func.html#built-in-table-generating-functions-udtf">Built-in Table-Generating Functions (UDTF)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func.html#grouping-and-sorting-on-f-column">GROUPing and SORTing on f(column)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func.html#udf-internals">UDF internals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="explain.html">Hive Explain Statement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lateralview.html">Hive Lateral Views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lateralview.html#lateral-view-syntax">Lateral View Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lateralview.html#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lateralview.html#important-note">Important note</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lateralview.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lateralview.html#multiple-lateral-views">Multiple Lateral Views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="virtualcolumn.html">Hive Virtual Columns</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="virtualcolumn.html#simple-examples">Simple Examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Welcome to NDAP documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="datatypes.html"
+                        title="next chapter">Hive Data Types</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="datatypes.html" title="Hive Data Types"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to NDAP documentation!"
+             >previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, joe.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

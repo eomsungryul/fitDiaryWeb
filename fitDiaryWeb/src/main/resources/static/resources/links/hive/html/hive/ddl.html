@@ -1,0 +1,759 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hive Data Definition Statements &mdash; NDAP  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/ndap-help.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="NDAP  documentation" href="../index.html" />
+    <link rel="up" title="Hive Query Language Reference Manual" href="index.html" />
+    <link rel="next" title="Hive Data Manipulation Statements" href="dml.html" />
+    <link rel="prev" title="Hive Data Types" href="datatypes.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dml.html" title="Hive Data Manipulation Statements"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="datatypes.html" title="Hive Data Types"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Hive Query Language Reference Manual</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hive-data-definition-statements">
+<h1>Hive Data Definition Statements<a class="headerlink" href="#hive-data-definition-statements" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="create-drop-database">
+<h2>Create/Drop Database<a class="headerlink" href="#create-drop-database" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="create-database">
+<h3>Create Database<a class="headerlink" href="#create-database" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="p">(</span><span class="n">DATABASE</span><span class="o">|</span><span class="n">SCHEMA</span><span class="p">)</span> <span class="p">[</span><span class="n">IF</span> <span class="n">NOT</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">database_name</span>
+  <span class="p">[</span><span class="n">COMMENT</span> <span class="n">database_comment</span><span class="p">]</span>
+  <span class="p">[</span><span class="n">LOCATION</span> <span class="n">hdfs_path</span><span class="p">]</span>
+  <span class="p">[</span><span class="n">WITH</span> <span class="n">DBPROPERTIES</span> <span class="p">(</span><span class="n">property_name</span><span class="o">=</span><span class="n">property_value</span><span class="p">,</span> <span class="o">...</span><span class="p">)];</span>
+</pre></div>
+</div>
+<p>The use of SCHEMA and DATABASE are interchangeable - they mean the same thing.</p>
+</div>
+<div class="section" id="drop-database">
+<h3>Drop Database<a class="headerlink" href="#drop-database" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DROP</span> <span class="p">(</span><span class="n">DATABASE</span><span class="o">|</span><span class="n">SCHEMA</span><span class="p">)</span> <span class="p">[</span><span class="n">IF</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">database_name</span> <span class="p">[</span><span class="n">RESTRICT</span><span class="o">|</span><span class="n">CASCADE</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>The use of SCHEMA and DATABASE are interchangeable - they mean the same thing.</p>
+</div>
+</div>
+<div class="section" id="create-drop-truncate-table">
+<h2>Create/Drop/Truncate Table<a class="headerlink" href="#create-drop-truncate-table" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="create-table">
+<span id="id1"></span><h3>Create Table<a class="headerlink" href="#create-table" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="p">[</span><span class="n">EXTERNAL</span><span class="p">]</span> <span class="n">TABLE</span> <span class="p">[</span><span class="n">IF</span> <span class="n">NOT</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="p">[</span><span class="n">db_name</span><span class="o">.</span><span class="p">]</span><span class="n">table_name</span>
+  <span class="p">[(</span><span class="n">col_name</span> <span class="n">data_type</span> <span class="p">[</span><span class="n">COMMENT</span> <span class="n">col_comment</span><span class="p">],</span> <span class="o">...</span><span class="p">)]</span>
+  <span class="p">[</span><span class="n">COMMENT</span> <span class="n">table_comment</span><span class="p">]</span>
+  <span class="p">[</span><span class="n">PARTITIONED</span> <span class="n">BY</span> <span class="p">(</span><span class="n">col_name</span> <span class="n">data_type</span> <span class="p">[</span><span class="n">COMMENT</span> <span class="n">col_comment</span><span class="p">],</span> <span class="o">...</span><span class="p">)]</span>
+  <span class="p">[</span><span class="n">CLUSTERED</span> <span class="n">BY</span> <span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="n">col_name</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="p">[</span><span class="n">SORTED</span> <span class="n">BY</span> <span class="p">(</span><span class="n">col_name</span> <span class="p">[</span><span class="n">ASC</span><span class="o">|</span><span class="n">DESC</span><span class="p">],</span> <span class="o">...</span><span class="p">)]</span> <span class="n">INTO</span> <span class="n">num_buckets</span> <span class="n">BUCKETS</span><span class="p">]</span>
+  <span class="p">[</span><span class="n">SKEWED</span> <span class="n">BY</span> <span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="n">col_name</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="n">ON</span> <span class="p">([(</span><span class="n">col_value</span><span class="p">,</span> <span class="n">col_value</span><span class="p">,</span> <span class="o">...</span><span class="p">),</span> <span class="o">...|</span><span class="n">col_value</span><span class="p">,</span> <span class="n">col_value</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="p">(</span><span class="n">Note</span><span class="p">:</span> <span class="n">only</span> <span class="n">available</span> <span class="n">starting</span> <span class="k">with</span> <span class="mf">0.10</span><span class="o">.</span><span class="mi">0</span><span class="p">)]</span>
+  <span class="p">[</span>
+   <span class="p">[</span><span class="n">ROW</span> <span class="n">FORMAT</span> <span class="n">row_format</span><span class="p">]</span> <span class="p">[</span><span class="n">STORED</span> <span class="n">AS</span> <span class="n">file_format</span><span class="p">]</span>
+   <span class="o">|</span> <span class="n">STORED</span> <span class="n">BY</span> <span class="s">&#39;storage.handler.class.name&#39;</span> <span class="p">[</span><span class="n">WITH</span> <span class="n">SERDEPROPERTIES</span> <span class="p">(</span><span class="o">...</span><span class="p">)]</span>  <span class="p">(</span><span class="n">Note</span><span class="p">:</span> <span class="n">only</span> <span class="n">available</span> <span class="n">starting</span> <span class="k">with</span> <span class="mf">0.6</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+  <span class="p">]</span>
+  <span class="p">[</span><span class="n">LOCATION</span> <span class="n">hdfs_path</span><span class="p">]</span>
+  <span class="p">[</span><span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="n">property_name</span><span class="o">=</span><span class="n">property_value</span><span class="p">,</span> <span class="o">...</span><span class="p">)]</span>  <span class="p">(</span><span class="n">Note</span><span class="p">:</span> <span class="n">only</span> <span class="n">available</span> <span class="n">starting</span> <span class="k">with</span> <span class="mf">0.6</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+  <span class="p">[</span><span class="n">AS</span> <span class="n">select_statement</span><span class="p">]</span>  <span class="p">(</span><span class="n">Note</span><span class="p">:</span> <span class="n">this</span> <span class="n">feature</span> <span class="ow">is</span> <span class="n">only</span> <span class="n">available</span> <span class="n">starting</span> <span class="k">with</span> <span class="mf">0.5</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="ow">and</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">supported</span> <span class="n">when</span> <span class="n">creating</span> <span class="n">external</span> <span class="n">tables</span><span class="o">.</span><span class="p">)</span>
+
+<span class="n">CREATE</span> <span class="p">[</span><span class="n">EXTERNAL</span><span class="p">]</span> <span class="n">TABLE</span> <span class="p">[</span><span class="n">IF</span> <span class="n">NOT</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="p">[</span><span class="n">db_name</span><span class="o">.</span><span class="p">]</span><span class="n">table_name</span>
+  <span class="n">LIKE</span> <span class="n">existing_table_or_view_name</span>
+  <span class="p">[</span><span class="n">LOCATION</span> <span class="n">hdfs_path</span><span class="p">]</span>
+
+<span class="n">data_type</span>
+  <span class="p">:</span> <span class="n">primitive_type</span>
+  <span class="o">|</span> <span class="n">array_type</span>
+  <span class="o">|</span> <span class="n">map_type</span>
+  <span class="o">|</span> <span class="n">struct_type</span>
+  <span class="o">|</span> <span class="n">union_type</span> <span class="p">(</span><span class="n">Note</span><span class="p">:</span> <span class="n">Only</span> <span class="n">available</span> <span class="n">starting</span> <span class="k">with</span> <span class="n">Hive</span> <span class="mf">0.7</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">needs</span> <span class="n">documentation</span>
+
+<span class="n">primitive_type</span>
+  <span class="p">:</span> <span class="n">TINYINT</span>
+  <span class="o">|</span> <span class="n">SMALLINT</span>
+  <span class="o">|</span> <span class="n">INT</span>
+  <span class="o">|</span> <span class="n">BIGINT</span>
+  <span class="o">|</span> <span class="n">BOOLEAN</span>
+  <span class="o">|</span> <span class="n">FLOAT</span>
+  <span class="o">|</span> <span class="n">DOUBLE</span>
+  <span class="o">|</span> <span class="n">STRING</span>
+  <span class="o">|</span> <span class="n">BINARY</span> <span class="p">(</span><span class="n">Note</span><span class="p">:</span> <span class="n">Only</span> <span class="n">available</span> <span class="n">starting</span> <span class="k">with</span> <span class="n">Hive</span> <span class="mf">0.8</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+  <span class="o">|</span> <span class="n">TIMESTAMP</span> <span class="p">(</span><span class="n">Note</span><span class="p">:</span> <span class="n">Only</span> <span class="n">available</span> <span class="n">starting</span> <span class="k">with</span> <span class="n">Hive</span> <span class="mf">0.8</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">array_type</span>
+  <span class="p">:</span> <span class="n">ARRAY</span> <span class="o">&lt;</span> <span class="n">data_type</span> <span class="o">&gt;</span>
+
+<span class="n">map_type</span>
+  <span class="p">:</span> <span class="n">MAP</span> <span class="o">&lt;</span> <span class="n">primitive_type</span><span class="p">,</span> <span class="n">data_type</span> <span class="o">&gt;</span>
+
+<span class="n">struct_type</span>
+  <span class="p">:</span> <span class="n">STRUCT</span> <span class="o">&lt;</span> <span class="n">col_name</span> <span class="p">:</span> <span class="n">data_type</span> <span class="p">[</span><span class="n">COMMENT</span> <span class="n">col_comment</span><span class="p">],</span> <span class="o">...&gt;</span>
+
+<span class="n">union_type</span>
+   <span class="p">:</span> <span class="n">UNIONTYPE</span> <span class="o">&lt;</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="o">...</span> <span class="o">&gt;</span>
+
+<span class="n">row_format</span>
+  <span class="p">:</span> <span class="n">DELIMITED</span> <span class="p">[</span><span class="n">FIELDS</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="n">char</span><span class="p">]</span> <span class="p">[</span><span class="n">COLLECTION</span> <span class="n">ITEMS</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="n">char</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">MAP</span> <span class="n">KEYS</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="n">char</span><span class="p">]</span> <span class="p">[</span><span class="n">LINES</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="n">char</span><span class="p">]</span>
+  <span class="o">|</span> <span class="n">SERDE</span> <span class="n">serde_name</span> <span class="p">[</span><span class="n">WITH</span> <span class="n">SERDEPROPERTIES</span> <span class="p">(</span><span class="n">property_name</span><span class="o">=</span><span class="n">property_value</span><span class="p">,</span> <span class="n">property_name</span><span class="o">=</span><span class="n">property_value</span><span class="p">,</span> <span class="o">...</span><span class="p">)]</span>
+
+<span class="n">file_format</span><span class="p">:</span>
+  <span class="p">:</span> <span class="n">SEQUENCEFILE</span>
+  <span class="o">|</span> <span class="n">TEXTFILE</span>
+  <span class="o">|</span> <span class="n">RCFILE</span>     <span class="p">(</span><span class="n">Note</span><span class="p">:</span> <span class="n">only</span> <span class="n">available</span> <span class="n">starting</span> <span class="k">with</span> <span class="mf">0.6</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+  <span class="o">|</span> <span class="n">INPUTFORMAT</span> <span class="n">input_format_classname</span> <span class="n">OUTPUTFORMAT</span> <span class="n">output_format_classname</span>
+</pre></div>
+</div>
+<p>CREATE TABLE creates a table with the given name. An error is thrown if a table or view with the same name already exists. You can use IF NOT EXISTS to skip the error.</p>
+<p>The EXTERNAL keyword lets you create a table and provide a LOCATION so that Hive does not use a default location for this table. This comes in handy if you already have data generated. When dropping an EXTERNAL table, data in the table is NOT deleted from the file system.</p>
+<p>The LIKE form of CREATE TABLE allows you to copy an existing table definition exactly (without copying its data). Before 0.8.0, CREATE TABLE LIKE view_name would make a copy of the view. From 0.8.0, CREATE TABLE LIKE view_name creates a table by adopting the schema of view_name (fields and partition columns) using defaults for serde and file formats.</p>
+<p>You can create tables with custom SerDe or using native SerDe. A native SerDe is used if ROW FORMAT is not specified or ROW FORMAT DELIMITED is specified. You can use the DELIMITED clause to read delimited files. Use the SERDE clause to create a table with custom SerDe. Refer to SerDe section of the User Guide for more information on SerDe.</p>
+<p>You must specify a list of a columns for tables that use a native SerDe. Refer to the <a class="reference internal" href="datatypes.html"><em>Types</em></a> part of the User Guide for the allowable column types. A list of columns for tables that use a custom SerDe may be specified but Hive will query the SerDe to determine the actual list of columns for this table.</p>
+<div class="section" id="partitioned-tables">
+<span id="partition"></span><h4>Partitioned tables<a class="headerlink" href="#partitioned-tables" title="Permalink to this headline">¶</a></h4>
+<p>Partitioned tables can be created using the PARTITIONED BY clause. A table can have one or more partition columns and a separate data directory is created for each distinct value combination in the partition columns. Further, tables or partitions can be bucketed using CLUSTERED BY columns, and data can be sorted within that bucket via SORT BY columns. This can improve performance on certain kinds of queries.</p>
+<p>If, when creating a partitioned table, you get this error: &#8220;FAILED: Error in semantic analysis: Column repeated in partitioning columns,&#8221; it means you are trying to include the partitioned column in the data of the table itself. You probably really do have the column defined. However, the partition you create makes a pseudocolumn on which you can query, so you must rename your table column to something else (that users should not query on!).</p>
+<p>Here is an example. Suppose your original table was this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">id</span>     <span class="nb">int</span><span class="p">,</span>
+<span class="n">date</span>   <span class="n">date</span><span class="p">,</span>
+<span class="n">name</span>   <span class="n">varchar</span>
+</pre></div>
+</div>
+<p>Now you want to partition on date. Your Hive definition would be this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">create</span> <span class="n">table</span> <span class="n">table_name</span> <span class="p">(</span>
+  <span class="nb">id</span>                <span class="nb">int</span><span class="p">,</span>
+  <span class="n">dtDontQuery</span>       <span class="n">string</span><span class="p">,</span>
+  <span class="n">name</span>              <span class="n">string</span>
+<span class="p">)</span>
+<span class="n">partitioned</span> <span class="n">by</span> <span class="p">(</span><span class="n">date</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now your users will still query on &#8220;where date = &#8216;...&#8217;&#8221; but the 2nd column will be the original values.</p>
+<p>Table names and column names are case insensitive but SerDe and property names are case sensitive. Table and column comments are string literals (single-quoted). The TBLPROPERTIES clause allows you to tag the table definition with your own metadata key/value pairs.</p>
+<p>Tables can also be created and populated by the results of a query in one create-table-as-select (CTAS) statement. The table created by CTAS is atomic, meaning that the table is not seen by other users until all the query results are populated. So other users will either see the table with the complete results of the query or will not see the table at all.</p>
+<p>There are two parts in CTAS, the SELECT part can be any <a class="reference internal" href="select.html"><em>SELECT statement</em></a> supported by HiveQL. The CREATE part of the CTAS takes the resulting schema from the SELECT part and creates the target table with other table properties such as the SerDe and storage format. The only restrictions in CTAS is that the target table cannot be a partitioned table (nor can it be an external table).</p>
+<p>Examples:</p>
+<p>Here&#8217;s an example statement to create a table:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">page_view</span><span class="p">(</span><span class="n">viewTime</span> <span class="n">INT</span><span class="p">,</span> <span class="n">userid</span> <span class="n">BIGINT</span><span class="p">,</span>
+     <span class="n">page_url</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">referrer_url</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">ip</span> <span class="n">STRING</span> <span class="n">COMMENT</span> <span class="s">&#39;IP Address of the User&#39;</span><span class="p">)</span>
+ <span class="n">COMMENT</span> <span class="s">&#39;This is the page view table&#39;</span>
+ <span class="n">PARTITIONED</span> <span class="n">BY</span><span class="p">(</span><span class="n">dt</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">country</span> <span class="n">STRING</span><span class="p">)</span>
+ <span class="n">STORED</span> <span class="n">AS</span> <span class="n">SEQUENCEFILE</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The statement above creates the page_view table with viewTime, userid, page_url, referrer_url, and ip columns (including comments). The table is also partitioned and data is stored in sequence files. The data format in the files is assumed to be field-delimited by ctrl-A and row-delimited by newline.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">page_view</span><span class="p">(</span><span class="n">viewTime</span> <span class="n">INT</span><span class="p">,</span> <span class="n">userid</span> <span class="n">BIGINT</span><span class="p">,</span>
+     <span class="n">page_url</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">referrer_url</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">ip</span> <span class="n">STRING</span> <span class="n">COMMENT</span> <span class="s">&#39;IP Address of the User&#39;</span><span class="p">)</span>
+ <span class="n">COMMENT</span> <span class="s">&#39;This is the page view table&#39;</span>
+ <span class="n">PARTITIONED</span> <span class="n">BY</span><span class="p">(</span><span class="n">dt</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">country</span> <span class="n">STRING</span><span class="p">)</span>
+ <span class="n">ROW</span> <span class="n">FORMAT</span> <span class="n">DELIMITED</span>
+   <span class="n">FIELDS</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="s">&#39;</span><span class="se">\u0001</span><span class="s">&#39;</span>
+<span class="n">STORED</span> <span class="n">AS</span> <span class="n">SEQUENCEFILE</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The above statement lets you create the same table as the previous table.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">page_view</span><span class="p">(</span><span class="n">viewTime</span> <span class="n">INT</span><span class="p">,</span> <span class="n">userid</span> <span class="n">BIGINT</span><span class="p">,</span>
+     <span class="n">page_url</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">referrer_url</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">ip</span> <span class="n">STRING</span> <span class="n">COMMENT</span> <span class="s">&#39;IP Address of the User&#39;</span><span class="p">)</span>
+ <span class="n">COMMENT</span> <span class="s">&#39;This is the page view table&#39;</span>
+ <span class="n">PARTITIONED</span> <span class="n">BY</span><span class="p">(</span><span class="n">dt</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">country</span> <span class="n">STRING</span><span class="p">)</span>
+ <span class="n">CLUSTERED</span> <span class="n">BY</span><span class="p">(</span><span class="n">userid</span><span class="p">)</span> <span class="n">SORTED</span> <span class="n">BY</span><span class="p">(</span><span class="n">viewTime</span><span class="p">)</span> <span class="n">INTO</span> <span class="mi">32</span> <span class="n">BUCKETS</span>
+ <span class="n">ROW</span> <span class="n">FORMAT</span> <span class="n">DELIMITED</span>
+   <span class="n">FIELDS</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="s">&#39;</span><span class="se">\u0001</span><span class="s">&#39;</span>
+   <span class="n">COLLECTION</span> <span class="n">ITEMS</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="s">&#39;</span><span class="se">\u0002</span><span class="s">&#39;</span>
+   <span class="n">MAP</span> <span class="n">KEYS</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="s">&#39;</span><span class="se">\u0003</span><span class="s">&#39;</span>
+ <span class="n">STORED</span> <span class="n">AS</span> <span class="n">SEQUENCEFILE</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In the example above, the page_view table is bucketed (clustered by) userid and within each bucket the data is sorted in increasing order of viewTime. Such an organization allows the user to do efficient sampling on the clustered column - in this case userid. The sorting property allows internal operators to take advantage of the better-known data structure while evaluating queries, also increasing efficiency. MAP KEYS and COLLECTION ITEMS keywords can be used if any of the columns are lists or maps.</p>
+<p>In all the examples until now the data is stored in &lt;hive.metastore.warehouse.dir&gt;/page_view. Specify a value for the key hive.metastore.warehouse.dir in Hive config file hive-site.xml.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">EXTERNAL</span> <span class="n">TABLE</span> <span class="n">page_view</span><span class="p">(</span><span class="n">viewTime</span> <span class="n">INT</span><span class="p">,</span> <span class="n">userid</span> <span class="n">BIGINT</span><span class="p">,</span>
+     <span class="n">page_url</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">referrer_url</span> <span class="n">STRING</span><span class="p">,</span>
+     <span class="n">ip</span> <span class="n">STRING</span> <span class="n">COMMENT</span> <span class="s">&#39;IP Address of the User&#39;</span><span class="p">,</span>
+     <span class="n">country</span> <span class="n">STRING</span> <span class="n">COMMENT</span> <span class="s">&#39;country of origination&#39;</span><span class="p">)</span>
+ <span class="n">COMMENT</span> <span class="s">&#39;This is the staging page view table&#39;</span>
+ <span class="n">ROW</span> <span class="n">FORMAT</span> <span class="n">DELIMITED</span> <span class="n">FIELDS</span> <span class="n">TERMINATED</span> <span class="n">BY</span> <span class="s">&#39;</span><span class="se">\054</span><span class="s">&#39;</span>
+ <span class="n">STORED</span> <span class="n">AS</span> <span class="n">TEXTFILE</span>
+ <span class="n">LOCATION</span> <span class="s">&#39;&lt;hdfs_location&gt;&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>You can use the above statement to create a page_view table which points to any hdfs location for its storage. But you still have to make sure that the data is delimited as specified in the query above.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">new_key_value_store</span>
+   <span class="n">ROW</span> <span class="n">FORMAT</span> <span class="n">SERDE</span> <span class="s">&quot;org.apache.hadoop.hive.serde2.columnar.ColumnarSerDe&quot;</span>
+   <span class="n">STORED</span> <span class="n">AS</span> <span class="n">RCFile</span> <span class="n">AS</span>
+<span class="n">SELECT</span> <span class="p">(</span><span class="n">key</span> <span class="o">%</span> <span class="mi">1024</span><span class="p">)</span> <span class="n">new_key</span><span class="p">,</span> <span class="n">concat</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="n">key_value_pair</span>
+<span class="n">FROM</span> <span class="n">key_value_store</span>
+<span class="n">SORT</span> <span class="n">BY</span> <span class="n">new_key</span><span class="p">,</span> <span class="n">key_value_pair</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The above CTAS statement creates the target table new_key_value_store with the schema (new_key DOUBLE, key_value_pair STRING) derived from the results of the SELECT statement. If the SELECT statement does not specify column aliases, the column names will be automatically assigned to _col0, _col1, and _col2 etc. In addition, the new target table is created using a specific SerDe and a storage format independent of the source tables in the SELECT statement.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">empty_key_value_store</span>
+<span class="n">LIKE</span> <span class="n">key_value_store</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In contrast, the statement above creates a new empty_key_value_store table whose definition exactly matches the existing key_value_store in all particulars other than table name. The new table contains no rows.</p>
+</div>
+<div class="section" id="inserting-data-into-bucketed-tables">
+<h4>Inserting Data Into Bucketed Tables<a class="headerlink" href="#inserting-data-into-bucketed-tables" title="Permalink to this headline">¶</a></h4>
+<p>The CLUSTERED BY and SORTED BY creation commands do not affect how data is inserted into a table - only how it is read. This means that users must be careful to insert data correctly by specifying the number of reducers to be equal to the number of buckets, and using CLUSTER BY and SORT BY commands in their query.</p>
+<p>This is a brief example on creating and populating bucketed tables. Bucketed tables are fantastic in that they allow much more efficient sampling than do non-bucketed tables, and they may later allow for time saving operations such as mapside joins. However, the bucketing specified at table creation is not enforced when the table is written to, and so it is possible for the table&#8217;s metadata to advertise properties which are not upheld by the table&#8217;s actual layout. This should obviously be avoided. Here&#8217;s how to do it right.</p>
+<p>First, table creation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">user_info_bucketed</span><span class="p">(</span><span class="n">user_id</span> <span class="n">BIGINT</span><span class="p">,</span> <span class="n">firstname</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">lastname</span> <span class="n">STRING</span><span class="p">)</span>
+<span class="n">COMMENT</span> <span class="s">&#39;A bucketed copy of user_info&#39;</span>
+<span class="n">PARTITIONED</span> <span class="n">BY</span><span class="p">(</span><span class="n">ds</span> <span class="n">STRING</span><span class="p">)</span>
+<span class="n">CLUSTERED</span> <span class="n">BY</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="n">INTO</span> <span class="mi">256</span> <span class="n">BUCKETS</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Note that we specify a column (user_id) to base the bucketing.</p>
+<p>Then we populate the table</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">set</span> <span class="n">hive</span><span class="o">.</span><span class="n">enforce</span><span class="o">.</span><span class="n">bucketing</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+<span class="n">FROM</span> <span class="n">user_id</span>
+<span class="n">INSERT</span> <span class="n">OVERWRITE</span> <span class="n">TABLE</span> <span class="n">user_info_bucketed</span>
+<span class="n">PARTITION</span> <span class="p">(</span><span class="n">ds</span><span class="o">=</span><span class="s">&#39;2009-02-25&#39;</span><span class="p">)</span>
+<span class="n">SELECT</span> <span class="n">userid</span><span class="p">,</span> <span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span> <span class="n">WHERE</span> <span class="n">ds</span><span class="o">=</span><span class="s">&#39;2009-02-25&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The command set hive.enforce.bucketing = true; allows the correct number of reducers and the cluster by column to be automatically selected based on the table. Otherwise, you would need to set the number of reducers to be the same as the number of buckets a la set mapred.reduce.tasks = 256; and have a CLUSTER BY ... clause in the select.</p>
+<p>How does Hive distribute the rows across the buckets? In general, the bucket number is determined by the expression hash_function(bucketing_column) mod num_buckets. (There&#8217;s a &#8216;0x7FFFFFFF in there too, but that&#8217;s not that important). The hash_function depends on the type of the bucketing column. For an int, it&#8217;s easy, hash_int(i) == i. For example, if user_id were an int, and there were 10 buckets, we would expect all user_id&#8217;s that end in 0 to be in bucket 1, all user_id&#8217;s that end in a 1 to be in bucket 2, etc. For other datatypes, it&#8217;s a little tricky. In particular, the hash of a BIGINT is not the same as the BIGINT. And the hash of a string or a complex datatype will be some number that&#8217;s derived from the value, but not anything humanly-recognizable. For example, if user_id were a STRING, then the user_id&#8217;s in bucket 1 would probably not end in 0. In general, distributing rows based on the hash will give you a even distribution in the buckets.</p>
+<p>So, what can go wrong? As long as you set hive.enforce.bucketing = true, and use the syntax above, the tables should be populated properly. Things can go wrong if the bucketing column type is different during the insert and on read, or if you manually cluster by a value that&#8217;s different from the table definition.</p>
+</div>
+<div class="section" id="skewed-tables">
+<h4>Skewed tables<a class="headerlink" href="#skewed-tables" title="Permalink to this headline">¶</a></h4>
+<p>This feature can be used to improve performance for tables where one or more columns have skewed values. By specifying the values that appear very often (heavy skew) Hive will split those out into separate files automatically and take this fact into account during queries so that it can skip (or include) whole files if possible.</p>
+<p>This can be specified on a per-table level during table creation.</p>
+<p>This is an example where we have one column with three skewed values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">list_bucket_single</span> <span class="p">(</span><span class="n">key</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">value</span> <span class="n">STRING</span><span class="p">)</span> <span class="n">SKEWED</span> <span class="n">BY</span> <span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="n">ON</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>And here is an example of a table with two skewed columns:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">list_bucket_multiple</span> <span class="p">(</span><span class="n">col1</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">col2</span> <span class="nb">int</span><span class="p">,</span> <span class="n">col3</span> <span class="n">STRING</span><span class="p">)</span> <span class="n">SKEWED</span> <span class="n">BY</span> <span class="p">(</span><span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">)</span> <span class="n">ON</span> <span class="p">((</span><span class="s">&#39;s1&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;s3&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;s13&#39;</span><span class="p">,</span><span class="mi">13</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;s78&#39;</span><span class="p">,</span><span class="mi">78</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="drop-table">
+<h3>Drop Table<a class="headerlink" href="#drop-table" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DROP</span> <span class="n">TABLE</span> <span class="p">[</span><span class="n">IF</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">table_name</span>
+</pre></div>
+</div>
+<p>DROP TABLE removes metadata and data for this table. The data is actually moved to the .Trash/Current directory if Trash is configured. The metadata is completely lost.</p>
+<p>When dropping an EXTERNAL table, data in the table will NOT be deleted from the file system.</p>
+<p>When dropping a table referenced by views, no warning is given (the views are left dangling as invalid and must be dropped or recreated by the user).</p>
+<p>See the next section on ALTER TABLE for how to drop partitions.</p>
+<p>Otherwise, the table information is removed from the metastore and the raw data is removed as if by &#8216;hadoop dfs -rm&#8217;. In many cases, this results in the table data being moved into the user&#8217;s .Trash folder in their home directory; users who mistakenly DROP TABLEs mistakenly may thus be able to recover their lost data by re-creating a table with the same schema, re-creating any necessary partitions, and then moving the data back into place manually using Hadoop. This solution is subject to change over time or across installations as it relies on the underlying implementation; users are strongly encouraged not to drop tables capriciously.</p>
+<p>In Hive 0.70 or later, DROP returns an error if the table doesn&#8217;t exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.</p>
+</div>
+<div class="section" id="truncate-table">
+<h3>Truncate Table<a class="headerlink" href="#truncate-table" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">TRUNCATE</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="p">[</span><span class="n">PARTITION</span> <span class="n">partition_spec</span><span class="p">];</span>
+
+<span class="n">partition_spec</span><span class="p">:</span>
+  <span class="p">:</span> <span class="p">(</span><span class="n">partition_col</span> <span class="o">=</span> <span class="n">partition_col_value</span><span class="p">,</span> <span class="n">partition_col</span> <span class="o">=</span> <span class="n">partiton_col_value</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Removes all rows from a table or partition(s). Currently target table should be native/managed table or exception will be thrown.
+User can specify partial partition spec for truncating multiple partitions at once and omitting partition spec will truncate all partitions in the table.</p>
+</div>
+</div>
+<div class="section" id="alter-table-partition-statements">
+<h2>Alter Table/Partition Statements<a class="headerlink" href="#alter-table-partition-statements" title="Permalink to this headline">¶</a></h2>
+<p>Alter table statements enable you to change the structure of an existing table. You can add columns/partitions, change serde, add table and serde properties, or rename the table itself. Similarly, alter table partition statements allow you change the properties of a specific partition in the named table.</p>
+<div class="section" id="add-partitions">
+<h3>Add Partitions<a class="headerlink" href="#add-partitions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">ADD</span> <span class="p">[</span><span class="n">IF</span> <span class="n">NOT</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">PARTITION</span> <span class="n">partition_spec</span> <span class="p">[</span><span class="n">LOCATION</span> <span class="s">&#39;location1&#39;</span><span class="p">]</span> <span class="n">partition_spec</span> <span class="p">[</span><span class="n">LOCATION</span> <span class="s">&#39;location2&#39;</span><span class="p">]</span> <span class="o">...</span>
+
+<span class="n">partition_spec</span><span class="p">:</span>
+  <span class="p">:</span> <span class="p">(</span><span class="n">partition_col</span> <span class="o">=</span> <span class="n">partition_col_value</span><span class="p">,</span> <span class="n">partition_col</span> <span class="o">=</span> <span class="n">partiton_col_value</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can use ALTER TABLE ADD PARTITION to add partitions to a table. Partition values should be quoted only if they are strings. The location must be a directory inside of which data files reside.</p>
+<p>Note that it is proper syntax to have multiple partition_spec in a single ALTER TABLE, but if you do this in version 0.7, your partitioning scheme will fail. That is, every query specifying a partition will always use only the first partition. Instead, you should use the following form if you want to add many partitions:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">ADD</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="n">partCol</span> <span class="o">=</span> <span class="s">&#39;value1&#39;</span><span class="p">)</span> <span class="n">location</span> <span class="s">&#39;loc1&#39;</span><span class="p">;</span>
+<span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">ADD</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="n">partCol</span> <span class="o">=</span> <span class="s">&#39;value2&#39;</span><span class="p">)</span> <span class="n">location</span> <span class="s">&#39;loc2&#39;</span><span class="p">;</span>
+<span class="o">...</span>
+<span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">ADD</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="n">partCol</span> <span class="o">=</span> <span class="s">&#39;valueN&#39;</span><span class="p">)</span> <span class="n">location</span> <span class="s">&#39;locN&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Specifically, the following example (which was the default example before) will FAIL silently and without error, and all queries will go only to dt=&#8216;2008-08-08&#8217; partition, no matter which partition you specify.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">page_view</span> <span class="n">ADD</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="s">&#39;2008-08-08&#39;</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s">&#39;us&#39;</span><span class="p">)</span> <span class="n">location</span> <span class="s">&#39;/path/to/us/part080808&#39;</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="s">&#39;2008-08-09&#39;</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s">&#39;us&#39;</span><span class="p">)</span> <span class="n">location</span> <span class="s">&#39;/path/to/us/part080809&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An error is thrown if the partition_spec for the table already exists. You can use IF NOT EXISTS to skip the error.</p>
+</div>
+<div class="section" id="recover-partitions">
+<h3>Recover partitions<a class="headerlink" href="#recover-partitions" title="Permalink to this headline">¶</a></h3>
+<p>Hive stores a list of partitions for each table in its metastore. If, however, new partitions are directly added to HDFS (say by using hadoop fs -put command), the metastore (and hence Hive) will not be aware of these partitions unless the user runs ALTER TABLE table_name ADD PARTITION commands on each of the newly added partitions.</p>
+<p>However, users can run</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MSCK</span> <span class="n">REPAIR</span> <span class="n">TABLE</span> <span class="n">table_name</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>which will add metadata about partitions to the Hive metastore for partitions for which such metadata doesn&#8217;t already exist. In other words, it will add any partitions that exist on HDFS but not in metastore to the metastore. See <a class="reference external" href="https://issues.apache.org/jira/browse/HIVE-874">HIVE-874</a> for more details.</p>
+<p>The equivalent command on Amazon Elastic MapReduce (EMR)&#8217;s version of Hive is</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">RECOVER</span> <span class="n">PARTITIONS</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="drop-partitions">
+<h3>Drop Partitions<a class="headerlink" href="#drop-partitions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">DROP</span> <span class="p">[</span><span class="n">IF</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">partition_spec</span><span class="p">,</span> <span class="n">partition_spec</span><span class="p">,</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>You can use ALTER TABLE DROP PARTITION to drop a partition for a table. This removes the data and metadata for this partition.</p>
+<p>For tables that are protected by NO DROP CASCADE, you can use the predicate IGNORE PROTECTION to drop a specified partition or set of partitions (for example, when splitting a table between two Hadoop clusters).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">DROP</span> <span class="p">[</span><span class="n">IF</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">partition_spec</span> <span class="n">IGNORE</span> <span class="n">PROTECTION</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The above command will drop that partition regardless of protection stats.</p>
+<p>In Hive 0.70 or later, DROP returns an error if the partition doesn&#8217;t exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">page_view</span> <span class="n">DROP</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="s">&#39;2008-08-08&#39;</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s">&#39;us&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="rename-table">
+<h3>Rename Table<a class="headerlink" href="#rename-table" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">RENAME</span> <span class="n">TO</span> <span class="n">new_table_name</span>
+</pre></div>
+</div>
+<p>This statement lets you change the name of a table to a different name.</p>
+<p>As of version 0.6, a rename on a managed table moves its HDFS location as well. (Older Hive versions just renamed the table in the metastore without moving the HDFS location.)</p>
+</div>
+<div class="section" id="change-column-name-type-position-comment">
+<h3>Change Column Name/Type/Position/Comment<a class="headerlink" href="#change-column-name-type-position-comment" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">CHANGE</span> <span class="p">[</span><span class="n">COLUMN</span><span class="p">]</span> <span class="n">col_old_name</span> <span class="n">col_new_name</span> <span class="n">column_type</span> <span class="p">[</span><span class="n">COMMENT</span> <span class="n">col_comment</span><span class="p">]</span> <span class="p">[</span><span class="n">FIRST</span><span class="o">|</span><span class="n">AFTER</span> <span class="n">column_name</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This command will allow users to change a column&#8217;s name, data type, comment, or position, or an arbitrary combination of them.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">test_change</span> <span class="p">(</span><span class="n">a</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span> <span class="nb">int</span><span class="p">,</span> <span class="n">c</span> <span class="nb">int</span><span class="p">);</span>
+
+<span class="o">//</span> <span class="n">will</span> <span class="n">change</span> <span class="n">column</span> <span class="n">a</span><span class="s">&#39;s name to a1</span>
+<span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">test_change</span> <span class="n">CHANGE</span> <span class="n">a</span> <span class="n">a1</span> <span class="n">INT</span><span class="p">;</span>
+
+<span class="o">//</span> <span class="n">will</span> <span class="n">change</span> <span class="n">column</span> <span class="n">a</span><span class="s">&#39;s name to a1, a&#39;</span><span class="n">s</span> <span class="n">data</span> <span class="nb">type</span> <span class="n">to</span> <span class="n">string</span><span class="p">,</span> <span class="ow">and</span> <span class="n">put</span> <span class="n">it</span> <span class="n">after</span> <span class="n">column</span> <span class="n">b</span><span class="o">.</span> <span class="n">The</span> <span class="n">new</span> <span class="n">table</span><span class="s">&#39;s structure is: b int, a1 string, c int</span>
+<span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">test_change</span> <span class="n">CHANGE</span> <span class="n">a</span> <span class="n">a1</span> <span class="n">STRING</span> <span class="n">AFTER</span> <span class="n">b</span><span class="p">;</span>
+
+<span class="o">//</span> <span class="n">will</span> <span class="n">change</span> <span class="n">column</span> <span class="n">b</span><span class="s">&#39;s name to b1, and put it as the first column. The new table&#39;</span><span class="n">s</span> <span class="n">structure</span> <span class="ow">is</span><span class="p">:</span> <span class="n">b1</span> <span class="nb">int</span><span class="p">,</span> <span class="n">a</span> <span class="n">string</span><span class="p">,</span> <span class="n">c</span> <span class="nb">int</span>
+<span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">test_change</span> <span class="n">CHANGE</span> <span class="n">b</span> <span class="n">b1</span> <span class="n">INT</span> <span class="n">FIRST</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>NOTE: The column change command will only modify Hive&#8217;s metadata, and will NOT touch data. Users should make sure the actual data layout conforms with the metadata definition.</p>
+</div>
+<div class="section" id="add-replace-columns">
+<h3>Add/Replace Columns<a class="headerlink" href="#add-replace-columns" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">ADD</span><span class="o">|</span><span class="n">REPLACE</span> <span class="n">COLUMNS</span> <span class="p">(</span><span class="n">col_name</span> <span class="n">data_type</span> <span class="p">[</span><span class="n">COMMENT</span> <span class="n">col_comment</span><span class="p">],</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ADD COLUMNS lets you add new columns to the end of the existing columns but before the partition columns.</p>
+<p>REPLACE COLUMNS removes all existing columns and adds the new set of columns. This can be done only for tables with native serde (DynamicSerDe or MetadataTypedColumnsetSerDe). Refer to SerDe section of User Guide for more information. REPLACE COLUMNS can also be used to drop columns. For example:</p>
+<p>&#8220;ALTER TABLE test_change REPLACE COLUMNS (a int, b int);&#8221; will remove column &#8216;c&#8217; from test_change&#8217;s schema. Note that this does not delete underlying data, it just changes the schema.</p>
+</div>
+<div class="section" id="alter-table-properties">
+<h3>Alter Table Properties<a class="headerlink" href="#alter-table-properties" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">SET</span> <span class="n">TBLPROPERTIES</span> <span class="n">table_properties</span>
+
+<span class="n">table_properties</span><span class="p">:</span>
+  <span class="p">:</span> <span class="p">(</span><span class="n">property_name</span> <span class="o">=</span> <span class="n">property_value</span><span class="p">,</span> <span class="n">property_name</span> <span class="o">=</span> <span class="n">property_value</span><span class="p">,</span> <span class="o">...</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>You can use this statement to add your own metadata to the tables. Currently last_modified_user, last_modified_time properties are automatically added and managed by Hive. Users can add their own properties to this list. You can do DESCRIBE EXTENDED TABLE to get this information.</p>
+</div>
+<div class="section" id="add-serde-properties">
+<h3>Add Serde Properties<a class="headerlink" href="#add-serde-properties" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">SET</span> <span class="n">SERDE</span> <span class="n">serde_class_name</span> <span class="p">[</span><span class="n">WITH</span> <span class="n">SERDEPROPERTIES</span> <span class="n">serde_properties</span><span class="p">]</span>
+<span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">SET</span> <span class="n">SERDEPROPERTIES</span> <span class="n">serde_properties</span>
+
+<span class="n">serde_properties</span><span class="p">:</span>
+  <span class="p">:</span> <span class="p">(</span><span class="n">property_name</span> <span class="o">=</span> <span class="n">property_value</span><span class="p">,</span> <span class="n">property_name</span> <span class="o">=</span> <span class="n">property_value</span><span class="p">,</span> <span class="o">...</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>This statement enables you to add user defined metadata to table SerDe object. The serde properties are passed to the table&#8217;s SerDe when it is being initialized by Hive to serialize and deserialize data. So users can store any information required for their custom serde here. Refer to SerDe section of Users Guide for more information.</p>
+<p>Example, note that both property_name and property_value must be quoted:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">SET</span> <span class="n">SERDEPROPERTIES</span> <span class="p">(</span><span class="s">&#39;field.delim&#39;</span> <span class="o">=</span> <span class="s">&#39;,&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="alter-table-partition-file-format">
+<h3>Alter Table/Partition File Format<a class="headerlink" href="#alter-table-partition-file-format" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="p">[</span><span class="n">PARTITION</span> <span class="n">partitionSpec</span><span class="p">]</span> <span class="n">SET</span> <span class="n">FILEFORMAT</span> <span class="n">file_format</span>
+</pre></div>
+</div>
+<p>This statement changes the table&#8217;s (or partition&#8217;s) file format. For available file_format options, see the section above on CREATE TABLE.</p>
+</div>
+<div class="section" id="alter-table-storage-properties">
+<h3>Alter Table Storage Properties<a class="headerlink" href="#alter-table-storage-properties" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">CLUSTERED</span> <span class="n">BY</span> <span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="n">col_name</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="p">[</span><span class="n">SORTED</span> <span class="n">BY</span> <span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="o">...</span><span class="p">)]</span> <span class="n">INTO</span> <span class="n">num_buckets</span> <span class="n">BUCKETS</span>
+</pre></div>
+</div>
+<p>These statements change the table&#8217;s physical storage properties.</p>
+<p>NOTE: These commands will only modify Hive&#8217;s metadata, and will NOT reorganize or reformat existing data. Users should make sure the actual data layout conforms with the metadata definition.</p>
+</div>
+<div class="section" id="alter-table-partition-location">
+<h3>Alter Table/Partition Location<a class="headerlink" href="#alter-table-partition-location" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="p">[</span><span class="n">PARTITION</span> <span class="n">partitionSpec</span><span class="p">]</span> <span class="n">SET</span> <span class="n">LOCATION</span> <span class="s">&quot;new location&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="alter-table-touch">
+<h3>Alter Table Touch<a class="headerlink" href="#alter-table-touch" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">TOUCH</span> <span class="p">[</span><span class="n">PARTITION</span> <span class="n">partitionSpec</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>TOUCH reads the metadata, and writes it back. This has the effect of causing the pre/post execute hooks to fire. An example use case is if you have a hook that logs all the tables/partitions that were modified, along with an external script that alters the files on HDFS directly. Since the script modifies files outside of hive, the modification wouldn&#8217;t be logged by the hook. The external script could call TOUCH to fire the hook and mark the said table or partition as modified.</p>
+<p>Also, it may be useful later if we incorporate reliable last modified times. Then touch would update that time as well.</p>
+<p>Note that TOUCH doesn&#8217;t create a table or partition if it doesn&#8217;t already exist. (See <a class="reference internal" href="#create-table"><em>Create Table</em></a>)</p>
+</div>
+<div class="section" id="alter-table-un-archive">
+<h3>Alter Table (Un)Archive<a class="headerlink" href="#alter-table-un-archive" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">ARCHIVE</span> <span class="n">PARTITION</span> <span class="n">partition_spec</span><span class="p">;</span>
+<span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">UNARCHIVE</span> <span class="n">PARTITION</span> <span class="n">partition_spec</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Archiving is a feature to moves a partition&#8217;s files into a Hadoop Archive (HAR). Note that only the file count will be reduced; HAR does not provide any compression. See <a class="reference external" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Archiving">LanguageManual Archiving</a> for more information</p>
+</div>
+<div class="section" id="alter-table-partition-protections">
+<h3>Alter Table/Partition Protections<a class="headerlink" href="#alter-table-partition-protections" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="p">[</span><span class="n">PARTITION</span> <span class="n">partition_spec</span><span class="p">]</span> <span class="n">ENABLE</span><span class="o">|</span><span class="n">DISABLE</span> <span class="n">NO_DROP</span><span class="p">;</span>
+<span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="p">[</span><span class="n">PARTITION</span> <span class="n">partition_spec</span><span class="p">]</span> <span class="n">ENABLE</span><span class="o">|</span><span class="n">DISABLE</span> <span class="n">OFFLINE</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Protection on data can be set at either the table or partition level. Enabling NO_DROP prevents a table or partition from being dropped. Enabling OFFLINE prevents the data in a table or partition from being queried, but the metadata can still be accessed. Note, if any partition in a table has NO_DROP enabled, the table cannot be dropped either.</p>
+</div>
+<div class="section" id="alter-table-rename-partition">
+<h3>Alter Table Rename Partition<a class="headerlink" href="#alter-table-rename-partition" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">TABLE</span> <span class="n">table_name</span> <span class="n">PARTITION</span> <span class="n">partition_spec</span> <span class="n">RENAME</span> <span class="n">TO</span> <span class="n">PARTITION</span> <span class="n">partition_spec</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Available starting in Hive 0.9
+This statement lets you change the value of a partition column.</p>
+</div>
+</div>
+<div class="section" id="create-drop-view">
+<span id="view"></span><h2>Create/Drop View<a class="headerlink" href="#create-drop-view" title="Permalink to this headline">¶</a></h2>
+<p>Note: View support is only available starting in Hive 0.6.</p>
+<div class="section" id="create-view">
+<h3>Create View<a class="headerlink" href="#create-view" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">VIEW</span> <span class="p">[</span><span class="n">IF</span> <span class="n">NOT</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">view_name</span> <span class="p">[(</span><span class="n">column_name</span> <span class="p">[</span><span class="n">COMMENT</span> <span class="n">column_comment</span><span class="p">],</span> <span class="o">...</span><span class="p">)</span> <span class="p">]</span>
+<span class="p">[</span><span class="n">COMMENT</span> <span class="n">view_comment</span><span class="p">]</span>
+<span class="p">[</span><span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="n">property_name</span> <span class="o">=</span> <span class="n">property_value</span><span class="p">,</span> <span class="o">...</span><span class="p">)]</span>
+<span class="n">AS</span> <span class="n">SELECT</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>CREATE VIEW creates a view with the given name. An error is thrown if a table or view with the same name already exists. You can use IF NOT EXISTS to skip the error.</p>
+<p>If no column names are supplied, the names of the view&#8217;s columns will be derived automatically from the defining SELECT expression. (If the SELECT contains unaliased scalar expressions such as x+y, the resulting view column names will be generated in the form _C0, _C1, etc.) When renaming columns, column comments can also optionally be supplied. (Comments are not automatically inherited from underlying columns.)</p>
+<p>A CREATE VIEW statement will fail if the view&#8217;s defining SELECT expression is invalid.</p>
+<p>Note that a view is a purely logical object with no associated storage. (No support for materialized views is currently available in Hive.) When a query references a view, the view&#8217;s definition is evaluated in order to produce a set of rows for further processing by the query. (This is a conceptual description; in fact, as part of query optimization, Hive may combine the view&#8217;s definition with the query&#8217;s, e.g. pushing filters from the query down into the view.)</p>
+<p>A view&#8217;s schema is frozen at the time the view is created; subsequent changes to underlying tables (e.g. adding a column) will not be reflected in the view&#8217;s schema. If an underlying table is dropped or changed in an incompatible fashion, subsequent attempts to query the invalid view will fail.</p>
+<p>Views are read-only and may not be used as the target of LOAD/INSERT/ALTER. For changing metadata, see <a class="reference internal" href="#alter-view"><em>ALTER VIEW</em></a>.</p>
+<p>A view may contain ORDER BY and LIMIT clauses. If a referencing query also contains these clauses, the query-level clauses are evaluated after the view clauses (and after any other operations in the query). For example, if a view specifies LIMIT 5, and a referencing query is executed as (select * from v LIMIT 10), then at most 5 rows will be returned.</p>
+<p>Example of view creation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">VIEW</span> <span class="n">onion_referrers</span><span class="p">(</span><span class="n">url</span> <span class="n">COMMENT</span> <span class="s">&#39;URL of Referring page&#39;</span><span class="p">)</span>
+<span class="n">COMMENT</span> <span class="s">&#39;Referrers to The Onion website&#39;</span>
+<span class="n">AS</span>
+<span class="n">SELECT</span> <span class="n">DISTINCT</span> <span class="n">referrer_url</span>
+<span class="n">FROM</span> <span class="n">page_view</span>
+<span class="n">WHERE</span> <span class="n">page_url</span><span class="o">=</span><span class="s">&#39;http://www.theonion.com&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="drop-view">
+<h3>Drop View<a class="headerlink" href="#drop-view" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DROP</span> <span class="n">VIEW</span> <span class="p">[</span><span class="n">IF</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">view_name</span>
+</pre></div>
+</div>
+<p>DROP VIEW removes metadata for the specified view. (It is illegal to use DROP TABLE on a view.)</p>
+<p>When dropping a view referenced by other views, no warning is given (the dependent views are left dangling as invalid and must be dropped or recreated by the user).</p>
+<p>In Hive 0.70 or later, DROP returns an error if the view doesn&#8217;t exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DROP</span> <span class="n">VIEW</span> <span class="n">onion_referrers</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="alter-view-properties">
+<span id="alter-view"></span><h3>Alter View Properties<a class="headerlink" href="#alter-view-properties" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALTER</span> <span class="n">VIEW</span> <span class="n">view_name</span> <span class="n">SET</span> <span class="n">TBLPROPERTIES</span> <span class="n">table_properties</span>
+
+<span class="n">table_properties</span><span class="p">:</span>
+  <span class="p">:</span> <span class="p">(</span><span class="n">property_name</span> <span class="o">=</span> <span class="n">property_value</span><span class="p">,</span> <span class="n">property_name</span> <span class="o">=</span> <span class="n">property_value</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As with ALTER TABLE, you can use this statement to add your own metadata to a view.</p>
+</div>
+</div>
+<div class="section" id="create-drop-index">
+<h2>Create/Drop Index<a class="headerlink" href="#create-drop-index" title="Permalink to this headline">¶</a></h2>
+<p>Not available until 0.7 release</p>
+<div class="section" id="create-index">
+<h3>Create Index<a class="headerlink" href="#create-index" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CREATE</span> <span class="n">INDEX</span> <span class="n">index_name</span>
+<span class="n">ON</span> <span class="n">TABLE</span> <span class="n">base_table_name</span> <span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">AS</span> <span class="n">index_type</span>
+<span class="p">[</span><span class="n">WITH</span> <span class="n">DEFERRED</span> <span class="n">REBUILD</span><span class="p">]</span>
+<span class="p">[</span><span class="n">IDXPROPERTIES</span> <span class="p">(</span><span class="n">property_name</span><span class="o">=</span><span class="n">property_value</span><span class="p">,</span> <span class="o">...</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">IN</span> <span class="n">TABLE</span> <span class="n">index_table_name</span><span class="p">]</span>
+<span class="p">[</span>
+   <span class="p">[</span> <span class="n">ROW</span> <span class="n">FORMAT</span> <span class="o">...</span><span class="p">]</span> <span class="n">STORED</span> <span class="n">AS</span> <span class="o">...</span>
+   <span class="o">|</span> <span class="n">STORED</span> <span class="n">BY</span> <span class="o">...</span>
+<span class="p">]</span>
+<span class="p">[</span><span class="n">LOCATION</span> <span class="n">hdfs_path</span><span class="p">]</span>
+<span class="p">[</span><span class="n">TBLPROPERTIES</span> <span class="p">(</span><span class="o">...</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">COMMENT</span> <span class="s">&quot;index comment&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>CREATE INDEX creates an index on a table using the given list of columns as keys. See <a class="reference external" href="http://wiki.apache.org/hadoop/Hive/IndexDev#CREATE_INDEX">http://wiki.apache.org/hadoop/Hive/IndexDev#CREATE_INDEX</a></p>
+</div>
+<div class="section" id="drop-index">
+<h3>Drop Index<a class="headerlink" href="#drop-index" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DROP</span> <span class="n">INDEX</span> <span class="p">[</span><span class="n">IF</span> <span class="n">EXISTS</span><span class="p">]</span> <span class="n">index_name</span> <span class="n">ON</span> <span class="n">table_name</span>
+<span class="n">DROP</span> <span class="n">INDEX</span> <span class="n">drops</span> <span class="n">the</span> <span class="n">index</span><span class="p">,</span> <span class="k">as</span> <span class="n">well</span> <span class="k">as</span> <span class="n">deleting</span> <span class="n">the</span> <span class="n">index</span> <span class="n">table</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>In Hive 0.70 or later, DROP returns an error if the index doesn&#8217;t exist, unless IF EXISTS is specified or the configuration variable hive.exec.drop.ignorenonexistent is set to true.</p>
+</div>
+</div>
+<div class="section" id="show-describe-statements">
+<h2>Show/Describe Statements<a class="headerlink" href="#show-describe-statements" title="Permalink to this headline">¶</a></h2>
+<p>These statements provide a way to query the Hive metastore for existing data and metadata accessible to this Hive system.</p>
+<div class="section" id="show-databases">
+<h3>Show Databases<a class="headerlink" href="#show-databases" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="p">(</span><span class="n">DATABASES</span><span class="o">|</span><span class="n">SCHEMAS</span><span class="p">)</span> <span class="p">[</span><span class="n">LIKE</span> <span class="n">identifier_with_wildcards</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>SHOW DATABASES lists all of the databases defined in the metastore. The optional LIKE clause allows the list of databases to be filtered using a regular expression. The regular expression may only contain &#8216;&#8217; for any characters or &#8216;|&#8217; for a choice. Examples are &#8216;employees&#8217;, &#8216;emp&#8217;, &#8220;emp*|*ees&#8217;, all of which will match the database named &#8216;employees&#8217;.</p>
+</div>
+<div class="section" id="show-tables">
+<h3>Show Tables<a class="headerlink" href="#show-tables" title="Permalink to this headline">¶</a></h3>
+<p>SHOW TABLES identifier_with_wildcards;
+SHOW TABLES lists all the base tables and views with names matching the given regular expression. Regular expression can contain only &#8216;&#8217; for any characters or &#8216;|&#8217; for a choice. Examples are &#8216;page_view&#8217;, &#8216;page_v&#8217;, &#8216;view|page&#8217;, all which will match &#8216;page_view&#8217; table. Matching tables are listed in alphabetical order. It is not an error if there are no matching tables found in metastore.</p>
+<div class="section" id="show-table-properties">
+<h4>Show Table Properties<a class="headerlink" href="#show-table-properties" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="n">TBLPROPERTIES</span> <span class="n">tblname</span><span class="p">;</span>
+<span class="n">SHOW</span> <span class="n">TBLPROPERTIES</span> <span class="n">tblname</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The first form lists all of the table properties for the table in question one per row separated by tabs. The second form of the command prints only the value for the property that&#8217;s being asked for.</p>
+</div>
+</div>
+<div class="section" id="show-partitions">
+<h3>Show Partitions<a class="headerlink" href="#show-partitions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="n">PARTITIONS</span> <span class="n">table_name</span>
+</pre></div>
+</div>
+<p>SHOW PARTITIONS lists all the existing partitions for a given base table. Partitions are listed in alphabetical order.</p>
+<p>It is also possible to specify parts of a partition specification to filter the resulting list. Note: This feature is only available starting in version 0.6.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="n">PARTITIONS</span> <span class="n">table_name</span> <span class="n">PARTITION</span><span class="p">(</span><span class="n">ds</span><span class="o">=</span><span class="s">&#39;2010-03-03&#39;</span><span class="p">);</span>
+<span class="n">SHOW</span> <span class="n">PARTITIONS</span> <span class="n">table_name</span> <span class="n">PARTITION</span><span class="p">(</span><span class="n">hr</span><span class="o">=</span><span class="s">&#39;12&#39;</span><span class="p">);</span>
+<span class="n">SHOW</span> <span class="n">PARTITIONS</span> <span class="n">table_name</span> <span class="n">PARTITION</span><span class="p">(</span><span class="n">ds</span><span class="o">=</span><span class="s">&#39;2010-03-03&#39;</span><span class="p">,</span> <span class="n">hr</span><span class="o">=</span><span class="s">&#39;12&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="show-table-partitions-extended">
+<h3>Show Table/Partitions Extended<a class="headerlink" href="#show-table-partitions-extended" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="n">TABLE</span> <span class="n">EXTENDED</span> <span class="p">[</span><span class="n">IN</span><span class="o">|</span><span class="n">FROM</span> <span class="n">database_name</span><span class="p">]</span> <span class="n">LIKE</span> <span class="n">identifier_with_wildcards</span> <span class="p">[</span><span class="n">PARTITION</span><span class="p">(</span><span class="n">partition_desc</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>SHOW TABLE EXTENDED will list information for all tables matching the given regular expression. Users can not use regular expression for table name if a partition specification is present. This command&#8217;s output includes basic table information and file system information like totalNumberFiles, totalFileSize, maxFileSize, minFileSize,lastAccessTime, and lastUpdateTime. If partition is present, it will output the given partition&#8217;s file system information instead of table&#8217;s file system information.</p>
+</div>
+<div class="section" id="show-functions">
+<h3>Show Functions<a class="headerlink" href="#show-functions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="n">FUNCTIONS</span> <span class="s">&quot;a.*&quot;</span>
+</pre></div>
+</div>
+<p>SHOW FUNCTIONS lists all the user defined and builtin functions matching the regular expression. To get all functions use &#8221;.*&#8221;</p>
+</div>
+<div class="section" id="show-indexes">
+<h3>Show Indexes<a class="headerlink" href="#show-indexes" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="p">[</span><span class="n">FORMATTED</span><span class="p">]</span> <span class="p">(</span><span class="n">INDEX</span><span class="o">|</span><span class="n">INDEXES</span><span class="p">)</span> <span class="n">ON</span> <span class="n">table_with_index</span> <span class="p">[(</span><span class="n">FROM</span><span class="o">|</span><span class="n">IN</span><span class="p">)</span> <span class="n">db_name</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>SHOW INDEXES shows all of the indexes on a certain column, as well as information about them: index name, table name, names of the columns used as keys, index table name, index type, and comment. If the FORMATTED keyword is used, then column titles are printed for each column. Not available until 0.7 release.</p>
+</div>
+<div class="section" id="show-columns">
+<h3>Show Columns<a class="headerlink" href="#show-columns" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="n">COLUMNS</span> <span class="p">(</span><span class="n">FROM</span><span class="o">|</span><span class="n">IN</span><span class="p">)</span> <span class="n">table_name</span> <span class="p">[(</span><span class="n">FROM</span><span class="o">|</span><span class="n">IN</span><span class="p">)</span> <span class="n">db_name</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>SHOW COLUMNS shows all the columns in a table including partition columns.</p>
+</div>
+<div class="section" id="show-create-table">
+<h3>Show Create Table<a class="headerlink" href="#show-create-table" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="n">CREATE</span> <span class="n">TABLE</span> <span class="p">([</span><span class="n">db_name</span><span class="o">.</span><span class="p">]</span><span class="n">table_name</span><span class="o">|</span><span class="n">view_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>SHOW CREATE TABLE shows the CREATE TABLE statement that creates a given table, or the CREATE VIEW statement that creates a given view.</p>
+</div>
+<div class="section" id="describe-database">
+<h3>Describe Database<a class="headerlink" href="#describe-database" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DESCRIBE</span> <span class="n">DATABASE</span> <span class="n">db_name</span>
+</pre></div>
+</div>
+<p>DESCRIBE DATABASE will show the name of the database, its comment (if one has been set), and its root location on the filesystem. Not available until the 0.7 release.</p>
+</div>
+<div class="section" id="describe-table-column">
+<h3>Describe Table/Column<a class="headerlink" href="#describe-table-column" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DESCRIBE</span> <span class="p">[</span><span class="n">EXTENDED</span><span class="o">|</span><span class="n">FORMATTED</span><span class="p">]</span> <span class="n">table_name</span><span class="p">[</span><span class="n">DOT</span> <span class="n">col_name</span> <span class="p">(</span> <span class="p">[</span><span class="n">DOT</span> <span class="n">field_name</span><span class="p">]</span> <span class="o">|</span> <span class="p">[</span><span class="n">DOT</span> <span class="s">&#39;$elem$&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="p">[</span><span class="n">DOT</span> <span class="s">&#39;$key$&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="p">[</span><span class="n">DOT</span> <span class="s">&#39;$value$&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">*</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>DESCRIBE shows the list of columns including partition columns for the given table. If the EXTENDED keyword is specified then it will show all the metadata for the table in Thrift serialized form. This is generally only useful for debugging and not for general use. If the FORMATTED keyword is specified, then it will show the metadata in a tabular format.</p>
+<p>If a table has complex column then you can examine the attributes of this column by specifying table_name.complex_col_name (and &#8216;$elem$&#8217; for array element, &#8216;$key$&#8217; for map key, and &#8216;$value$&#8217; for map value). You can specify this recursively to explore the complex column type.</p>
+<p>For a view, DESCRIBE EXTENDED or FORMATTED can be used to retrieve the view&#8217;s definition. Two relevant attributes are provided: both the original view definition as specified by the user, and an expanded definition used internally by Hive.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DESCRIBE</span> <span class="p">[</span><span class="n">EXTENDED</span><span class="o">|</span><span class="n">FORMATTED</span><span class="p">]</span> <span class="n">table_name</span> <span class="n">partition_spec</span>
+</pre></div>
+</div>
+<p>This statement lists metadata for a given partition. The output is similar to that of DESCRIBE. Presently, the column information associated with a particular partition is not used while preparing plans.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DESCRIBE</span> <span class="n">page_view</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="n">ds</span><span class="o">=</span><span class="s">&#39;2008-08-08&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Hive Data Definition Statements</a><ul>
+<li><a class="reference internal" href="#create-drop-database">Create/Drop Database</a><ul>
+<li><a class="reference internal" href="#create-database">Create Database</a></li>
+<li><a class="reference internal" href="#drop-database">Drop Database</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-drop-truncate-table">Create/Drop/Truncate Table</a><ul>
+<li><a class="reference internal" href="#create-table">Create Table</a></li>
+<li><a class="reference internal" href="#drop-table">Drop Table</a></li>
+<li><a class="reference internal" href="#truncate-table">Truncate Table</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#alter-table-partition-statements">Alter Table/Partition Statements</a><ul>
+<li><a class="reference internal" href="#add-partitions">Add Partitions</a></li>
+<li><a class="reference internal" href="#recover-partitions">Recover partitions</a></li>
+<li><a class="reference internal" href="#drop-partitions">Drop Partitions</a></li>
+<li><a class="reference internal" href="#rename-table">Rename Table</a></li>
+<li><a class="reference internal" href="#change-column-name-type-position-comment">Change Column Name/Type/Position/Comment</a></li>
+<li><a class="reference internal" href="#add-replace-columns">Add/Replace Columns</a></li>
+<li><a class="reference internal" href="#alter-table-properties">Alter Table Properties</a></li>
+<li><a class="reference internal" href="#add-serde-properties">Add Serde Properties</a></li>
+<li><a class="reference internal" href="#alter-table-partition-file-format">Alter Table/Partition File Format</a></li>
+<li><a class="reference internal" href="#alter-table-storage-properties">Alter Table Storage Properties</a></li>
+<li><a class="reference internal" href="#alter-table-partition-location">Alter Table/Partition Location</a></li>
+<li><a class="reference internal" href="#alter-table-touch">Alter Table Touch</a></li>
+<li><a class="reference internal" href="#alter-table-un-archive">Alter Table (Un)Archive</a></li>
+<li><a class="reference internal" href="#alter-table-partition-protections">Alter Table/Partition Protections</a></li>
+<li><a class="reference internal" href="#alter-table-rename-partition">Alter Table Rename Partition</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-drop-view">Create/Drop View</a><ul>
+<li><a class="reference internal" href="#create-view">Create View</a></li>
+<li><a class="reference internal" href="#drop-view">Drop View</a></li>
+<li><a class="reference internal" href="#alter-view-properties">Alter View Properties</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-drop-index">Create/Drop Index</a><ul>
+<li><a class="reference internal" href="#create-index">Create Index</a></li>
+<li><a class="reference internal" href="#drop-index">Drop Index</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#show-describe-statements">Show/Describe Statements</a><ul>
+<li><a class="reference internal" href="#show-databases">Show Databases</a></li>
+<li><a class="reference internal" href="#show-tables">Show Tables</a></li>
+<li><a class="reference internal" href="#show-partitions">Show Partitions</a></li>
+<li><a class="reference internal" href="#show-table-partitions-extended">Show Table/Partitions Extended</a></li>
+<li><a class="reference internal" href="#show-functions">Show Functions</a></li>
+<li><a class="reference internal" href="#show-indexes">Show Indexes</a></li>
+<li><a class="reference internal" href="#show-columns">Show Columns</a></li>
+<li><a class="reference internal" href="#show-create-table">Show Create Table</a></li>
+<li><a class="reference internal" href="#describe-database">Describe Database</a></li>
+<li><a class="reference internal" href="#describe-table-column">Describe Table/Column</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="datatypes.html"
+                        title="previous chapter">Hive Data Types</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dml.html"
+                        title="next chapter">Hive Data Manipulation Statements</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dml.html" title="Hive Data Manipulation Statements"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="datatypes.html" title="Hive Data Types"
+             >previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Hive Query Language Reference Manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, joe.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

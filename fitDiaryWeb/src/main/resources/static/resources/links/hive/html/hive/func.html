@@ -1,0 +1,1361 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hive Operators and Functions &mdash; NDAP  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/ndap-help.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="NDAP  documentation" href="../index.html" />
+    <link rel="up" title="Hive Query Language Reference Manual" href="index.html" />
+    <link rel="next" title="Hive Explain Statement" href="explain.html" />
+    <link rel="prev" title="Hive Select Statement" href="select.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="explain.html" title="Hive Explain Statement"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="select.html" title="Hive Select Statement"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Hive Query Language Reference Manual</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hive-operators-and-functions">
+<h1>Hive Operators and Functions<a class="headerlink" href="#hive-operators-and-functions" title="Permalink to this headline">¶</a></h1>
+<p>Use the commands below to show the latest documentation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SHOW</span> <span class="n">FUNCTIONS</span><span class="p">;</span>
+<span class="n">DESCRIBE</span> <span class="n">FUNCTION</span> <span class="o">&lt;</span><span class="n">function_name</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="n">DESCRIBE</span> <span class="n">FUNCTION</span> <span class="n">EXTENDED</span> <span class="o">&lt;</span><span class="n">function_name</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="built-in-operators">
+<h2>Built-in Operators<a class="headerlink" href="#built-in-operators" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="relational-operators">
+<h3>Relational Operators<a class="headerlink" href="#relational-operators" title="Permalink to this headline">¶</a></h3>
+<p>The following operators compare the passed operands and generate a TRUE or FALSE value depending on whether the comparison between the operands holds.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="4%" />
+<col width="92%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operator</th>
+<th class="head">Operand types</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>A = B</td>
+<td>All primitive types</td>
+<td>TRUE if expression A is equal to expression B otherwise FALSE</td>
+</tr>
+<tr class="row-odd"><td>A &lt;=&gt; B</td>
+<td>All primitive types</td>
+<td>Returns same result with EQUAL(=) operator for non-null operands, but returns TRUE if both are NULL, FALSE if one of the them is NULL (as of version 0.9.0)</td>
+</tr>
+<tr class="row-even"><td>A == B</td>
+<td>None!</td>
+<td>Fails because of invalid syntax. SQL uses =, not ==</td>
+</tr>
+<tr class="row-odd"><td>A &lt;&gt; B</td>
+<td>All primitive types</td>
+<td>NULL if A or B is NULL, TRUE if expression A is NOT equal to expression B otherwise FALSE</td>
+</tr>
+<tr class="row-even"><td>A &lt; B</td>
+<td>All primitive types</td>
+<td>NULL if A or B is NULL, TRUE if expression A is less than expression B otherwise FALSE</td>
+</tr>
+<tr class="row-odd"><td>A &lt;= B</td>
+<td>All primitive types</td>
+<td>NULL if A or B is NULL, TRUE if expression A is less than or equal to expression B otherwise FALSE</td>
+</tr>
+<tr class="row-even"><td>A &gt; B</td>
+<td>All primitive types</td>
+<td>NULL if A or B is NULL, TRUE if expression A is greater than expression B otherwise FALSE</td>
+</tr>
+<tr class="row-odd"><td>A &gt;= B</td>
+<td>All primitive types</td>
+<td>NULL if A or B is NULL, TRUE if expression A is greater than or equal to expression B otherwise FALSE</td>
+</tr>
+<tr class="row-even"><td>A [NOT] BETWEEN B AND C</td>
+<td>All primitive types</td>
+<td>NULL if A, B or C is NULL, TRUE if A is greater than or equal to B AND A less than or equal to C otherwise FALSE. This can be inverted by using the NOT keyword. (as of version 0.9.0)</td>
+</tr>
+<tr class="row-odd"><td>A IS NULL</td>
+<td>all types</td>
+<td>TRUE if expression A evaluates to NULL otherwise FALSE</td>
+</tr>
+<tr class="row-even"><td>A IS NOT NULL</td>
+<td>All types</td>
+<td>FALSE if expression A evaluates to NULL otherwise TRUE</td>
+</tr>
+<tr class="row-odd"><td>A LIKE B</td>
+<td>strings</td>
+<td>NULL if A or B is NULL, TRUE if string A matches the SQL simple regular expression B, otherwise FALSE. The comparison is done character by character. The _ character in B matches any character in A(similar to . in posix regular expressions) while the % character in B matches an arbitrary number of characters in A(similar to .* in posix regular expressions) e.g. &#8216;foobar&#8217; like &#8216;foo&#8217; evaluates to FALSE where as &#8216;foobar&#8217; like &#8216;<a href="#id3"><span class="problematic" id="id4">foo_</span></a> _ _&#8217; evaluates to TRUE and so does &#8216;foobar&#8217; like &#8216;foo%&#8217;</td>
+</tr>
+<tr class="row-even"><td>A RLIKE B</td>
+<td>strings</td>
+<td>NULL if A or B is NULL, TRUE if string A matches the Java regular expression B(See Java regular expressions syntax), otherwise FALSE e.g. &#8216;foobar&#8217; rlike &#8216;foo&#8217; evaluates to FALSE where as &#8216;foobar&#8217; rlike &#8216;^f.*r$&#8217; evaluates to TRUE</td>
+</tr>
+<tr class="row-odd"><td>A REGEXP B</td>
+<td>strings</td>
+<td>Same as RLIKE</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="arithmetic-operators">
+<h3>Arithmetic Operators<a class="headerlink" href="#arithmetic-operators" title="Permalink to this headline">¶</a></h3>
+<p>The following operators support various common arithmetic operations on the operands. All return number types; if any of the operands are NULL, then the result is also NULL.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="3%" />
+<col width="6%" />
+<col width="91%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operator</th>
+<th class="head">Operand types</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>A + B</td>
+<td>All number types</td>
+<td>Gives the result of adding A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands. e.g. since every integer is a float, therefore float is a containing type of integer so the + operator on a float and an int will result in a float.</td>
+</tr>
+<tr class="row-odd"><td>A - B</td>
+<td>All number types</td>
+<td>Gives the result of subtracting B from A. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.</td>
+</tr>
+<tr class="row-even"><td>A * B</td>
+<td>All number types</td>
+<td>Gives the result of multiplying A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands. Note that if the multiplication causing overflow, you will have to cast one of the operators to a type higher in the type hierarchy.</td>
+</tr>
+<tr class="row-odd"><td>A / B</td>
+<td>All number types</td>
+<td>Gives the result of dividing B from A. The result is a double type.</td>
+</tr>
+<tr class="row-even"><td>A % B</td>
+<td>All number types</td>
+<td>Gives the reminder resulting from dividing A by B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.</td>
+</tr>
+<tr class="row-odd"><td>A &amp; B</td>
+<td>All number types</td>
+<td>Gives the result of bitwise AND of A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.</td>
+</tr>
+<tr class="row-even"><td>A | B</td>
+<td>All number types</td>
+<td>Gives the result of bitwise OR of A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.</td>
+</tr>
+<tr class="row-odd"><td>A ^ B</td>
+<td>All number types</td>
+<td>Gives the result of bitwise XOR of A and B. The type of the result is the same as the common parent(in the type hierarchy) of the types of the operands.</td>
+</tr>
+<tr class="row-even"><td>~A</td>
+<td>All number types</td>
+<td>Gives the result of bitwise NOT of A. The type of the result is the same as the type of A.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="logical-operators">
+<h3>Logical Operators<a class="headerlink" href="#logical-operators" title="Permalink to this headline">¶</a></h3>
+<p>The following operators provide support for creating logical expressions. All of them return boolean TRUE, FALSE, or NULL depending upon the boolean values of the operands. NULL behaves as an &#8220;unknown&#8221; flag, so if the result depends on the state of an unknown, the result itself is unknown.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="14%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operator</th>
+<th class="head">Operand types</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>A AND B</td>
+<td>boolean</td>
+<td>TRUE if both A and B are TRUE, otherwise FALSE. NULL if A or B is NULL</td>
+</tr>
+<tr class="row-odd"><td>A &amp;&amp; B</td>
+<td>boolean</td>
+<td>Same as A AND B</td>
+</tr>
+<tr class="row-even"><td>A OR B</td>
+<td>boolean</td>
+<td>TRUE if either A or B or both are TRUE; FALSE OR NULL is NULL; otherwise FALSE</td>
+</tr>
+<tr class="row-odd"><td>A || B</td>
+<td>boolean</td>
+<td>Same as A OR B</td>
+</tr>
+<tr class="row-even"><td>NOT A</td>
+<td>boolean</td>
+<td>TRUE if A is FALSE or NULL if A is NULL. Otherwise FALSE.</td>
+</tr>
+<tr class="row-odd"><td>! A</td>
+<td>boolean</td>
+<td>Same as NOT A</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="complex-type-constructors">
+<h3>Complex Type Constructors<a class="headerlink" href="#complex-type-constructors" title="Permalink to this headline">¶</a></h3>
+<p>The following functions construct instances of complex types.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="23%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Constructor Function</th>
+<th class="head">Operands</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>map</td>
+<td>(key1, value1, key2, value2, ...)</td>
+<td>Creates a map with the given key/value pairs</td>
+</tr>
+<tr class="row-odd"><td>struct</td>
+<td>(val1, val2, val3, ...)</td>
+<td>Creates a struct with the given field values. Struct field names will be col1, col2, ...</td>
+</tr>
+<tr class="row-even"><td>named_struct</td>
+<td>(name1, val1, name2, val2, ...)</td>
+<td>Creates a struct with the given field names and values.</td>
+</tr>
+<tr class="row-odd"><td>array</td>
+<td>(val1, val2, ...)</td>
+<td>Creates an array with the given elements</td>
+</tr>
+<tr class="row-even"><td>create_union</td>
+<td>(tag, val1, val2, ...)</td>
+<td>Creates a union type with the value that is being pointed to by the tag parameter</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="operators-on-complex-types">
+<h3>Operators on Complex Types<a class="headerlink" href="#operators-on-complex-types" title="Permalink to this headline">¶</a></h3>
+<p>The following operators provide mechanisms to access elements in Complex Types</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="17%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operator</th>
+<th class="head">Operand types</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>A[n]</td>
+<td>A is an Array and n is an int</td>
+<td>Returns the nth element in the array A. The first element has index 0 e.g. if A is an array comprising of [&#8216;foo&#8217;, &#8216;bar&#8217;] then A[0] returns &#8216;foo&#8217; and A[1] returns &#8216;bar&#8217;</td>
+</tr>
+<tr class="row-odd"><td>M[key]</td>
+<td>M is a Map&lt;K, V&gt; and key has type K</td>
+<td>Returns the value corresponding to the key in the map e.g. if M is a map comprising of {&#8216;f&#8217; -&gt; &#8216;foo&#8217;, &#8216;b&#8217; -&gt; &#8216;bar&#8217;, &#8216;all&#8217; -&gt; &#8216;foobar&#8217;} then M[&#8216;all&#8217;] returns &#8216;foobar&#8217;</td>
+</tr>
+<tr class="row-even"><td>S.x</td>
+<td>S is a struct</td>
+<td>Returns the x field of S. e.g for struct foobar {int foo, int bar} foobar.foo returns the integer stored in the foo field of the struct.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="built-in-functions">
+<h2>Built-in Functions<a class="headerlink" href="#built-in-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mathematical-functions">
+<h3>Mathematical Functions<a class="headerlink" href="#mathematical-functions" title="Permalink to this headline">¶</a></h3>
+<p>The following built-in mathematical functions are supported in hive; most return NULL when the argument(s) are NULL:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="3%" />
+<col width="24%" />
+<col width="73%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>BIGINT</td>
+<td>round(double a)</td>
+<td>Returns the rounded BIGINT value of the double</td>
+</tr>
+<tr class="row-odd"><td>DOUBLE</td>
+<td>round(double a, int d)</td>
+<td>Returns the double rounded to d decimal places</td>
+</tr>
+<tr class="row-even"><td>BIGINT</td>
+<td>floor(double a)</td>
+<td>Returns the maximum BIGINT value that is equal or less than the double</td>
+</tr>
+<tr class="row-odd"><td>BIGINT</td>
+<td>ceil(double a), ceiling(double a)</td>
+<td>Returns the minimum BIGINT value that is equal or greater than the double</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>rand(), rand(int seed)</td>
+<td>Returns a random number (that changes from row to row) that is distributed uniformly from 0 to 1. Specifiying the seed will make sure the generated random number sequence is deterministic.</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>exp(double a)</td>
+<td>Returns ea where e is the base of the natural logarithm</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>ln(double a)</td>
+<td>Returns the natural logarithm of the argument</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>log10(double a)</td>
+<td>Returns the base-10 logarithm of the argument</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>log2(double a)</td>
+<td>Returns the base-2 logarithm of the argument</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>log(double base, double a)</td>
+<td>Return the base &#8220;base&#8221; logarithm of the argument</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>pow(double a, double p), power(double a, double p)</td>
+<td>Return ap</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>sqrt(double a)</td>
+<td>Returns the square root of a</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>bin(BIGINT a)</td>
+<td>Returns the number in binary format (see [<a class="reference external" href="http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_bin">http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_bin</a>])</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>hex(BIGINT a) hex(string a)</td>
+<td>If the argument is an int, hex returns the number as a string in hex format. Otherwise if the number is a string, it converts each character into its hex representation and returns the resulting string. (see [<a class="reference external" href="http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_hex">http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_hex</a>])</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>unhex(string a)</td>
+<td>Inverse of hex. Interprets each pair of characters as a hexidecimal number and converts to the character represented by the number.</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>conv(BIGINT num, int from_base, int to_base), conv(STRING num, int from_base, int to_base)</td>
+<td>Converts a number from a given base to another (see [<a class="reference external" href="http://dev.mysql.com/doc/refman/5.0/en/mathematical-functions.html#function_conv">http://dev.mysql.com/doc/refman/5.0/en/mathematical-functions.html#function_conv</a>])</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>abs(double a)</td>
+<td>Returns the absolute value</td>
+</tr>
+<tr class="row-odd"><td>int double</td>
+<td>pmod(int a, int b)</td>
+<td>pmod(double a, double b)     Returns the positive value of a mod b</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>sin(double a)</td>
+<td>Returns the sine of a (a is in radians)</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>asin(double a)</td>
+<td>Returns the arc sin of x if -1&lt;=a&lt;=1 or null otherwise</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>cos(double a)</td>
+<td>Returns the cosine of a (a is in radians)</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>acos(double a)</td>
+<td>Returns the arc cosine of x if -1&lt;=a&lt;=1 or null otherwise</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>tan(double a)</td>
+<td>Returns the tangent of a (a is in radians)</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>atan(double a)</td>
+<td>Returns the arctangent of a</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>degrees(double a)</td>
+<td>Converts value of a from radians to degrees</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>radians(double a)</td>
+<td>Converts value of a from degrees to radians</td>
+</tr>
+<tr class="row-even"><td>int double</td>
+<td>positive(int a),</td>
+<td>positive(double a)     Returns a</td>
+</tr>
+<tr class="row-odd"><td>int double</td>
+<td>negative(int a),</td>
+<td>negative(double a)     Returns -a</td>
+</tr>
+<tr class="row-even"><td>float</td>
+<td>sign(double a)</td>
+<td>Returns the sign of a as &#8216;1.0&#8217; or &#8216;-1.0&#8217;</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>e()</td>
+<td>Returns the value of e</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>pi()</td>
+<td>Returns the value of pi</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="collection-functions">
+<h3>Collection Functions<a class="headerlink" href="#collection-functions" title="Permalink to this headline">¶</a></h3>
+<p>The following built-in collection functions are supported in hive:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="18%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>int</td>
+<td>size(Map&lt;K.V&gt;)</td>
+<td>Returns the number of elements in the map type</td>
+</tr>
+<tr class="row-odd"><td>int</td>
+<td>size(Array&lt;T&gt;)</td>
+<td>Returns the number of elements in the array type</td>
+</tr>
+<tr class="row-even"><td>array&lt;K&gt;</td>
+<td>map_keys(Map&lt;K.V&gt;)</td>
+<td>Returns an unordered array containing the keys of the input map</td>
+</tr>
+<tr class="row-odd"><td>array&lt;V&gt;</td>
+<td>map_values(Map&lt;K.V&gt;)</td>
+<td>Returns an unordered array containing the values of the input map</td>
+</tr>
+<tr class="row-even"><td>boolean</td>
+<td>array_contains(Array&lt;T&gt;, value)</td>
+<td>Returns TRUE if the array contains value</td>
+</tr>
+<tr class="row-odd"><td>array&lt;t&gt;</td>
+<td>sort_array(Array&lt;T&gt;)</td>
+<td>Sorts the input array in ascending order according to the natural ordering of the array elements and returns it (as of version 0.9.0)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="type-conversion-functions">
+<h3>Type Conversion Functions<a class="headerlink" href="#type-conversion-functions" title="Permalink to this headline">¶</a></h3>
+<p>The following type conversion functions are supported in hive:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="9%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>binary</td>
+<td>binary(string|binary)</td>
+<td>Casts the parameter into a binary</td>
+</tr>
+<tr class="row-odd"><td>Expected &#8220;=&#8221; to follow &#8220;type&#8221;</td>
+<td>cast(expr as &lt;type&gt;)</td>
+<td>Converts the results of the expression expr to &lt;type&gt; e.g. cast(&#8216;1&#8217; as BIGINT) will convert the string &#8216;1&#8217; to it integral representation. A null is returned if the conversion does not succeed.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="date-functions">
+<h3>Date Functions<a class="headerlink" href="#date-functions" title="Permalink to this headline">¶</a></h3>
+<p>The following built-in date functions are supported in hive:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="19%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>string</td>
+<td>from_unixtime(bigint unixtime[, string format])</td>
+<td>Converts the number of seconds from unix epoch (1970-01-01 00:00:00 UTC) to a string representing the timestamp of that moment in the current system time zone in the format of &#8220;1970-01-01 00:00:00&#8221;</td>
+</tr>
+<tr class="row-odd"><td>bigint</td>
+<td>unix_timestamp()</td>
+<td>Gets current time stamp using the default time zone.</td>
+</tr>
+<tr class="row-even"><td>bigint</td>
+<td>unix_timestamp(string date)</td>
+<td>Converts time string in format yyyy-MM-dd HH:mm:ss to Unix time stamp, return 0 if fail: unix_timestamp(&#8216;2009-03-20 11:30:01&#8217;) = 1237573801</td>
+</tr>
+<tr class="row-odd"><td>bigint</td>
+<td>unix_timestamp(string date, string pattern)</td>
+<td>Convert time string with given pattern (see [<a class="reference external" href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html</a>]) to Unix time stamp, return 0 if fail: unix_timestamp(&#8216;2009-03-20&#8217;, &#8216;yyyy-MM-dd&#8217;) = 1237532400</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>to_date(string timestamp)</td>
+<td>Returns the date part of a timestamp string: to_date(&#8220;1970-01-01 00:00:00&#8221;) = &#8220;1970-01-01&#8221;</td>
+</tr>
+<tr class="row-odd"><td>int</td>
+<td>year(string date)</td>
+<td>Returns the year part of a date or a timestamp string: year(&#8220;1970-01-01 00:00:00&#8221;) = 1970, year(&#8220;1970-01-01&#8221;) = 1970</td>
+</tr>
+<tr class="row-even"><td>int</td>
+<td>month(string date)</td>
+<td>Returns the month part of a date or a timestamp string: month(&#8220;1970-11-01 00:00:00&#8221;) = 11, month(&#8220;1970-11-01&#8221;) = 11</td>
+</tr>
+<tr class="row-odd"><td>int</td>
+<td>day(string date) dayofmonth(date)</td>
+<td>Return the day part of a date or a timestamp string: day(&#8220;1970-11-01 00:00:00&#8221;) = 1, day(&#8220;1970-11-01&#8221;) = 1</td>
+</tr>
+<tr class="row-even"><td>int</td>
+<td>hour(string date)</td>
+<td>Returns the hour of the timestamp: hour(&#8216;2009-07-30 12:58:59&#8217;) = 12, hour(&#8216;12:58:59&#8217;) = 12</td>
+</tr>
+<tr class="row-odd"><td>int</td>
+<td>minute(string date)</td>
+<td>Returns the minute of the timestamp</td>
+</tr>
+<tr class="row-even"><td>int</td>
+<td>second(string date)</td>
+<td>Returns the second of the timestamp</td>
+</tr>
+<tr class="row-odd"><td>int</td>
+<td>weekofyear(string date)</td>
+<td>Return the week number of a timestamp string: weekofyear(&#8220;1970-11-01 00:00:00&#8221;) = 44, weekofyear(&#8220;1970-11-01&#8221;) = 44</td>
+</tr>
+<tr class="row-even"><td>int</td>
+<td>datediff(string enddate, string startdate)</td>
+<td>Return the number of days from startdate to enddate: datediff(&#8216;2009-03-01&#8217;, &#8216;2009-02-27&#8217;) = 2</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>date_add(string startdate, int days)</td>
+<td>Add a number of days to startdate: date_add(&#8216;2008-12-31&#8217;, 1) = &#8216;2009-01-01&#8217;</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>date_sub(string startdate, int days)</td>
+<td>Subtract a number of days to startdate: date_sub(&#8216;2008-12-31&#8217;, 1) = &#8216;2008-12-30&#8217;</td>
+</tr>
+<tr class="row-odd"><td>timestamp</td>
+<td>from_utc_timestamp(timestamp, string timezone)</td>
+<td>Assumes given timestamp ist UTC and converts to given timezone (as of Hive 0.8.0)</td>
+</tr>
+<tr class="row-even"><td>timestamp</td>
+<td>to_utc_timestamp(timestamp, string timezone)</td>
+<td>Assumes given timestamp is in given timezone and converts to UTC (as of Hive 0.8.0)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="conditional-functions">
+<h3>Conditional Functions<a class="headerlink" href="#conditional-functions" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="40%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>T</td>
+<td>if(boolean testCondition, T valueTrue, T valueFalseOrNull)</td>
+<td>Return valueTrue when testCondition is true, returns valueFalseOrNull otherwise</td>
+</tr>
+<tr class="row-odd"><td>T</td>
+<td>COALESCE(T v1, T v2, ...)</td>
+<td>Return the first v that is not NULL, or NULL if all v&#8217;s are NULL</td>
+</tr>
+<tr class="row-even"><td>T</td>
+<td>CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END</td>
+<td>When a = b, returns c; when a = d, return e; else return f</td>
+</tr>
+<tr class="row-odd"><td>T</td>
+<td>CASE WHEN a THEN b [WHEN c THEN d]* [ELSE e] END</td>
+<td>When a = true, returns b; when c = true, return d; else return e</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="string-functions">
+<h3>String Functions<a class="headerlink" href="#string-functions" title="Permalink to this headline">¶</a></h3>
+<p>The following are built-in String functions are supported in hive:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="5%" />
+<col width="13%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>int</td>
+<td>ascii(string str)</td>
+<td>Returns the numeric value of the first character of str</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>concat(string|binary A, string|binary B...)</td>
+<td>Returns the string or bytes resulting from concatenating the strings or bytes passed in as parameters in order. e.g. concat(&#8216;foo&#8217;, &#8216;bar&#8217;) results in &#8216;foobar&#8217;. Note that this function can take any number of input strings.</td>
+</tr>
+<tr class="row-even"><td>array&lt;struct&lt;string,double&gt;&gt;</td>
+<td>context_ngrams(array&lt;array&lt;string&gt;&gt;, array&lt;string&gt;, int K, int pf)</td>
+<td>Returns the top-k contextual N-grams from a set of tokenized sentences, given a string of &#8220;context&#8221;. See <a class="reference external" href="https://cwiki.apache.org/confluence/display/Hive/StatisticsAndDataMining">StatisticsAndDataMining</a> for more information.</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>concat_ws(string SEP, string A, string B...)</td>
+<td>Like concat() above, but with custom separator SEP.</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>concat_ws(string SEP, array&lt;string&gt;)</td>
+<td>Like concat_ws() above, but taking an array of strings. (as of Hive 0.9.0)</td>
+</tr>
+<tr class="row-odd"><td>int</td>
+<td>find_in_set(string str, string strList)</td>
+<td>Returns the first occurance of str in strList where strList is a comma-delimited string. Returns null if either argument is null. Returns 0 if the first argument contains any commas. e.g. find_in_set(&#8216;ab&#8217;, &#8216;abc,b,ab,c,def&#8217;) returns 3</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>format_number(number x, int     d)</td>
+<td>Formats the number X to a format like &#8216;#,###,###.##&#8217;, rounded to D decimal places, and returns the result as a string. If D is 0, the result has no decimal point or fractional part. (as of Hive 0.10.0)</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>get_json_object(string json_string, string path)</td>
+<td>Extract json object from a json string based on json path specified, and return json string of the extracted json object. It will return null if the input json string is invalid. NOTE: The json path can only have the characters [<a href="#id5"><span class="problematic" id="id6">0-9a-z_</span></a>], i.e., no upper-case or special characters. Also, the keys <strong>cannot start with numbers.</strong> This is due to restrictions on Hive column names.</td>
+</tr>
+<tr class="row-even"><td>boolean</td>
+<td>in_file(string str, string filename)</td>
+<td>Returns true if the string str appears as an entire line in filename.</td>
+</tr>
+<tr class="row-odd"><td>int</td>
+<td>instr(string str, string substr)</td>
+<td>Returns the position of the first occurence of substr in str</td>
+</tr>
+<tr class="row-even"><td>int</td>
+<td>length(string A)</td>
+<td>Returns the length of the string</td>
+</tr>
+<tr class="row-odd"><td>int</td>
+<td>locate(string substr, string str[, int pos])</td>
+<td>Returns the position of the first occurrence of substr in str after position pos</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>lower(string A) lcase(string A)</td>
+<td>Returns the string resulting from converting all characters of B to lower case e.g. lower(&#8216;fOoBaR&#8217;) results in &#8216;foobar&#8217;</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>lpad(string str, int     len, string pad)</td>
+<td>Returns str, left-padded with pad to a length of len</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>ltrim(string A)</td>
+<td>Returns the string resulting from trimming spaces from the beginning(left hand side) of A e.g. ltrim(&#8216; foobar &#8216;) results in &#8216;foobar &#8216;</td>
+</tr>
+<tr class="row-odd"><td>array&lt;struct&lt;string,double&gt;&gt;</td>
+<td>ngrams(array&lt;array&lt;string&gt;&gt;, int     N, int K, int pf)</td>
+<td>Returns the top-k N-grams from a set of tokenized sentences, such as those returned by the sentences() UDAF. See <a class="reference external" href="https://cwiki.apache.org/confluence/display/Hive/StatisticsAndDataMining">StatisticsAndDataMining</a> for more information.</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>parse_url(string urlString, string partToExtract [, string keyToExtract])</td>
+<td>Returns the specified part from the URL. Valid values for partToExtract include HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and USERINFO. e.g. parse_url(&#8216;<a class="reference external" href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>&#8216;, &#8216;HOST&#8217;) returns &#8216;facebook.com&#8217;. Also a value of a particular key in QUERY can be extracted by providing the key as the third argument, e.g. parse_url(&#8216;<a class="reference external" href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>&#8216;, &#8216;QUERY&#8217;, &#8216;k1&#8217;) returns &#8216;v1&#8217;.</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>printf(String format, Obj... args)</td>
+<td>Returns the input formatted according do printf-style format strings (as of Hive 0.9.0)</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>regexp_extract(string subject, string pattern, int     index)</td>
+<td>Returns the string extracted using the pattern. e.g. regexp_extract(&#8216;foothebar&#8217;, &#8216;foo(.*?)(bar)&#8217;, 2) returns &#8216;bar.&#8217; Note that some care is necessary in using predefined character classes: using &#8216;s&#8217; as the second argument will match the letter s; &#8216;s&#8217; is necessary to match whitespace, etc. The &#8216;index&#8217; parameter is the Java regex Matcher group() method index. See docs/api/java/util/regex/Matcher.html for more information on the &#8216;index&#8217; or Java regex group() method.</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>regexp_replace(string INITIAL_STRING, string PATTERN, string REPLACEMENT)</td>
+<td>Returns the string resulting from replacing all substrings in INITIAL_STRING that match the java regular expression syntax defined in PATTERN with instances of REPLACEMENT, e.g. regexp_replace(&#8220;foobar&#8221;, &#8220;oo|ar&#8221;, &#8220;&#8221;) returns &#8216;fb.&#8217; Note that some care is necessary in using predefined character classes: using &#8216;s&#8217; as the second argument will match the letter s; &#8216;s&#8217; is necessary to match whitespace, etc.</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>repeat(string str, int n)</td>
+<td>Repeat str n times</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>reverse(string A)</td>
+<td>Returns the reversed string</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>rpad(string str, int len, string pad)</td>
+<td>Returns str, right-padded with pad to a length of len</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>rtrim(string A)</td>
+<td>Returns the string resulting from trimming spaces from the end(right hand side) of A e.g. rtrim(&#8216; foobar &#8216;) results in &#8216; foobar&#8217;</td>
+</tr>
+<tr class="row-even"><td>array&lt;array&lt;string&gt;&gt;</td>
+<td>sentences(string str, string lang, string locale)</td>
+<td>Tokenizes a string of natural language text int    o words and sentences, where each sentence is broken at the appropriate sentence boundary and returned as an array of words. The &#8216;lang&#8217; and &#8216;locale&#8217; are optional arguments. e.g. sentences(&#8216;Hello there! How are you?&#8217;) returns ( (&#8220;Hello&#8221;, &#8220;there&#8221;), (&#8220;How&#8221;, &#8220;are&#8221;, &#8220;you&#8221;) )</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>space(int n)</td>
+<td>Return a string of n spaces</td>
+</tr>
+<tr class="row-even"><td>array</td>
+<td>split(string str, string pat)</td>
+<td>Split str around pat (pat is a regular expression)</td>
+</tr>
+<tr class="row-odd"><td>map&lt;string,string&gt;</td>
+<td>str_to_map(text[, delimiter1, delimiter2])</td>
+<td>Splits text int    o key-value pairs using two delimiters. Delimiter1 separates text into K-V pairs, and Delimiter2 splits each K-V pair. Default delimiters are &#8216;,&#8217; for delimiter1 and &#8216;=&#8217; for delimiter2.</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>substr(string|binary A, int  start)</td>
+<td>substring(string|binary A, int start)    Returns the substring or slice of the byte array of A starting from start position till the end of string A e.g. substr(&#8216;foobar&#8217;, 4) results in &#8216;bar&#8217; (see [<a class="reference external" href="http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_substr">http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_substr</a>])</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>substr(string|binary A, int  start, int len)</td>
+<td>substring(string|binary A, int start, int len)  Returns the substring or slice of the byte array of A starting from start position with length len e.g. substr(&#8216;foobar&#8217;, 4, 1) results in &#8216;b&#8217; (see [<a class="reference external" href="http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_substr">http://dev.mysql.com/doc/refman/5.0/en/string-functions.html#function_substr</a>])</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>translate(string input, string from, string to)</td>
+<td>Translates the input string by replacing the characters present in the from string with the corresponding characters in the to string. This is similar to the translate function in <a class="reference external" href="http://www.postgresql.org/docs/9.1/interactive/functions-string.html">PostgreSQL</a>. If any of the parameters to this UDF are NULL, the result is NULL as well (available as of Hive 0.10.0)</td>
+</tr>
+<tr class="row-odd"><td>string</td>
+<td>trim(string A)</td>
+<td>Returns the string resulting from trimming spaces from both ends of A e.g. trim(&#8216; foobar &#8216;) results in &#8216;foobar&#8217;</td>
+</tr>
+<tr class="row-even"><td>string</td>
+<td>upper(string A) ucase(string A)</td>
+<td>Returns the string resulting from converting all characters of A to upper case e.g. upper(&#8216;fOoBaR&#8217;) results in &#8216;FOOBAR&#8217;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="xpath-functions">
+<h3>XPath Functions<a class="headerlink" href="#xpath-functions" title="Permalink to this headline">¶</a></h3>
+<p>The xpath family of UDFs are wrappers around the Java XPath library javax.xml.xpath provided by the JDK. The library is based on the XPath 1.0 specification. Please refer to <a class="reference external" href="http://java.sun.com/javase/6/docs/api/javax/xml/xpath/package-summary.html">http://java.sun.com/javase/6/docs/api/javax/xml/xpath/package-summary.html</a> for detailed information on the Java XPath library.</p>
+<p>All functions follow the form: xpath_*(xml_string, xpath_expression_string). The XPath expression string is compiled and cached. It is reused if the expression in the next input row matches the previous. Otherwise, it is recompiled. So, the xml string is always parsed for every input row, but the xpath expression is precompiled and reused for the vast majority of use cases.</p>
+<p>Backward axes are supported. For example:</p>
+<div class="highlight-python"><pre>select xpath ('&lt;a&gt;&lt;b id="1"&gt;&lt;c/&gt;&lt;/b&gt;&lt;b id="2"&gt;&lt;c/&gt;&lt;/b&gt;&lt;/a&gt;','/descendant::c/ancestor::b/@id') from t1 limit 1 ;
+[1","2]</pre>
+</div>
+<p>Each function returns a specific Hive type given the XPath expression:</p>
+<ul class="simple">
+<li>xpath returns a Hive array of strings.</li>
+<li>xpath_string returns a string.</li>
+<li>xpath_boolean returns a boolean.</li>
+<li>xpath_short returns a short integer.</li>
+<li>xpath_int returns an integer.</li>
+<li>xpath_long returns a long integer.</li>
+<li>xpath_float returns a floating point number.</li>
+<li>xpath_double,xpath_number returns a double-precision floating point number (xpath_number is an alias for xpath_double).</li>
+</ul>
+<p>The UDFs are schema agnostic - no XML validation is performed. However, malformed xml (e.g., &lt;a&gt;&lt;b&gt;1&lt;/b&gt;&lt;/aa&gt;) will result in a runtime exception being thrown.</p>
+<p>Following are specifics on each xpath UDF variant.</p>
+<div class="section" id="xpath">
+<h4>xpath<a class="headerlink" href="#xpath" title="Permalink to this headline">¶</a></h4>
+<p>The xpath() function always returns a hive array of strings. If the expression results in a non-text value (e.g., another xml node) the function will return an empty array. There are 2 primary uses for this function: to get a list of node text values or to get a list of attribute values.</p>
+<p>Examples:</p>
+<p>Non-matching XPath expression:</p>
+<div class="highlight-python"><pre>select xpath('&lt;a&gt;&lt;b&gt;b1&lt;/b&gt;&lt;b&gt;b2&lt;/b&gt;&lt;/a&gt;','a/*') from src limit 1 ;
+[]</pre>
+</div>
+<p>Get a list of node text values:</p>
+<div class="highlight-python"><pre>select xpath('&lt;a&gt;&lt;b&gt;b1&lt;/b&gt;&lt;b&gt;b2&lt;/b&gt;&lt;/a&gt;','a/*/text()') from src limit 1 ;
+[b1","b2]</pre>
+</div>
+<p>Get a list of values for attribute &#8216;id&#8217;:</p>
+<div class="highlight-python"><pre>select xpath('&lt;a&gt;&lt;b id="foo"&gt;b1&lt;/b&gt;&lt;b id="bar"&gt;b2&lt;/b&gt;&lt;/a&gt;','//@id') from src limit 1 ;
+[foo","bar]</pre>
+</div>
+<p>Get a list of node texts for nodes where the &#8216;class&#8217; attribute equals &#8216;bb&#8217;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b class=&quot;bb&quot;&gt;b1&lt;/b&gt;&lt;b&gt;b2&lt;/b&gt;&lt;b&gt;b3&lt;/b&gt;&lt;c class=&quot;bb&quot;&gt;c1&lt;/c&gt;&lt;c&gt;c2&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/*[@class=&quot;bb&quot;]/text()&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="p">[</span><span class="n">b1</span><span class="s">&quot;,&quot;</span><span class="n">c1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="xpath-string">
+<h4>xpath_string<a class="headerlink" href="#xpath-string" title="Permalink to this headline">¶</a></h4>
+<p>The xpath_string() function returns the text of the first matching node.</p>
+<p>Get the text for node &#8216;a/b&#8217;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_string</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;bb&lt;/b&gt;&lt;c&gt;cc&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/b&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">bb</span>
+</pre></div>
+</div>
+<p>Get the text for node &#8216;a&#8217;. Because &#8216;a&#8217; has children nodes with text, the result is a composite of text from the children.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_string</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;bb&lt;/b&gt;&lt;c&gt;cc&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">bbcc</span>
+</pre></div>
+</div>
+<p>Non-matching expression returns an empty string:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_string</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;bb&lt;/b&gt;&lt;c&gt;cc&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/d&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>Gets the text of the first node that matches &#8216;//b&#8217;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_string</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;b1&lt;/b&gt;&lt;b&gt;b2&lt;/b&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;//b&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">b1</span>
+</pre></div>
+</div>
+<p>Gets the second matching node:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_string</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;b1&lt;/b&gt;&lt;b&gt;b2&lt;/b&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/b[2]&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">b2</span>
+</pre></div>
+</div>
+<p>Gets the text from the first node that has an attribute &#8216;id&#8217; with value &#8216;b_2&#8217;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_string</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;b1&lt;/b&gt;&lt;b id=&quot;b_2&quot;&gt;b2&lt;/b&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/b[@id=&quot;b_2&quot;]&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">b2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="xpath-boolean">
+<h4>xpath_boolean<a class="headerlink" href="#xpath-boolean" title="Permalink to this headline">¶</a></h4>
+<p>Returns true if the XPath expression evaluates to true, or if a matching node is found.</p>
+<p>Match found:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_boolean</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;b&lt;/b&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/b&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">true</span>
+</pre></div>
+</div>
+<p>No match found:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_boolean</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;b&lt;/b&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/c&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">false</span>
+</pre></div>
+</div>
+<p>Match found:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_boolean</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;b&lt;/b&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/b = &quot;b&quot;&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">true</span>
+</pre></div>
+</div>
+<p>No match found:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_boolean</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;10&lt;/b&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/b &lt; 10&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">false</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="xpath-short-xpath-int-xpath-long">
+<h4>xpath_short, xpath_int, xpath_long<a class="headerlink" href="#xpath-short-xpath-int-xpath-long" title="Permalink to this headline">¶</a></h4>
+<p>These functions return an integer numeric value, or the value zero if no match is found, or a match is found but the value is non-numeric.
+Mathematical operations are supported. In cases where the value overflows the return type, then the maximum value for the type is returned.</p>
+<p>No match:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_int</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;b&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a = 10&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mi">0</span>
+</pre></div>
+</div>
+<p>Non-numeric match:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_int</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;this is not a number&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mi">0</span>
+
+<span class="n">SELECT</span> <span class="n">xpath_int</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;this 2 is not a number&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mi">0</span>
+</pre></div>
+</div>
+<p>Adding values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_int</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b class=&quot;odd&quot;&gt;1&lt;/b&gt;&lt;b class=&quot;even&quot;&gt;2&lt;/b&gt;&lt;b class=&quot;odd&quot;&gt;4&lt;/b&gt;&lt;c&gt;8&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;sum(a/*)&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mi">15</span>
+
+<span class="n">SELECT</span> <span class="n">xpath_int</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b class=&quot;odd&quot;&gt;1&lt;/b&gt;&lt;b class=&quot;even&quot;&gt;2&lt;/b&gt;&lt;b class=&quot;odd&quot;&gt;4&lt;/b&gt;&lt;c&gt;8&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;sum(a/b)&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mi">7</span>
+
+<span class="n">SELECT</span> <span class="n">xpath_int</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b class=&quot;odd&quot;&gt;1&lt;/b&gt;&lt;b class=&quot;even&quot;&gt;2&lt;/b&gt;&lt;b class=&quot;odd&quot;&gt;4&lt;/b&gt;&lt;c&gt;8&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;sum(a/b[@class=&quot;odd&quot;])&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mi">5</span>
+</pre></div>
+</div>
+<p>Overflow:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_int</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;2000000000&lt;/b&gt;&lt;c&gt;40000000000&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/b * a/c&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mi">2147483647</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="xpath-float-xpath-double-xpath-number">
+<h4>xpath_float, xpath_double, xpath_number<a class="headerlink" href="#xpath-float-xpath-double-xpath-number" title="Permalink to this headline">¶</a></h4>
+<p>Similar to xpath_short, xpath_int and xpath_long but with floating point semantics. Non-matches result in zero. However,
+non-numeric matches result in NaN. Note that xpath_number() is an alias for xpath_double().</p>
+<p>No match:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_double</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;b&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a = 10&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mf">0.0</span>
+</pre></div>
+</div>
+<p>Non-numeric match:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_double</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;this is not a number&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="n">NaN</span>
+</pre></div>
+</div>
+<p>A very large number:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">xpath_double</span> <span class="p">(</span><span class="s">&#39;&lt;a&gt;&lt;b&gt;2000000000&lt;/b&gt;&lt;c&gt;40000000000&lt;/c&gt;&lt;/a&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;a/b * a/c&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src</span> <span class="n">LIMIT</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="mf">8.0E19</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="json-functions">
+<h3>JSON Functions<a class="headerlink" href="#json-functions" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="get-json-object">
+<h4>get_json_object<a class="headerlink" href="#get-json-object" title="Permalink to this headline">¶</a></h4>
+<p>A limited version of JSONPath is supported:</p>
+<ul class="simple">
+<li>$ : Root object</li>
+<li>. : Child operator</li>
+<li>[] : Subscript operator for array</li>
+<li>* : Wildcard for []</li>
+</ul>
+<p>Syntax not supported that&#8217;s worth noticing:</p>
+<ul class="simple">
+<li>: Zero length string as key</li>
+<li>.. : Recursive descent</li>
+<li>&#64; : Current object/element</li>
+<li>() : Script expression</li>
+<li>?() : Filter (script) expression.</li>
+<li>[,] : Union operator</li>
+<li>[start:end.step] : array slice operator</li>
+</ul>
+<p>Example: src_json table is a single column (json), single row table:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">+----+</span>
+                               <span class="n">json</span>
+<span class="o">+----+</span>
+<span class="p">{</span><span class="s">&quot;store&quot;</span><span class="p">:</span>
+  <span class="p">{</span><span class="s">&quot;fruit&quot;</span><span class="p">:</span>\<span class="p">[{</span><span class="s">&quot;weight&quot;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="s">&quot;apple&quot;</span><span class="p">},{</span><span class="s">&quot;weight&quot;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="s">&quot;pear&quot;</span><span class="p">}],</span>
+   <span class="s">&quot;bicycle&quot;</span><span class="p">:{</span><span class="s">&quot;price&quot;</span><span class="p">:</span><span class="mf">19.95</span><span class="p">,</span><span class="s">&quot;color&quot;</span><span class="p">:</span><span class="s">&quot;red&quot;</span><span class="p">}</span>
+  <span class="p">},</span>
+ <span class="s">&quot;email&quot;</span><span class="p">:</span><span class="s">&quot;amy@only_for_json_udf_test.net&quot;</span><span class="p">,</span>
+ <span class="s">&quot;owner&quot;</span><span class="p">:</span><span class="s">&quot;amy&quot;</span>
+<span class="p">}</span>
+<span class="o">+----+</span>
+</pre></div>
+</div>
+<p>The fields of the json object can be extracted using these queries:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">hive</span><span class="o">&gt;</span> <span class="n">SELECT</span> <span class="n">get_json_object</span><span class="p">(</span><span class="n">src_json</span><span class="o">.</span><span class="n">json</span><span class="p">,</span> <span class="s">&#39;$.owner&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src_json</span><span class="p">;</span>
+<span class="n">amy</span>
+
+<span class="n">hive</span><span class="o">&gt;</span> <span class="n">SELECT</span> <span class="n">get_json_object</span><span class="p">(</span><span class="n">src_json</span><span class="o">.</span><span class="n">json</span><span class="p">,</span> <span class="s">&#39;$.store.fruit\[0]&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src_json</span><span class="p">;</span>
+<span class="p">{</span><span class="s">&quot;weight&quot;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="s">&quot;apple&quot;</span><span class="p">}</span>
+
+<span class="n">hive</span><span class="o">&gt;</span> <span class="n">SELECT</span> <span class="n">get_json_object</span><span class="p">(</span><span class="n">src_json</span><span class="o">.</span><span class="n">json</span><span class="p">,</span> <span class="s">&#39;$.non_exist_key&#39;</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">src_json</span><span class="p">;</span>
+<span class="n">NULL</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="misc-functions">
+<h3>Misc. Functions<a class="headerlink" href="#misc-functions" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="29%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>varies</td>
+<td>java_method(class, method[, arg1[, arg2..]])</td>
+<td>Synonym for reflect (as of Hive 0.9.0)</td>
+</tr>
+<tr class="row-odd"><td>varies</td>
+<td>reflect(class, method[, arg1[, arg2..]])</td>
+<td>Use this UDF to call Java methods by matching the argument signature (uses reflection). (as of Hive 0.7.0)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="built-in-aggregate-functions-udaf">
+<h2>Built-in Aggregate Functions (UDAF)<a class="headerlink" href="#built-in-aggregate-functions-udaf" title="Permalink to this headline">¶</a></h2>
+<p>The following are built-in aggregate functions are supported in Hive:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="6%" />
+<col width="13%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bigint</td>
+<td>count(*), count(expr), count(DISTINCT expr[, <a href="#id7"><span class="problematic" id="id8">expr_</span></a>.])</td>
+<td>count(*) - Returns the total number of retrieved rows, including rows containing NULL values; count(expr) - Returns the number of rows for which the supplied expression is non-NULL; count(DISTINCT expr[, expr]) - Returns the number of rows for which the supplied expression(s) are unique and non-NULL.</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>sum(col), sum(DISTINCT col)</td>
+<td>Returns the sum of the elements in the group or the sum of the distinct values of the column in the group</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>avg(col), avg(DISTINCT col)</td>
+<td>Returns the average of the elements in the group or the average of the distinct values of the column in the group</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>min(col)</td>
+<td>Returns the minimum of the column in the group</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>max(col)</td>
+<td>Returns the maximum value of the column in the group</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>variance(col), var_pop(col)</td>
+<td>Returns the variance of a numeric column in the group</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>var_samp(col)</td>
+<td>Returns the unbiased sample variance of a numeric column in the group</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>stddev_pop(col)</td>
+<td>Returns the standard deviation of a numeric column in the group</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>stddev_samp(col)</td>
+<td>Returns the unbiased sample standard deviation of a numeric column in the group</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>covar_pop(col1, col2)</td>
+<td>Returns the population covariance of a pair of numeric columns in the group</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>covar_samp(col1, col2)</td>
+<td>Returns the sample covariance of a pair of a numeric columns in the group</td>
+</tr>
+<tr class="row-odd"><td>double</td>
+<td>corr(col1, col2)</td>
+<td>Returns the Pearson coefficient of correlation of a pair of a numeric columns in the group</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>percentile(BIGINT col, p)</td>
+<td>Returns the exact pth percentile of a column in the group (does not work with floating point types). p must be between 0 and 1. NOTE: A true percentile can only be computed for integer values. Use PERCENTILE_APPROX if your input is non-integral.</td>
+</tr>
+<tr class="row-odd"><td>array&lt;double&gt;</td>
+<td>percentile(BIGINT col, array(p1 [, p2]...))</td>
+<td>Returns the exact percentiles p1, p2, ... of a column in the group (does not work with floating point types). pi must be between 0 and 1. NOTE: A true percentile can only be computed for integer values. Use PERCENTILE_APPROX if your input is non-integral.</td>
+</tr>
+<tr class="row-even"><td>double</td>
+<td>percentile_approx(DOUBLE col, p [, B])</td>
+<td>Returns an approximate pth percentile of a numeric column (including floating point types) in the group. The B parameter controls approximation accuracy at the cost of memory. Higher values yield better approximations, and the default is 10,000. When the number of distinct values in col is smaller than B, this gives an exact percentile value.</td>
+</tr>
+<tr class="row-odd"><td>array&lt;double&gt;</td>
+<td>percentile_approx(DOUBLE col, array(p1 [, p2]...) [, B])</td>
+<td>Same as above, but accepts and returns an array of percentile values instead of a single one.</td>
+</tr>
+<tr class="row-even"><td>array&lt;struct {&#8216;x&#8217;,&#8217;y&#8217;}&gt;</td>
+<td>histogram_numeric(col, b)</td>
+<td>Computes a histogram of a numeric column in the group using b non-uniformly spaced bins. The output is an array of size b of double-valued (x,y) coordinates that represent the bin centers and heights</td>
+</tr>
+<tr class="row-odd"><td>array</td>
+<td>collect_set(col)</td>
+<td>Returns a set of objects with duplicate elements eliminated</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="built-in-table-generating-functions-udtf">
+<span id="udtf"></span><h2>Built-in Table-Generating Functions (UDTF)<a class="headerlink" href="#built-in-table-generating-functions-udtf" title="Permalink to this headline">¶</a></h2>
+<p>Normal user-defined functions, such as concat(), take in a single input row and output a single output row. In contrast, table-generating functions transform a single input row to multiple output rows.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name (Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>inline(ARRAY&lt;STRUCT[,STRUCT]&gt;)</td>
+<td>Explodes an array of structs into a table (as of Hive 0.10)</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="explode">
+<span id="id2"></span><h3>explode<a class="headerlink" href="#explode" title="Permalink to this headline">¶</a></h3>
+<p>explode() takes in an array as an input and outputs the elements of the array as separate rows. UDTF&#8217;s can be used in the SELECT expression list and as a part of LATERAL VIEW.</p>
+<p>An example use of explode() in the SELECT expression list is as follows:</p>
+<p>Consider a table named myTable that has a single column (myCol) and two rows:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Array&lt;int&gt; myCol</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>[1,2,3]</td>
+</tr>
+<tr class="row-odd"><td>[4,5,6]</td>
+</tr>
+</tbody>
+</table>
+<p>Then running the query:</p>
+<p>SELECT explode(myCol) AS myNewCol FROM myTable;</p>
+<p>Will produce:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">(int) myNewCol</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+</tr>
+<tr class="row-even"><td>3</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+</tr>
+<tr class="row-even"><td>5</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+</tr>
+</tbody>
+</table>
+<p>Using the syntax &#8220;SELECT udtf(col) AS colAlias...&#8221; has a few limitations:</p>
+<ul class="simple">
+<li>No other expressions are allowed in SELECT<ul>
+<li>SELECT pageid, explode(adid_list) AS myCol... is not supported</li>
+</ul>
+</li>
+<li>UDTF&#8217;s can&#8217;t be nested<ul>
+<li>SELECT explode(explode(adid_list)) AS myCol... is not supported</li>
+</ul>
+</li>
+<li>GROUP BY / CLUSTER BY / DISTRIBUTE BY / SORT BY is not supported<ul>
+<li>SELECT explode(adid_list) AS myCol ... GROUP BY myCol is not supported</li>
+</ul>
+</li>
+</ul>
+<p>Please see <a class="reference internal" href="lateralview.html"><em>LanguageManual LateralView</em></a> for an alternative syntax that does not have these limitations.</p>
+<p>The following are built-in table-generating functions are supported in Hive:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="25%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Return Type</th>
+<th class="head">Name(Signature)</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Array Type</td>
+<td>explode(array&lt;TYPE&gt; a)
+stack(INT n, v_1, v_2, ..., v_k)</td>
+<td>For each element in a, explode() generates a row containing that element
+Breaks up v_1, ..., v_k into n rows. Each row will have k/n columns. n must be constant.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="json-tuple">
+<h4>json_tuple<a class="headerlink" href="#json-tuple" title="Permalink to this headline">¶</a></h4>
+<p>A new json_tuple() UDTF is introduced in hive 0.7. It takes a set of names (keys) and a JSON string, and returns a tuple of values using one function. This is much more efficient than calling GET_JSON_OBJECT to retrieve more than one key from a single JSON string. In any case where a single JSON string would be parsed more than once, your query will be more efficient if you parse it once, which is what JSON_TUPLE is for. As JSON_TUPLE is a UDTF, you will need to use the LATERAL VIEW syntax in order to achieve the same goal.</p>
+<p>For example,</p>
+<div class="highlight-python"><pre>select a.timestamp, get_json_object(a.appevents, '$.eventid'), get_json_object(a.appenvets, '$.eventname') from log a;</pre>
+</div>
+<p>should be changed to</p>
+<div class="highlight-python"><pre>select a.timestamp, b.*
+from log a lateral view json_tuple(a.appevent, 'eventid', 'eventname') b as f1, f2;</pre>
+</div>
+</div>
+<div class="section" id="parse-url-tuple">
+<h4>parse_url_tuple<a class="headerlink" href="#parse-url-tuple" title="Permalink to this headline">¶</a></h4>
+<p>The parse_url_tuple() UDTF is similar to parse_url(), but can extract multiple parts of a given URL, returning the data in a tuple. Values for a particular key in QUERY can be extracted by appending a colon and the key to the partToExtract argument, e.g. parse_url_tuple(&#8216;<a class="reference external" href="http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1">http://facebook.com/path1/p.php?k1=v1&amp;k2=v2#Ref1</a>&#8216;, &#8216;QUERY:k1&#8217;, &#8216;QUERY:k2&#8217;) returns a tuple with values of &#8216;v1&#8217;,&#8217;v2&#8217;. This is more efficient than calling parse_url() multiple times. All the input parameters and output column types are string.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">b</span><span class="o">.*</span>
+<span class="n">FROM</span> <span class="n">src</span> <span class="n">LATERAL</span> <span class="n">VIEW</span> <span class="n">parse_url_tuple</span><span class="p">(</span><span class="n">fullurl</span><span class="p">,</span> <span class="s">&#39;HOST&#39;</span><span class="p">,</span> <span class="s">&#39;PATH&#39;</span><span class="p">,</span> <span class="s">&#39;QUERY&#39;</span><span class="p">,</span> <span class="s">&#39;QUERY:id&#39;</span><span class="p">)</span> <span class="n">b</span> <span class="k">as</span> <span class="n">host</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">query_id</span> <span class="n">LIMIT</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="grouping-and-sorting-on-f-column">
+<h2>GROUPing and SORTing on f(column)<a class="headerlink" href="#grouping-and-sorting-on-f-column" title="Permalink to this headline">¶</a></h2>
+<p>A typical OLAP pattern is that you have a timestamp column and you want to group by daily or other less granular date windows than by second. So you might want to select concat(year(dt),month(dt)) and then group on that concat(). But if you attempt to GROUP BY or SORT BY a column on which you&#8217;ve applied a function and alias, like this:</p>
+<div class="highlight-python"><pre>select f(col) as fc, count(*) from table_name group by fc;</pre>
+</div>
+<p>You will get an error:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">FAILED</span><span class="p">:</span> <span class="n">Error</span> <span class="ow">in</span> <span class="n">semantic</span> <span class="n">analysis</span><span class="p">:</span> <span class="n">line</span> <span class="mi">1</span><span class="p">:</span><span class="mi">69</span> <span class="n">Invalid</span> <span class="n">Table</span> <span class="n">Alias</span> <span class="ow">or</span> <span class="n">Column</span> <span class="n">Reference</span> <span class="n">fc</span>
+</pre></div>
+</div>
+<p>Because you are not able to GROUP BY or SORT BY a column alias on which a function has been applied. There are two workarounds. First, you can reformulate this query with subqueries, which is somewhat complicated:</p>
+<div class="highlight-python"><pre>select sq.fc,col1,col2,...,colN,count(*) from
+  (select f(col) as fc,col1,col2,...,colN from table_name) sq
+ group by sq.fc,col1,col2,...,colN;</pre>
+</div>
+<p>Or you can make sure not to use a column alias, which is simpler:</p>
+<div class="highlight-python"><pre>select f(col) as fc, count(*) from table_name group by f(col);</pre>
+</div>
+<p>Contact Tim Ellis (tellis) at RiotGames dot com if you would like to discuss this in further detail.</p>
+</div>
+<div class="section" id="udf-internals">
+<h2>UDF internals<a class="headerlink" href="#udf-internals" title="Permalink to this headline">¶</a></h2>
+<p>The context of a UDF&#8217;s evaluate method is one row at a time. A simple invocation of a UDF like</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">length</span><span class="p">(</span><span class="n">string_col</span><span class="p">)</span> <span class="n">FROM</span> <span class="n">table_name</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>would evaluate the length of each of the string_col&#8217;s values in the map portion of the job. The side effect of the UDF being evaluated on the map-side is that you can&#8217;t control the order of rows which get sent to the mapper. It is the same order in which the file split sent to the mapper gets deserialized. Any reduce side operation (e.g. SORT BY, ORDER BY, regular JOIN, etc.) would apply to the UDFs output as if it is just another column of the table. This is fine since the context of the UDF&#8217;s evaluate method is meant to be one row at a time.</p>
+<p>If you would like to control which rows get sent to the same UDF (and possibly in what order), you will have the urge to make the UDF evaluate during the reduce phase. This is achievable by making use of <a class="reference internal" href="select.html#cluster-by"><em>DISTRIBUTE BY , DISTRIBUTE BY + SORT BY, CLUSTER BY</em></a>. An example query would be:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SELECT</span> <span class="n">reducer_udf</span><span class="p">(</span><span class="n">my_col</span><span class="p">,</span> <span class="n">distribute_col</span><span class="p">,</span> <span class="n">sort_col</span><span class="p">)</span> <span class="n">FROM</span>
+<span class="p">(</span><span class="n">SELECT</span> <span class="n">my_col</span><span class="p">,</span> <span class="n">distribute_col</span><span class="p">,</span> <span class="n">sort_col</span> <span class="n">FROM</span> <span class="n">table_name</span> <span class="n">DISTRIBUTE</span> <span class="n">BY</span> <span class="n">distribute_col</span> <span class="n">SORT</span> <span class="n">BY</span> <span class="n">distribute_col</span><span class="p">,</span> <span class="n">sort_col</span><span class="p">)</span> <span class="n">t</span>
+</pre></div>
+</div>
+<p>However, one could argue that the very premise of your requirement to control the set of rows sent to the same UDF is to do aggregation in that UDF. In such a case, using a User Defined Aggregate Function (UDAF) is a better choice. You can read more about writing a UDAF <a class="reference external" href="https://cwiki.apache.org/confluence/display/Hive/GenericUDAFCaseStudy">here</a>. Alternatively, you can user a custom reduce script to accomplish the same using <a class="reference external" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Transform">Hive&#8217;s Transform functionality</a>. Both of these options would do aggregations on the reduce side.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Hive Operators and Functions</a><ul>
+<li><a class="reference internal" href="#built-in-operators">Built-in Operators</a><ul>
+<li><a class="reference internal" href="#relational-operators">Relational Operators</a></li>
+<li><a class="reference internal" href="#arithmetic-operators">Arithmetic Operators</a></li>
+<li><a class="reference internal" href="#logical-operators">Logical Operators</a></li>
+<li><a class="reference internal" href="#complex-type-constructors">Complex Type Constructors</a></li>
+<li><a class="reference internal" href="#operators-on-complex-types">Operators on Complex Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#built-in-functions">Built-in Functions</a><ul>
+<li><a class="reference internal" href="#mathematical-functions">Mathematical Functions</a></li>
+<li><a class="reference internal" href="#collection-functions">Collection Functions</a></li>
+<li><a class="reference internal" href="#type-conversion-functions">Type Conversion Functions</a></li>
+<li><a class="reference internal" href="#date-functions">Date Functions</a></li>
+<li><a class="reference internal" href="#conditional-functions">Conditional Functions</a></li>
+<li><a class="reference internal" href="#string-functions">String Functions</a></li>
+<li><a class="reference internal" href="#xpath-functions">XPath Functions</a></li>
+<li><a class="reference internal" href="#json-functions">JSON Functions</a></li>
+<li><a class="reference internal" href="#misc-functions">Misc. Functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#built-in-aggregate-functions-udaf">Built-in Aggregate Functions (UDAF)</a></li>
+<li><a class="reference internal" href="#built-in-table-generating-functions-udtf">Built-in Table-Generating Functions (UDTF)</a><ul>
+<li><a class="reference internal" href="#explode">explode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#grouping-and-sorting-on-f-column">GROUPing and SORTing on f(column)</a></li>
+<li><a class="reference internal" href="#udf-internals">UDF internals</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="select.html"
+                        title="previous chapter">Hive Select Statement</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="explain.html"
+                        title="next chapter">Hive Explain Statement</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="explain.html" title="Hive Explain Statement"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="select.html" title="Hive Select Statement"
+             >previous</a> |</li>
+        <li><a href="../index.html">NDAP  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Hive Query Language Reference Manual</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, joe.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

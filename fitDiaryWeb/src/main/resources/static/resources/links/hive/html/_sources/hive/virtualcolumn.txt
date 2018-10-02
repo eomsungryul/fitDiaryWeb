@@ -1,0 +1,22 @@
+Hive Virtual Columns
+============================
+
+Hive 0.8.0 provides support for two virtual columns:
+
+One is INPUT__FILE__NAME, which is the input file's name for a mapper task.
+
+the other is BLOCK__OFFSET__INSIDE__FILE, which is the current global file position.
+
+For block compressed file, it is the current block's file offset, which is the current block's first byte's file offset.
+
+===============
+Simple Examples
+===============
+
+::
+
+    select INPUT__FILE__NAME, key, BLOCK__OFFSET__INSIDE__FILE from src;
+
+    select key, count(INPUT__FILE__NAME) from src group by key order by key;
+
+    select * from src where BLOCK__OFFSET__INSIDE__FILE > 12000 order by key;
