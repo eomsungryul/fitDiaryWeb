@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dwebss.fitDiary.dao.UserHealthMapper">
+  <resultMap id="BaseResultMap" type="kr.co.dwebss.fitDiary.model.UserHealth">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="USER_HEALTH_ID" jdbcType="INTEGER" property="userHealthId" />
+    <result column="USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="DAY_KILOCALORIE" jdbcType="DATE" property="dayKilocalorie" />
+    <result column="WEIGHT" jdbcType="DECIMAL" property="weight" />
+    <result column="FAT" jdbcType="DECIMAL" property="fat" />
+    <result column="MUSCLE" jdbcType="DECIMAL" property="muscle" />
+    <result column="REGIST_D" jdbcType="DATE" property="registD" />
+  </resultMap>
+</mapper>

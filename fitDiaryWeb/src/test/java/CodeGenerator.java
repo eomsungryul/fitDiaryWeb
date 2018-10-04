@@ -5,7 +5,7 @@ import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.*;
 import org.mybatis.generator.internal.DefaultShellCallback;
 
-import static kr.co.dwebss.child.core.ProjectConstant.*;
+import static kr.co.dwebss.fitDiary.core.ProjectConstant.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -38,10 +38,14 @@ public class CodeGenerator {
 
     public static void main(String[] args) {
     	
-    	genCode("common_code");
-    	genCode("user");
-    	genCode("common_code_category");
-    	genCode("user_gym");
+//    	genCode("common_code");
+//    	genCode("user");
+//    	genCode("common_code_category");
+//    	genCode("user_gym");
+    	genCode("user_food");
+    	genCode("user_food_detail");
+    	genCode("user_health");
+    	genCode("food");
     	
         //genCodeByCustomModelName( "테이블 이름 입력", "사용자 정의 모델 이름 입력");
     }

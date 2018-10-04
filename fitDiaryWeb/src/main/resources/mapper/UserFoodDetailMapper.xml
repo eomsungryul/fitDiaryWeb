@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dwebss.fitDiary.dao.UserFoodDetailMapper">
+  <resultMap id="BaseResultMap" type="kr.co.dwebss.fitDiary.model.UserFoodDetail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="USER_FOOD_DETAIL_ID" jdbcType="INTEGER" property="userFoodDetailId" />
+    <result column="USER_FOOD_ID" jdbcType="INTEGER" property="userFoodId" />
+    <result column="FOOD_ID" jdbcType="INTEGER" property="foodId" />
+    <result column="AMOUNT_DISH" jdbcType="DECIMAL" property="amountDish" />
+  </resultMap>
+</mapper>

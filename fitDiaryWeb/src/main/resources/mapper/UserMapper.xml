@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.co.dwebss.child.dao.UserMapper">
-  <resultMap id="userVo" type="kr.co.dwebss.child.model.User">
+<mapper namespace="kr.co.dwebss.fitDiary.dao.UserMapper">
+  <resultMap id="userVo" type="kr.co.dwebss.fitDiary.model.User">
     <!--
       WARNING - @mbg.generated
     -->
@@ -43,7 +43,7 @@
 		</if>	
 	</sql>
     
-    <select id="selectList" parameterType="kr.co.dwebss.child.model.User" resultType="hashMap">
+    <select id="selectList" parameterType="kr.co.dwebss.fitDiary.model.User" resultType="hashMap">
     	SELECT A.* FROM (
 			SELECT 
 				@rownum := @rownum + 1 as rownum,
@@ -58,20 +58,20 @@
 				USER_SEX , 
 				USER_EMAIL_GMAIL
 			FROM USER, (select @rownum :=0) r
-			<include refid="kr.co.dwebss.child.dao.UserMapper.WhereQuery" />
+			<include refid="kr.co.dwebss.fitDiary.dao.UserMapper.WhereQuery" />
 			ORDER BY USER_ID DESC
 		) A
 		where A.rownum LIMIT #{firstIndex}, #{recordCountPerPage}
     </select>
     
-    <select id="selectCnt" parameterType="kr.co.dwebss.child.model.User" resultType="INTEGER">
+    <select id="selectCnt" parameterType="kr.co.dwebss.fitDiary.model.User" resultType="INTEGER">
 		SELECT 
 			COUNT(*)
 		FROM USER
-		<include refid="kr.co.dwebss.child.dao.UserMapper.WhereQuery" />
+		<include refid="kr.co.dwebss.fitDiary.dao.UserMapper.WhereQuery" />
     </select>
     
-    <select id="selectUser" parameterType="kr.co.dwebss.child.model.User" resultMap="userVo">
+    <select id="selectUser" parameterType="kr.co.dwebss.fitDiary.model.User" resultMap="userVo">
     	SELECT 
 			USER_ID ,
 			USER_LOGIN_ID , 
@@ -84,7 +84,7 @@
 			USER_SEX , 
 			USER_EMAIL_GMAIL
 		FROM USER
-		<include refid="kr.co.dwebss.child.dao.UserMapper.SelectWhereQuery" />
+		<include refid="kr.co.dwebss.fitDiary.dao.UserMapper.SelectWhereQuery" />
     </select>
   
   

@@ -7,7 +7,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import kr.co.dwebss.child.Application;
+import kr.co.dwebss.fitDiary.Application;
 
 /**
  * 单元测试继承该类即可
