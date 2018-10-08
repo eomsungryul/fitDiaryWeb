@@ -14,13 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.dwebss.fitDiary.model.Food;
 import kr.co.dwebss.fitDiary.service.FoodService;
+import kr.co.dwebss.fitDiary.service.UserFoodService;
 
 /**
 * Created by 엄성렬 on 2018/10/04.
 */
 @RestController
 public class FoodController {
-	
 	
     @Resource
     private FoodService foodService;
@@ -40,14 +40,13 @@ public class FoodController {
 			ModelMap model) throws Exception {
 		
 		food.setFirstIndex((food.getPageIndex() - 1 ) * food.getPageUnit());
-		
+		System.out.println("food : "+food.getSearchKeyword());
 		List<HashMap> resultList = foodService.selectList(food);
 		
 		int totalCnt=foodService.selectListCnt(food);
 		
 		food.setTotalRecordCount(totalCnt);
 		food.setTotalPage();
-		
 
 		ModelAndView mav = new ModelAndView("admin/food/list");
 		mav.addObject("resultList", resultList);
@@ -146,4 +145,6 @@ public class FoodController {
 		foodService.deleteById(food.getFoodId());
 		return mav;
 	}
+	
+	
 }

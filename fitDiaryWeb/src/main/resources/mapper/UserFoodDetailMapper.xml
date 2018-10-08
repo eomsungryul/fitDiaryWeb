@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.dwebss.fitDiary.dao.UserFoodDetailMapper">
-  <resultMap id="BaseResultMap" type="kr.co.dwebss.fitDiary.model.UserFoodDetail">
+  <resultMap id="userFoodDetailVo" type="kr.co.dwebss.fitDiary.model.UserFoodDetail">
     <!--
       WARNING - @mbg.generated
     -->
@@ -9,5 +9,32 @@
     <result column="USER_FOOD_ID" jdbcType="INTEGER" property="userFoodId" />
     <result column="FOOD_ID" jdbcType="INTEGER" property="foodId" />
     <result column="AMOUNT_DISH" jdbcType="DECIMAL" property="amountDish" />
+    <result column="FOOD_NM" jdbcType="VARCHAR" property="foodNm" />
+    <result column="SERVING_SIZE" jdbcType="INTEGER" property="servingSize" />
+    <result column="KILOCALORIE" jdbcType="DECIMAL" property="kilocalorie" />
   </resultMap>
+  
+  <delete id="deleteUserFoodDetail" parameterType="INTEGER">
+		DELETE FROM USER_FOOD_DETAIL 
+		WHERE 1=1 
+		AND USER_FOOD_ID = #{userFoodId}
+	</delete>
+	
+	
+    <select id="selectUserFoodDetail" parameterType="INTEGER" resultMap="userFoodDetailVo">
+    	SELECT 
+			ufd.USER_FOOD_DETAIL_ID ,
+			ufd.USER_FOOD_ID , 
+			ufd.FOOD_ID , 
+			ufd.AMOUNT_DISH,
+	        f.FOOD_NM,
+	        f.SERVING_SIZE,
+	        ufd.AMOUNT_DISH*f.KILOCALORIE KILOCALORIE
+		FROM USER_FOOD_DETAIL ufd, food f
+		WHERE 1=1 
+    	AND ufd.FOOD_ID = f.FOOD_ID
+		AND USER_FOOD_ID = #{userFoodId}
+    </select>
+	
+	
 </mapper>

@@ -42,7 +42,7 @@
 		<!-- aside end -->	    
 		
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
-         <h2 class="mt-3">공통 코드 등록</h2>
+         <h2 class="mt-3">사용자 음식 칼로리 등록</h2>
           <div class="row mt-3">
 	        <div class="col-md-8 order-md-1">
 	        
@@ -51,40 +51,47 @@
        		<input type="hidden" name="searchKeyword" id="searchKeyword" value="${ searchVO.searchKeyword}" />
        		<input type="hidden" name="pageIndex" id="pageIndex" value="${ searchVO.pageIndex }"/>  
       		<c:if test="${flag=='U'}">
-	       		<input type="hidden" name="code" id="code" value="${ result.code }"/>
+	       		<input type="hidden" name="code" id="code" value="${ result.userFoodId }"/>
       		</c:if>
-      		<c:if test="${flag=='I'}">
-				  <div class="form-group row">
-				    <label for="codeCategory" class="col-sm-2 col-form-label">코드</label>
-				    <div class="col-sm-10">
-				      <input type="text" class="form-control" id="code" name="code" placeholder="" value="${result.code }" required="" maxlength="128">
-				    </div>
-				  </div>
-      		</c:if>
-				  <div class="form-group row">
-				    <label for="codeCategory" class="col-sm-2 col-form-label">코드카테고리</label>
-				    <div class="col-sm-10">
-				      <input type="text" class="form-control" id="codeCategoryId" name="codeCategoryId" placeholder="" value="${result.codeCategoryId }" required="" maxlength="128">
-				    </div>
-				  </div>
-				  <div class="form-group row">
-				    <label for="codeValue" class="col-sm-2 col-form-label">코드명</label>
-				    <div class="col-sm-10">
-				      <input type="text" class="form-control" id="codeNm" name="codeNm" placeholder="" value="${result.codeNm }" required="" maxlength="128">
-				    </div>
-				  </div>
-				  <div class="form-group row">
-				    <label for="codeValue" class="col-sm-2 col-form-label">코드영문명</label>
-				    <div class="col-sm-10">
-				      <input type="text" class="form-control" id="codeEngNm" name="codeEngNm" placeholder="" value="${result.codeEngNm }" required="" maxlength="128">
-				    </div>
-				  </div>
+<%--       		<c:if test="${flag=='I'}"> --%>
 <!-- 				  <div class="form-group row"> -->
-<!-- 				    <label for="codeDesc" class="col-sm-2 col-form-label">코드영문명</label> -->
+<!-- 				    <label for="codeCategory" class="col-sm-2 col-form-label">코드</label> -->
 <!-- 				    <div class="col-sm-10"> -->
-<%-- 				 	   <textarea class="form-control" id="codeNmEng" name="codeNmEng" rows="3" data-parsley-length="[0, 2000]">${result.codeNmEng }</textarea> --%>
+<%-- 				      <input type="text" class="form-control" id="code" name="code" placeholder="" value="${result.userFoodId }" required="" maxlength="128"> --%>
 <!-- 				    </div> -->
 <!-- 				  </div> -->
+<%--       		</c:if> --%>
+				  <div class="row">
+		            <div class="col-md-12 mb-3">
+					    <label for="codeCategory" class="">음식사진</label>
+					    <div class="col-md-12">
+							<img src="${result.fileNm }" class="col-md-12">	
+					    </div>
+		             </div>
+				  </div>
+				  
+				  <div class="row">
+		             <div class="col-md-4 mb-3">
+		               <label for="country">음식명</label>
+		               <input type="text" class="form-control" id="zip" placeholder="" required="">
+			           <button type="submit" class="btn btn-primary" onclick="fnFoodSearch(); return false;">검색</button>
+		             </div>
+		             <div class="col-md-4 mb-3">
+		               <label for="state">인분</label>
+<!-- 		               <select class="custom-select d-block w-100" id="state" required=""> -->
+<!-- 		                 <option value="">Choose...</option> -->
+<!-- 		                 <option>California</option> -->
+<!-- 		               </select> -->
+		               <input type="text" class="form-control" id="zip" placeholder="" required="">
+		             </div>
+		             <div class="col-md-4 mb-3">
+		               <label for="zip">칼로리</label>
+		               <input type="text" class="form-control" id="zip" placeholder="" required="">
+		             </div>
+		           </div>
+
+
+
 				  <div class="float-right">
 				    <div>
               		<c:if test="${flag=='U'}">
@@ -166,7 +173,21 @@
 		document.registFrm.action = contextPath + "/admin/code/delete";
 		document.registFrm.submit();
 	}
+	
+	/**
+	 *  게시판 삭제
+	 */
+	function fnFoodSearch(){
+		var popUrl = contextPath + "/admin/food/list";	//팝업창에 출력될 페이지 URL
+// 		var popOption = "width=370, height=360, resizable=no, scrollbars=no, status=no;";    //팝업창 옵션(optoin)
+		var popOption = "resizable=no, scrollbars=no, status=no; fullscreen= yes;";    //팝업창 옵션(optoin)
+			window.open(popUrl,"",popOption);
+	}
+	
 	//]]>
+	
+	
+	
 	</script>
 	
 </body>

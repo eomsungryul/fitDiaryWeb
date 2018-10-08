@@ -8,6 +8,8 @@ import kr.co.dwebss.fitDiary.dao.UserFoodDetailMapper;
 import kr.co.dwebss.fitDiary.model.UserFoodDetail;
 import kr.co.dwebss.fitDiary.service.UserFoodDetailService;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 
@@ -19,5 +21,15 @@ import javax.annotation.Resource;
 public class UserFoodDetailServiceImpl extends AbstractService<UserFoodDetail> implements UserFoodDetailService {
     @Resource
     private UserFoodDetailMapper userFoodDetailMapper;
+
+	@Override
+	public void deleteUserFoodDetail(int userFoodId) {
+		userFoodDetailMapper.deleteUserFoodDetail(userFoodId);
+	}
+
+	@Override
+	public List<UserFoodDetail> selectUserFoodDetail(int userFoodId) {
+		return userFoodDetailMapper.selectUserFoodDetail(userFoodId);
+	}
 
 }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.dwebss.fitDiary.dao.FoodMapper">
-  <resultMap id="BaseResultMap" type="kr.co.dwebss.fitDiary.model.Food">
+  <resultMap id="foodVo" type="kr.co.dwebss.fitDiary.model.Food">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="FOOD_ID" jdbcType="INTEGER" property="foodId" />
-    <result column="FOOD_TYPE" jdbcType="INTEGER" property="foodType" />
+    <result column="FOOD_TYPE" jdbcType="VARCHAR" property="foodType" />
     <result column="FOOD_NM" jdbcType="VARCHAR" property="foodNm" />
-    <result column="SERVING_SIZE" jdbcType="TIMESTAMP" property="servingSize" />
+    <result column="SERVING_SIZE" jdbcType="INTEGER" property="servingSize" />
     <result column="KILOCALORIE" jdbcType="DECIMAL" property="kilocalorie" />
     <result column="CARBOHYDRATE" jdbcType="DECIMAL" property="carbohydrate" />
     <result column="PROTEIN" jdbcType="DECIMAL" property="protein" />
@@ -19,4 +19,61 @@
     <result column="SATURATED_FATTY_ACID" jdbcType="DECIMAL" property="saturatedFattyAcid" />
     <result column="TRANS_FATTY_ACIDS" jdbcType="DECIMAL" property="transFattyAcids" />
   </resultMap>
+  
+	<sql id="WhereQuery">
+	WHERE 1=1
+		<if test="searchCondition=='foodNm' and searchKeyword!='' and searchKeyword!=null">
+			AND FOOD_NM LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+<!-- 		<if test="searchCondition=='codeValue' and searchKeyword!='' and searchKeyword!=null"> -->
+<!-- 			AND CODE_NM LIKE CONCAT('%',#{ searchKeyword },'%') -->
+<!-- 		</if>	 -->
+	</sql>
+    
+    <select id="selectList" parameterType="kr.co.dwebss.fitDiary.model.Food" resultMap="foodVo">
+    	SELECT A.* FROM (
+			SELECT 
+				@rownum := @rownum + 1 as rownum,
+			    FOOD_ID ,
+			    FOOD_TYPE ,
+			    FOOD_NM ,
+			    SERVING_SIZE ,
+			    KILOCALORIE ,
+			    CARBOHYDRATE ,
+			    PROTEIN ,
+			    FAT ,
+			    SUGAR ,
+			    SODIUM ,
+			    CHOLESTEROL ,
+			    SATURATED_FATTY_ACID ,
+			    TRANS_FATTY_ACIDS
+			FROM FOOD, (select @rownum :=0) r
+			<include refid="kr.co.dwebss.fitDiary.dao.FoodMapper.WhereQuery" />
+			ORDER BY FOOD_ID DESC
+		) A
+		where A.rownum LIMIT #{firstIndex}, #{recordCountPerPage}
+    </select>
+    
+    <select id="selectListCnt" parameterType="kr.co.dwebss.fitDiary.model.Food" resultType="INTEGER">
+    	SELECT COUNT(*) FROM (
+			SELECT 
+			    FOOD_ID ,
+			    FOOD_TYPE ,
+			    FOOD_NM ,
+			    SERVING_SIZE ,
+			    KILOCALORIE ,
+			    CARBOHYDRATE ,
+			    PROTEIN ,
+			    FAT ,
+			    SUGAR ,
+			    SODIUM ,
+			    CHOLESTEROL ,
+			    SATURATED_FATTY_ACID ,
+			    TRANS_FATTY_ACIDS
+			FROM FOOD
+			<include refid="kr.co.dwebss.fitDiary.dao.FoodMapper.WhereQuery" />
+			ORDER BY FOOD_ID
+		) A
+    </select>
+  
 </mapper>

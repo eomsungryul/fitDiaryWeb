@@ -33,13 +33,13 @@
       <label for="user_login_id" class="sr-only">ID</label>
       <input type="text" id="user_login_id" name="user_login_id" class="form-control" placeholder="ID" required="" autofocus="">
       <label for="user_password" class="sr-only">Password</label>
-      <input type="password" id="user_password" name="user_password" class="form-control" placeholder="Password" required="">
+      <input type="password" id="user_password" name="user_password" class="form-control"  onkeydown="event.keyCode===13&&fnLogin()" placeholder="Password" required="">
       <div class="checkbox mb-3">
         <label>
           <input type="checkbox" value="remember-me"> Remember me
         </label>
       </div>
-      <button class="btn btn-lg btn-primary btn-block" type="button" id="login">로그인</button>
+      <button class="btn btn-lg btn-primary btn-block" type="button" id="login" onclick="fnLogin();">로그인</button>
       <div class="mt-1">
         <a href="<%=contextPath%>/join" id="popup_create">
         <u><p>New? Create an account</p></u> </a>
@@ -52,37 +52,36 @@
 <script src="<%=contextPath%>/resources/jquery-3.1.0.js"></script>
 
 <script type="text/javascript">
-//<![CDATA[
-$(function( $ ){ 
-	var contextPath = "${ pageContext.request.contextPath }";
-		$("#login").on('click',function(){
-		   var user_login_id = $("#user_login_id").val();
-		   var user_password = SHA256($("#user_password").val());
-			$.ajax({
-			        type : "post",
-			        url : contextPath + "/loginAction.dojson",
-		    		data : {"userLoginId" : user_login_id,
-	    					"userPassword" : user_password},
-			        dataType : "json",
-			        error:function(request,status,error){
-			            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-			         },
-			        success : function(data) {
-			        	if(data.code){
-			        		if(data.data.authCd = 40){
-				        		//관리자 임의 코드 40
-			        			location.href = contextPath+"/admin/code/list" ; 
-			        		}else{
-			        			//관장
-			        			
-			        		}
-			        	}
-			        }
-			      });
-		})
-	
-});
-//]]>
+
+
+var contextPath = "${ pageContext.request.contextPath }";
+
+
+function fnLogin(){
+	var user_login_id = $("#user_login_id").val();
+	var user_password = SHA256($("#user_password").val());
+	$.ajax({
+	        type : "post",
+	        url : contextPath + "/loginAction.dojson",
+    		data : {"userLoginId" : user_login_id,
+					"userPassword" : user_password},
+	        dataType : "json",
+	        error:function(request,status,error){
+	            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+	         },
+	        success : function(data) {
+	        	if(data.code){
+	        		if(data.data.authCd = 40){
+		        		//관리자 임의 코드 40
+	        			location.href = contextPath+"/admin/code/list" ; 
+	        		}else{
+	        			//관장
+	        			
+	        		}
+	        	}
+	        }
+	      });
+}
 
 </script>
 

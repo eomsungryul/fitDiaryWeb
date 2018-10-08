@@ -25,14 +25,12 @@ public class FoodServiceImpl extends AbstractService<Food> implements FoodServic
 
 	@Override
 	public List<HashMap> selectList(Food food) {
-		// TODO Auto-generated method stub
-		return null;
+		return foodMapper.selectList(food);
 	}
 
 	@Override
 	public int selectListCnt(Food food) {
-		// TODO Auto-generated method stub
-		return 0;
+		return foodMapper.selectListCnt(food);
 	}
 
 }

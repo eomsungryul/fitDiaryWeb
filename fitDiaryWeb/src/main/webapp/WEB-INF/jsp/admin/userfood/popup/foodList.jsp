@@ -16,7 +16,7 @@
 %>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <title>공통 코드 관리</title>
+    <title>음식</title>
 
     <!-- Bootstrap core CSS -->
     <link href="<%=contextPath%>/resources/bootstrap-4.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -26,20 +26,8 @@
 </head>
   
   <body>
-  	
-	<c:import charEncoding="utf-8" url="/inc/incHeader">
-		<c:param name="path" value="${requestUri}" />
-	</c:import>
-
     <div class="container-fluid">
       <div class="row">
-      
-        <!-- aside start -->
- 		<c:import charEncoding="utf-8" url="/inc/incLeft">
- 			<c:param name="path" value="${requestUri}" />
- 		</c:import>
-		<!-- aside end -->	    
-		
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
          <h2 class="mt-3">사용자음식</h2>
           <div class="col-md-8 table-responsive">
@@ -72,7 +60,7 @@
               <tbody>
               	<c:if test="${fn:length(resultList)!=0}">
                  	<c:forEach var="result" items="${ resultList }" varStatus="status">
-		                <tr onclick="fnRegist(${result.foodId },'U')">
+		                <tr onclick="fnRegist('${result.foodId }','${result.foodNm }','${result.servingSize }','${result.kilocalorie }')">
 		                  <td>${ pni.totalRecordCount - (((pni.pageIndex - 1) * pni.recordCountPerPage) + (status.index)) }</td>
 		                  <td>${result.foodType }</td>
 		                  <td>${result.foodNm }</td>
@@ -90,11 +78,6 @@
             </table>
             
 			  <ul id="pagination" class="pagination-sm justify-content-center"></ul>
-			  
-	          <div class="float-right mb-3">
-		          <button type="button" class="btn btn-primary" onclick="fnRegist('','I'); return false;">등록</button>
-	          </div>
-		      
           </div>
 
           
@@ -134,40 +117,24 @@
 	 */
 	function fnSearch(){
 		document.searchFrm.pageIndex.value = 1;
-		document.searchFrm.action = contextPath + "/admin/food/list";
+		document.searchFrm.action = contextPath + "/admin/userfood/popupFoodList";
 		document.searchFrm.submit();
 	}
-	
 	
 	/**
 	 *  게시판 리스트 페이지 이동
 	 */
 	function fnLinkPage(pageNo){
 		document.searchFrm.pageIndex.value = pageNo;
-		document.searchFrm.action = contextPath + "/admin/food/list";
+		document.searchFrm.action = contextPath + "/admin/userfood/popupFoodList";
 		document.searchFrm.submit();
 	}
 	
-	/**
-	 *  게시판 등록 페이지 
-	 */
-	function fnRegist(userFoodId ,flag){
-		if(flag=="U"){
-			document.searchFrm.action = contextPath + "/admin/food/regist?flag="+flag+"&userFoodId="+userFoodId;
-		}else{
-			document.searchFrm.action = contextPath + "/admin/food/regist?flag="+flag;
-		}
-		document.searchFrm.submit();
-	}
-	/**
-	 *  게시판 상세 페이지 
-	 */
-	function fnDetail(userFoodId){
-		document.searchFrm.action = contextPath + "/admin/food/detail?userFoodId="+userFoodId;
-		document.searchFrm.submit();
+	function fnRegist(id,name,servingSize,cal){
+		opener.setFoodValue(id,name,servingSize,cal);
+		window.close();
 	}
 	
-	//]]>
 	</script>
 </body>
 

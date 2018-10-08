@@ -46,11 +46,11 @@
           	<div class="float-right mt-3 mb-3">
 				<div class="form-inline">
 				<!-- 검색 start  -->
-                   	<form:form modelAttribute="searchVO" action="${ contextPath }/admin/food/list" name="searchFrm">
+                   	<form:form modelAttribute="searchVO" action="${ contextPath }/admin/userfood/list" name="searchFrm">
 		            <div>
 		            	<select class="form-control" id="searchCondition" name="searchCondition" >
-					        <option value="foodNm" selected="selected">음식명</option>
-<!-- 					        <option value="codeValue">코드명</option> -->
+					        <option value="codeCategory" selected="selected">카테고리</option>
+					        <option value="codeValue">코드명</option>
 					    </select>
 						<input type="hidden" id="pageIndex" name="pageIndex" value="${pni.pageIndex}" />
 		                <input type="text" class="form-control search" id="searchKeyword" name="searchKeyword" placeholder="검색어"  value="${pni.searchKeyword}" onkeydown="$event.keyCode===13&&fnSearch()"/>
@@ -63,21 +63,23 @@
               <thead>
                 <tr>
                   <th>번호</th>
-                  <th>음식종류</th>
-                  <th>음식명</th>
-                  <th>제공량</th>
-                  <th>칼로리</th>
+                  <th>사용자ID</th>
+                  <th>날짜</th>
+                  <th>입력여부</th>
                 </tr>
               </thead>
               <tbody>
               	<c:if test="${fn:length(resultList)!=0}">
                  	<c:forEach var="result" items="${ resultList }" varStatus="status">
-		                <tr onclick="fnRegist(${result.foodId },'U')">
+		                <tr onclick="fnRegist(${result.userFoodId },'U')">
 		                  <td>${ pni.totalRecordCount - (((pni.pageIndex - 1) * pni.recordCountPerPage) + (status.index)) }</td>
-		                  <td>${result.foodType }</td>
-		                  <td>${result.foodNm }</td>
-		                  <td>${result.servingSize }</td>
-		                  <td>${result.kilocalorie }</td>
+		                  <td>${result.userId }</td>
+		                  <td>
+							<fmt:formatDate var="resultRegDt" value="${result.registD }" pattern="yyyy-MM-dd"/>
+							${resultRegDt}
+<%-- 		                  ${result.registD } --%>
+		                  </td>
+		                  <td>${result.insertYn }</td>
 		                </tr>
                  	</c:forEach>
               	</c:if>
@@ -134,7 +136,7 @@
 	 */
 	function fnSearch(){
 		document.searchFrm.pageIndex.value = 1;
-		document.searchFrm.action = contextPath + "/admin/food/list";
+		document.searchFrm.action = contextPath + "/admin/userfood/list";
 		document.searchFrm.submit();
 	}
 	
@@ -144,7 +146,7 @@
 	 */
 	function fnLinkPage(pageNo){
 		document.searchFrm.pageIndex.value = pageNo;
-		document.searchFrm.action = contextPath + "/admin/food/list";
+		document.searchFrm.action = contextPath + "/admin/userfood/list";
 		document.searchFrm.submit();
 	}
 	
@@ -153,9 +155,9 @@
 	 */
 	function fnRegist(userFoodId ,flag){
 		if(flag=="U"){
-			document.searchFrm.action = contextPath + "/admin/food/regist?flag="+flag+"&userFoodId="+userFoodId;
+			document.searchFrm.action = contextPath + "/admin/userfood/regist?flag="+flag+"&userFoodId="+userFoodId;
 		}else{
-			document.searchFrm.action = contextPath + "/admin/food/regist?flag="+flag;
+			document.searchFrm.action = contextPath + "/admin/userfood/regist?flag="+flag;
 		}
 		document.searchFrm.submit();
 	}
@@ -163,7 +165,7 @@
 	 *  게시판 상세 페이지 
 	 */
 	function fnDetail(userFoodId){
-		document.searchFrm.action = contextPath + "/admin/food/detail?userFoodId="+userFoodId;
+		document.searchFrm.action = contextPath + "/admin/userfood/detail?userFoodId="+userFoodId;
 		document.searchFrm.submit();
 	}
 	

@@ -1,11 +1,17 @@
 package kr.co.dwebss.fitDiary.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Table(name = "user_food")
-public class UserFood {
+public class UserFood  extends SearchVO implements Serializable{
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 473624288219210287L;
+
+	/**
      * 음식사진ID
      */
     @Id
@@ -35,14 +41,59 @@ public class UserFood {
      */
     @Column(name = "FILE_NM")
     private String fileNm;
+    
+    @Column(name = "FIREBASE_STORAGE_PATH")
+    private String firebaseStoragePath;
 
-    /**
+    @Column(name = "FIREBASE_DOWNLOAD_URL")
+    private String firebaseDownloadUrl;
+    
+    @Column(name = "DEVICE_LOCAL_FILE_PATH")
+    private String deviceLocalFilePath;
+    
+
+    public String getFirebaseStoragePath() {
+		return firebaseStoragePath;
+	}
+
+	public void setFirebaseStoragePath(String firebaseStoragePath) {
+		this.firebaseStoragePath = firebaseStoragePath;
+	}
+
+	public String getFirebaseDownloadUrl() {
+		return firebaseDownloadUrl;
+	}
+
+	public void setFirebaseDownloadUrl(String firebaseDownloadUrl) {
+		this.firebaseDownloadUrl = firebaseDownloadUrl;
+	}
+
+	public String getDeviceLocalFilePath() {
+		return deviceLocalFilePath;
+	}
+
+	public void setDeviceLocalFilePath(String deviceLocalFilePath) {
+		this.deviceLocalFilePath = deviceLocalFilePath;
+	}
+
+	/**
      * 실제경로
      */
     @Column(name = "FILE_PATH")
     private String filePath;
+    
+    @Transient
+    private String insertYn;
 
-    /**
+    public String getInsertYn() {
+		return insertYn;
+	}
+
+	public void setInsertYn(String insertYn) {
+		this.insertYn = insertYn;
+	}
+
+	/**
      * getter음식사진ID
      *
      * @return USER_FOOD_ID - 음식사진ID

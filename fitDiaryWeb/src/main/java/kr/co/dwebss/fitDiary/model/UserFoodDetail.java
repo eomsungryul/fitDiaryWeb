@@ -29,8 +29,42 @@ public class UserFoodDetail {
      */
     @Column(name = "AMOUNT_DISH")
     private BigDecimal amountDish;
+    
+    @Transient
+    private BigDecimal kilocalorie;
 
-    /**
+    @Transient
+    private Integer servingSize;
+    
+    @Transient
+    private String foodNm;
+
+
+    public BigDecimal getKilocalorie() {
+		return kilocalorie;
+	}
+
+	public void setKilocalorie(BigDecimal kilocalorie) {
+		this.kilocalorie = kilocalorie;
+	}
+
+	public Integer getServingSize() {
+		return servingSize;
+	}
+
+	public void setServingSize(Integer servingSize) {
+		this.servingSize = servingSize;
+	}
+
+	public String getFoodNm() {
+		return foodNm;
+	}
+
+	public void setFoodNm(String foodNm) {
+		this.foodNm = foodNm;
+	}
+
+	/**
      * getter음식사진상세ID
      *
      * @return USER_FOOD_DETAIL_ID - 음식사진상세ID

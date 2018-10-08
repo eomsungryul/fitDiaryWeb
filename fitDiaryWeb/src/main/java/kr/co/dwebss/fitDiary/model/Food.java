@@ -22,7 +22,8 @@ public class Food extends SearchVO implements Serializable{
      * 음식종류
      */
     @Column(name = "FOOD_TYPE")
-    private Integer foodType;
+//    private Integer foodType;
+    private String foodType;
 
     /**
      * 음식명
@@ -34,7 +35,7 @@ public class Food extends SearchVO implements Serializable{
      * 1회제공량
      */
     @Column(name = "SERVING_SIZE")
-    private Date servingSize;
+    private Integer servingSize;
 
     /**
      * 열량
@@ -113,7 +114,7 @@ public class Food extends SearchVO implements Serializable{
      *
      * @return FOOD_TYPE - 음식종류
      */
-    public Integer getFoodType() {
+    public String getFoodType() {
         return foodType;
     }
 
@@ -122,7 +123,7 @@ public class Food extends SearchVO implements Serializable{
      *
      * @param foodType 음식종류
      */
-    public void setFoodType(Integer foodType) {
+    public void setFoodType(String foodType) {
         this.foodType = foodType;
     }
 
@@ -149,7 +150,7 @@ public class Food extends SearchVO implements Serializable{
      *
      * @return SERVING_SIZE - 1회제공량
      */
-    public Date getServingSize() {
+    public Integer getServingSize() {
         return servingSize;
     }
 
@@ -158,7 +159,7 @@ public class Food extends SearchVO implements Serializable{
      *
      * @param servingSize 1회제공량
      */
-    public void setServingSize(Date servingSize) {
+    public void setServingSize(Integer servingSize) {
         this.servingSize = servingSize;
     }
 

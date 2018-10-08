@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.dwebss.fitDiary.dao.UserFoodMapper">
-  <resultMap id="BaseResultMap" type="kr.co.dwebss.fitDiary.model.UserFood">
+  <resultMap id="userFoodVo" type="kr.co.dwebss.fitDiary.model.UserFood">
     <!--
       WARNING - @mbg.generated
     -->
@@ -11,5 +11,60 @@
     <result column="REGIST_TIME" jdbcType="TIMESTAMP" property="registTime" />
     <result column="FILE_NM" jdbcType="VARCHAR" property="fileNm" />
     <result column="FILE_PATH" jdbcType="VARCHAR" property="filePath" />
+    <result column="INSERT_YN" jdbcType="VARCHAR" property="insertYn" />
+    <result column="FIREBASE_STORAGE_PATH" jdbcType="VARCHAR" property="firebaseStoragePath" />
+    <result column="FIREBASE_DOWNLOAD_URL" jdbcType="VARCHAR" property="firebaseDownloadUrl" />
+    <result column="DEVICE_LOCAL_FILE_PATH" jdbcType="VARCHAR" property="deviceLocalFilePath" />
   </resultMap>
+  
+	<sql id="WhereQuery">
+	WHERE 1=1
+		<if test="searchCondition=='codeCategory' and searchKeyword!='' and searchKeyword!=null">
+			AND CODE_CATEGORY_ID LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+		<if test="searchCondition=='codeValue' and searchKeyword!='' and searchKeyword!=null">
+			AND CODE_NM LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+	</sql>
+    
+    <select id="selectList" parameterType="kr.co.dwebss.fitDiary.model.UserFood" resultMap="userFoodVo">
+    	SELECT A.* FROM (
+			SELECT 
+				@rownum := @rownum + 1 as rownum,
+			    USER_FOOD_ID, 
+			    USER_ID, 
+			    REGIST_D, 
+			    REGIST_TIME,
+			    FILE_NM,
+			    FILE_PATH ,
+			    FIREBASE_STORAGE_PATH,
+				FIREBASE_DOWNLOAD_URL,
+				DEVICE_LOCAL_FILE_PATH,
+          		IF((select count(*) from user_food_detail ufd where ufd.user_food_id = uf.USER_FOOD_ID)>0,"Y","N") insert_yn
+			FROM USER_FOOD uf, (select @rownum :=0) r
+			<include refid="kr.co.dwebss.fitDiary.dao.UserFoodMapper.WhereQuery" />
+			ORDER BY REGIST_D DESC
+		) A
+		where A.rownum LIMIT #{firstIndex}, #{recordCountPerPage}
+    </select>
+    
+    <select id="selectListCnt" parameterType="kr.co.dwebss.fitDiary.model.UserFood" resultType="INTEGER">
+    	SELECT COUNT(*) FROM (
+			SELECT 
+			    USER_FOOD_ID, 
+			    USER_ID, 
+			    REGIST_D, 
+			    REGIST_TIME,
+			    FILE_NM,
+			    FILE_PATH,
+			    FIREBASE_STORAGE_PATH,
+				FIREBASE_DOWNLOAD_URL,
+				DEVICE_LOCAL_FILE_PATH
+			FROM USER_FOOD
+			<include refid="kr.co.dwebss.fitDiary.dao.UserFoodMapper.WhereQuery" />
+			ORDER BY REGIST_D
+		) A
+    </select>
+  
+  
 </mapper>
