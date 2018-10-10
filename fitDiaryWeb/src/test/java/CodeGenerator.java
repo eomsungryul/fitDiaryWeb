@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class CodeGenerator {
     //JDBC 설정. 프로젝트의 실제 설정을 수정하십시오.
-    private static final String JDBC_URL = "jdbc:mysql://52.79.240.67:3306/fitness?useSSL=false&amp;serverTimezone=UTC";
+    private static final String JDBC_URL = "jdbc:mysql://13.125.161.158:3306/fitness?useSSL=false&amp;serverTimezone=UTC";
     private static final String JDBC_USERNAME = "fit";
     private static final String JDBC_PASSWORD = "dlfgkwk9!";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
@@ -42,10 +42,11 @@ public class CodeGenerator {
 //    	genCode("user");
 //    	genCode("common_code_category");
 //    	genCode("user_gym");
-    	genCode("user_food");
-    	genCode("user_food_detail");
-    	genCode("user_health");
-    	genCode("food");
+//    	genCode("user_food");
+//    	genCode("user_food_detail");
+//    	genCode("user_health");
+//    	genCode("food");
+    	genCode("exercise_info");
     	
         //genCodeByCustomModelName( "테이블 이름 입력", "사용자 정의 모델 이름 입력");
     }

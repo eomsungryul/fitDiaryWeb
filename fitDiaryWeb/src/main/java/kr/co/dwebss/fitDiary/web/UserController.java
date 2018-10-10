@@ -1,4 +1,5 @@
 package kr.co.dwebss.fitDiary.web;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -111,7 +112,7 @@ public class UserController {
 		codeVO.setSearchCondition("mappingCategory");
 		codeVO.setSearchKeyword("10000");
 
-		List<CommonCode> typeList = commonCodeService.selectCategory(codeVO);
+		List<HashMap> typeList = commonCodeService.selectList(codeVO);
 		
 		mav.addObject("searchVO", vo);
 		mav.addObject("flag", flag);

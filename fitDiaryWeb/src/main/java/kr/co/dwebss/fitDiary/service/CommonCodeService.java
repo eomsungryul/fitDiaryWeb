@@ -11,12 +11,12 @@ import kr.co.dwebss.fitDiary.model.CommonCode;
  */
 public interface CommonCodeService extends Service<CommonCode> {
 
-	List<CommonCode> selectCategory(CommonCode codeVO);
-
 	CommonCode selectCommonCode(CommonCode searchVO);
 
 	List<HashMap> selectList(CommonCode commonCode);
 
 	int selectListCnt(CommonCode commonCode);
+
+	List<HashMap> selectPart(CommonCode commonCode);
 
 }

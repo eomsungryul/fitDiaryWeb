@@ -20,12 +20,12 @@
 <%--                   	${ fn:indexOf(param.path,'/mapping') != -1} ${ fn:indexOf(param.path,'/code') != -1} ${param.path} --%>
                 </a>
               </li>
-<!--               <li class="nav-item"> -->
-<%--                 <a class="nav-link <c:if test="${ fn:indexOf(param.path,'/mapping') != -1}">active</c:if>" href="<%=contextPath %>/admin/mapping/list"> --%>
-<!--                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> -->
-<!--                   	운동 기구-부위 매핑  -->
-<!--                 </a> -->
-<!--               </li> -->
+              <li class="nav-item">
+                <a class="nav-link <c:if test="${ fn:indexOf(param.path,'/exerciseInfo') != -1}">active</c:if>" href="<%=contextPath %>/admin/exerciseInfo/list">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                  	운동 기구-부위 매핑 
+                </a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link <c:if test="${ fn:indexOf(param.path,'/userfood') != -1}">active</c:if>" href="<%=contextPath %>/admin/userfood/list">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>

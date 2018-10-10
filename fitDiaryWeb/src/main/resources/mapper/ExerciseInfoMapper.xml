@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.dwebss.fitDiary.dao.ExerciseInfoMapper">
+  <resultMap id="exerciseInfoVo" type="kr.co.dwebss.fitDiary.model.ExerciseInfo">
+    <id column="EXERCISE_INFO_ID" jdbcType="INTEGER" property="exerciseInfoId" />
+    <result column="EXERCISE_EQUIP_CD" jdbcType="INTEGER" property="exerciseEquipCd" />
+    <result column="EXERCISE_RANGE_CD" jdbcType="INTEGER" property="exerciseRangeCd" />
+    <result column="EXERCISE_NM" jdbcType="VARCHAR" property="exerciseNm" />
+    <result column="EXERCISE_DESC" jdbcType="VARCHAR" property="exerciseDesc" />
+    <result column="EXERCISE_VIDEO" jdbcType="VARCHAR" property="exerciseVideo" />
+    <result column="USE_YN" jdbcType="CHAR" property="useYn" />
+    <result column="CARDIO_YN" jdbcType="CHAR" property="cardioYn" />
+  </resultMap>
+  
+	<sql id="WhereQuery">
+	WHERE 1=1
+		<if test="searchCondition=='codeCategory' and searchKeyword!='' and searchKeyword!=null">
+			AND EXERCISE_EQUIP_CD LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+		<if test="searchCondition=='codeValue' and searchKeyword!='' and searchKeyword!=null">
+			AND EXERCISE_RANGE_CD LIKE CONCAT('%',#{ searchKeyword },'%')
+		</if>	
+	</sql>
+    
+    <select id="selectList" parameterType="kr.co.dwebss.fitDiary.model.ExerciseInfo" resultType="hashMap">
+    	SELECT A.* FROM (
+			SELECT 
+				@rownum := @rownum + 1 as rownum,
+				CODE ,
+				CODE_CATEGORY , 
+				CODE_VALUE , 
+				CODE_DESC 
+			FROM EXERCISE_NM_RANGE, (select @rownum :=0) r
+			<include refid="kr.co.dwebss.fitDiary.dao.ExerciseInfoMapper.WhereQuery" />
+			ORDER BY CODE DESC
+		) A
+		where A.rownum LIMIT #{firstIndex}, #{recordCountPerPage}
+    </select>
+    
+    <select id="selectExerciseInfo" parameterType="kr.co.dwebss.fitDiary.model.ExerciseInfo" resultType="kr.co.dwebss.fitDiary.model.ExerciseInfo">
+    	SELECT * FROM EXERCISE_INFO
+    	WHERE 1=1
+    	AND EXERCISE_EQUIP_CD = #{ exercise_equip_cd }
+    	AND EXERCISE_RANGE_CD = #{ exercise_range_cd }
+    	AND USE_YN = 'Y'
+    </select>
+    
+    <select id="selectCnt" parameterType="kr.co.dwebss.fitDiary.model.ExerciseInfo" resultType="INTEGER">
+    	SELECT COUNT(*) FROM EXERCISE_INFO
+    	WHERE 1=1
+    	AND EXERCISE_EQUIP_CD = #{ exercise_equip_cd }
+    	AND EXERCISE_RANGE_CD = #{ exercise_range_cd }
+    </select>
+    
+    <update id="updateBK" parameterType="kr.co.dwebss.fitDiary.model.ExerciseInfo" >
+		UPDATE  EXERCISE_INFO SET
+			EXERCISE_DESC 		= #{ exercise_desc } ,  
+			CARDIO_YN 	= #{ cardio_yn } , 
+			EXERCISE_VIDEO 	= #{ exercise_video } , 
+			USE_YN 	= #{ use_yn }
+		WHERE 1=1
+    	AND EXERCISE_EQUIP_CD = #{ exercise_equip_cd }
+    	AND EXERCISE_RANGE_CD = #{ exercise_range_cd }
+    </update> 
+</mapper>

@@ -23,10 +23,6 @@ public class CommonCodeServiceImpl extends AbstractService<CommonCode> implement
     @Resource
     private CommonCodeMapper commonCodeMapper;
 
-	@Override
-	public List<CommonCode> selectCategory(CommonCode codeVO) {
-		return commonCodeMapper.selectCategory(codeVO);
-	}
 
 	@Override
 	public CommonCode selectCommonCode(CommonCode searchVO) {
@@ -41,6 +37,12 @@ public class CommonCodeServiceImpl extends AbstractService<CommonCode> implement
 	@Override
 	public int selectListCnt(CommonCode commonCode) {
 		return commonCodeMapper.selectListCnt(commonCode);
+	}
+
+	@Override
+	public List<HashMap> selectPart(CommonCode commonCode) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

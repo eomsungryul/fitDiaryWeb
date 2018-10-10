@@ -90,8 +90,6 @@
 		             </div>
 		           </div>
 
-
-
 				  <div class="float-right">
 				    <div>
               		<c:if test="${flag=='U'}">
@@ -102,7 +100,6 @@
               		<c:if test="${flag=='I'}">
 			        	<button type="submit" class="btn btn-primary" onclick="fnInsert();">등록</button>
               		</c:if>
-				      
 				      
 				    <button type="submit" class="btn btn-secondary"  onclick="fnLinkPage('${ param.pageIndex }'); return false;">목록</button>
 				    </div>

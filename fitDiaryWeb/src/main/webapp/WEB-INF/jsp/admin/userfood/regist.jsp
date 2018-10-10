@@ -26,7 +26,7 @@
     <link href="<%=contextPath%>/resources/bootstrap-4.1.1/parsley.css" rel="stylesheet">
     <style>
     .form-control{
-	    display: inline; width: 80%; vertical-align: middle;
+	    display: inline; width: 75%; vertical-align: middle;
     }
     
     </style>
@@ -91,13 +91,14 @@
 			             <div class="col-md-4 mb-3">
 			               <label for="servingSize">인분</label>
 			               <div>
-			               <input type="text" class="form-control" name="servingSize" id="servingSize_1" value="${result.servingSize}" onkeydown="changeKcal(this);" required="" data-parsley-type="integer">
+			               <input type="text" class="form-control" style="width: 100%;" name="servingSize" id="servingSize_1" value="${result.amountDish}" onkeyup="changeKcal(this);" required="" data-parsley-type="number">
 			               </div>
 			             </div>
 			             <div class="col-md-4 mb-3">
 			               <label for="kilocalorie">칼로리</label>
 			               <div>
-			               <input type="text" class="form-control" name="kilocalorie" id="kilocalorie_1" value="${result.kilocalorie}"  required="" data-parsley-type="number">
+			               <input type="text" class="form-control" name="kilocalorie" id="kilocalorie_1" value="${result.kilocalorie}"  required="" data-parsley-type="number" readonly="readonly">
+			               <input type="hidden" class="form-control" name="kilocalorie_h" id="kilocalorie_h_1" value="${result.kilocalorie/result.amountDish}"  required="">
 				           <button type="button" class="btn btn-primary" onclick="fnDelete(this); return false;">삭제</button>
 			               </div>
 			             </div>
@@ -113,20 +114,21 @@
 			               <label for="foodNm">음식명</label>
 			               <div>
 			               <input type="text" class="form-control" name="foodNm" id="foodNm_1" required="">
-			               <input type="hidden" class="form-control" name="foodId" id="foodId_1" required="">
+			               <input type="hidden" class="form-control" name="foodId" id="foodId_1" required>
 				           <button type="button" class="btn btn-primary" onclick="fnFoodSearch(this); return false;">검색</button>
 				           </div>
 			             </div>
 			             <div class="col-md-4 mb-3">
 			               <label for="servingSize">인분</label>
 			               <div>
-			               <input type="text" class="form-control" name="servingSize" id="servingSize_1" onkeydown="changeKcal(this);" required="" data-parsley-type="integer">
+			               <input type="text" class="form-control" style="width: 100%;" name="servingSize" id="servingSize_1" onkeyup="changeKcal(this);" required="" data-parsley-type="number">
 			               </div>
 			             </div>
 			             <div class="col-md-4 mb-3">
 			               <label for="kilocalorie">칼로리</label>
 			               <div>
-			               <input type="text" class="form-control" name="kilocalorie" id="kilocalorie_1" required="" data-parsley-type="number">
+			               <input type="text" class="form-control" name="kilocalorie" id="kilocalorie_1" required="" data-parsley-type="number" readonly="readonly">
+			               <input type="hidden" class="form-control" name="kilocalorie_h" id="kilocalorie_h_1" required="">
 				           <button type="button" class="btn btn-primary" onclick="fnDelete(this); return false;">삭제</button>
 			               </div>
 			             </div>
@@ -195,13 +197,14 @@
 			'<div class="col-md-4 mb-3">'+
 			'<label for="servingSize">인분</label>'+
 			'<div>'+
-			'<input type="text" class="form-control" name="servingSize" id="servingSize_'+i+'" required="" data-parsley-type="integer">'+
+			'<input type="text" class="form-control" style="width: 100%;" name="servingSize" id="servingSize_'+i+'"  onkeyup="changeKcal(this);" required="" data-parsley-type="number">'+
 			'</div>'+
 			'</div>'+
 			'<div class="col-md-4 mb-3">'+
 			'<label for="kilocalorie">칼로리</label>'+
 			'<div>'+
-			'<input type="text" class="form-control" name="kilocalorie" id="kilocalorie_'+i+'" required="" data-parsley-type="number">'+
+			'<input type="text" class="form-control" name="kilocalorie" id="kilocalorie_'+i+'" required="" data-parsley-type="number"  readonly="readonly">'+
+			'<input type="hidden" class="form-control" name="kilocalorie_h" id="kilocalorie_h_'+i+'" required="">'+
 			' <button type="button" class="btn btn-primary" onclick="fnDelete(this); return false;">삭제</button>'+
 			'</div>'+
 			'</div>'+
@@ -220,9 +223,10 @@
 // 		.on('form:submit', function() {
 // 			document.registFrm.action = contextPath + "/admin/code/update";
 // 		});
-		if($('#registFrm').parsley().validate()){
 
-			if(!confirm("사용자 음식 칼로리를 등록 하겠습니까?")) return;
+		
+		
+		if($('#registFrm').parsley().validate()){
 			url = contextPath + "/admin/userfood/updateFoodDetail";
 			
 			var len = $("#foodDetailList").find(".row").length;
@@ -234,12 +238,16 @@
 // 				var kilocalorie = $($("#foodDetailList").find(".row").get(i)).find('input[name^="kilocalorie"]').val();
 				var foodId = $($("#foodDetailList").find(".row").get(i)).find('input[name^="foodId"]').val();
 				var amountDish = $($("#foodDetailList").find(".row").get(i)).find('input[name^="servingSize"]').val();
-
 // 				data = {
 // 						"foodNm" : foodNm ,
 // 						"servingSize" : servingSize ,
 // 						"kilocalorie" : kilocalorie,
 // 				}
+				if(foodId==""){
+					alert("음식 검색을 이용하여 기입해주세요.");
+					return;
+				}
+
 				data = {
 						"foodId" : foodId ,
 						"amountDish" : amountDish 
@@ -249,6 +257,8 @@
 
 			eventList = {"userFoodId":$("#userFoodId").val(),
 						 "addList":addList };
+			
+			if(!confirm("사용자 음식 칼로리를 등록 하겠습니까?")) return;
 			$.ajax({
 	     		type : "POST",
 	     		url : url,
@@ -263,6 +273,7 @@
 			
 			
 		}else{
+// 			alert("작성 시 모든 입력란에 입력해주세요.");
 			alert("작성 시 모든 입력란에 입력해주세요.");
 		}
 
@@ -275,7 +286,6 @@
 	function fnDelete(target){
 		$(target).parent().parent().parent().remove();
 	}
-	
 	
 	function fnFoodSearch(target){
 		var foodNm = $(target).parent().find("input[name^='foodNm']").val()
@@ -293,11 +303,15 @@
 // 		$("#servingSize_"+index).val(servingSize);
 		$("#servingSize_"+index).val(1);
 		$("#kilocalorie_"+index).val(cal);
+		$("#kilocalorie_h_"+index).val(cal);
 	}
 	
 	function changeKcal(target){
-		var servingSize = $(target).parent().find("input[name^='servingSize']").val();
-		var kilocalorie = $(target).parent().find("input[name^='kilocalorie']").val();
+		var servingSize = $(target).val();
+		var kilocalorie = $(target).parent().parent().parent().find("input[name='kilocalorie_h']").val();
+		
+		totalKcal = servingSize*kilocalorie;
+		$(target).parent().parent().parent().find("input[name='kilocalorie']").val(totalKcal);
 	}
 	
 	</script>
