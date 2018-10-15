@@ -1,6 +1,5 @@
 package kr.co.dwebss.fitDiary.dao;
 
-import java.util.HashMap;
 import java.util.List;
 
 import kr.co.dwebss.fitDiary.core.Mapper;
@@ -12,4 +11,6 @@ public interface UserFoodMapper extends Mapper<UserFood> {
 	List<UserFood> selectList(UserFood userFood);
 
 	int selectListCnt(UserFood userFood);
+
+	UserFood selectInsertList(UserFood userFood);
 }

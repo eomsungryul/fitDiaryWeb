@@ -51,8 +51,19 @@ public class UserFood  extends SearchVO implements Serializable{
     @Column(name = "DEVICE_LOCAL_FILE_PATH")
     private String deviceLocalFilePath;
     
+    @Transient
+    private UserFoodDetail userFoodDetail;
+    
 
-    public String getFirebaseStoragePath() {
+    public UserFoodDetail getUserFoodDetail() {
+		return userFoodDetail;
+	}
+
+	public void setUserFoodDetail(UserFoodDetail userFoodDetail) {
+		this.userFoodDetail = userFoodDetail;
+	}
+
+	public String getFirebaseStoragePath() {
 		return firebaseStoragePath;
 	}
 

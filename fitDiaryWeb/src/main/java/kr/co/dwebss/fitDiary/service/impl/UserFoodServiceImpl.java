@@ -34,4 +34,9 @@ public class UserFoodServiceImpl extends AbstractService<UserFood> implements Us
 		return userFoodMapper.selectListCnt(userFood);
 	}
 
+	@Override
+	public UserFood selectInsertList(UserFood userFood) {
+		return userFoodMapper.selectInsertList(userFood);
+	}
+
 }

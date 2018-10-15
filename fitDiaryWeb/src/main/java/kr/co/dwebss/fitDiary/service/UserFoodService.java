@@ -17,4 +17,7 @@ public interface UserFoodService extends Service<UserFood> {
 
 	int selectListCnt(UserFood userFood);
 
+//	List<UserFood> selectInsertList(UserFood userFood);
+	UserFood selectInsertList(UserFood userFood);
+
 }

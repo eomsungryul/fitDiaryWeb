@@ -33,4 +33,9 @@ public class FoodServiceImpl extends AbstractService<Food> implements FoodServic
 		return foodMapper.selectListCnt(food);
 	}
 
+	@Override
+	public List<HashMap> selectFood(Food food) {
+		return foodMapper.selectFood(food);
+	}
+
 }

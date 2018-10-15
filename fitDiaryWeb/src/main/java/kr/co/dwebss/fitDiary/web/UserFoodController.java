@@ -17,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import kr.co.dwebss.fitDiary.core.Result;
+import kr.co.dwebss.fitDiary.core.ResultGenerator;
 
 import kr.co.dwebss.fitDiary.model.Food;
 import kr.co.dwebss.fitDiary.model.UserFood;
@@ -40,38 +42,6 @@ public class UserFoodController {
     @Resource
     private UserFoodDetailService userFoodDetailService;
 
-//    @PostMapping("/add")
-//    public Result add(UserFood userFood) {
-//        userFoodService.save(userFood);
-//        return ResultGenerator.genSuccessResult();
-//    }
-//
-//    @PostMapping("/delete")
-//    public Result delete(@RequestParam Integer id) {
-//        userFoodService.deleteById(id);
-//        return ResultGenerator.genSuccessResult();
-//    }
-//
-//    @PostMapping("/update")
-//    public Result update(UserFood userFood) {
-//        userFoodService.update(userFood);
-//        return ResultGenerator.genSuccessResult();
-//    }
-//
-//    @PostMapping("/detail")
-//    public Result detail(@RequestParam Integer id) {
-//        UserFood userFood = userFoodService.findById(id);
-//        return ResultGenerator.genSuccessResult(userFood);
-//    }
-//
-//    @PostMapping("/list")
-//    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-//        PageHelper.startPage(page, size);
-//        List<UserFood> list = userFoodService.findAll();
-//        PageInfo pageInfo = new PageInfo(list);
-//        return ResultGenerator.genSuccessResult(pageInfo);
-//    }
-
 	/**
 	 * 음식 관리 목록
 	 *
@@ -88,7 +58,6 @@ public class UserFoodController {
 		
     	userFood.setFirstIndex((userFood.getPageIndex() - 1 ) * userFood.getPageUnit());
 		
-//		List<HashMap> resultList = userFoodService.selectList(userFood);
 		List<UserFood> resultList = userFoodService.selectList(userFood);
 		
 		int totalCnt=userFoodService.selectListCnt(userFood);
@@ -101,14 +70,9 @@ public class UserFoodController {
 		mav.addObject("resultList", resultList);
 		mav.addObject("totalCnt", totalCnt);
 		mav.addObject("pni", userFood);
-		
-//		model.addAttribute("power", commonService.getMenuPower((String)session.getAttribute("roleId"), EgovStringUtil.uriPathDeletePageUrl(request.getRequestURI(), request.getContextPath())));
 
 		return mav;
 	}
-
-
-
 
 	/**
 	 * 음식 등록 및 수정 화면
@@ -270,6 +234,52 @@ public class UserFoodController {
 				
 		return mav;
 	}
+    
+    
+    
+
+	/**
+	 * 음식 관리 목록 ( 입력을 안한 목록만 나오는 페이지 현재는 이것만 나오게 함  )
+	 *
+	 * @param CommonCode codeSearchVO
+	 * @param ModelMap model
+	 * @return String
+	 * @throws Exception
+	 */
+    @RequestMapping("/admin/userfood/insertList")
+	public ModelAndView insertList(@ModelAttribute("userFood") UserFood userFood,
+			HttpServletRequest request ,
+			HttpSession session ,
+			ModelMap model) throws Exception {
+		
+//		List<UserFood> resultList = userFoodService.selectInsertList(userFood);
+		UserFood resultList = userFoodService.selectInsertList(userFood);
+
+		ModelAndView mav = new ModelAndView("admin/userfood/insertList");
+		mav.addObject("result", resultList);
+
+		return mav;
+	}
+    
+    /**
+	 * 음식 관리 목록
+	 *
+	 * @param CommonCode codeSearchVO
+	 * @param ModelMap model
+	 * @return String
+	 * @throws Exception
+	 */
+    @RequestMapping("/admin/userfood/searchFoodList")
+	public Result searchFoodList(@ModelAttribute("food") Food food,
+			HttpServletRequest request ,
+			HttpSession session ,
+			ModelMap model) throws Exception {
+		
+		List<HashMap> resultList = foodService.selectFood(food);
+		
+	    return ResultGenerator.genSuccessResult(resultList);
+	}
+
     
 
     

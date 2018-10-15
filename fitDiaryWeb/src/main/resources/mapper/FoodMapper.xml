@@ -75,5 +75,29 @@
 			ORDER BY FOOD_ID
 		) A
     </select>
+    
+    
+    
+    <select id="selectFood" parameterType="kr.co.dwebss.fitDiary.model.Food" resultMap="foodVo">
+    	SELECT A.* FROM (
+			SELECT 
+			    FOOD_ID ,
+			    FOOD_TYPE ,
+			    FOOD_NM ,
+			    SERVING_SIZE ,
+			    KILOCALORIE ,
+			    CARBOHYDRATE ,
+			    PROTEIN ,
+			    FAT ,
+			    SUGAR ,
+			    SODIUM ,
+			    CHOLESTEROL ,
+			    SATURATED_FATTY_ACID ,
+			    TRANS_FATTY_ACIDS
+			FROM FOOD
+			<include refid="kr.co.dwebss.fitDiary.dao.FoodMapper.WhereQuery" />
+			ORDER BY FOOD_ID DESC
+		) A
+    </select>
   
 </mapper>

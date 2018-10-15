@@ -11,4 +11,6 @@ public interface FoodMapper extends Mapper<Food> {
 	List<HashMap> selectList(Food food);
 
 	int selectListCnt(Food food);
+
+	List<HashMap> selectFood(Food food);
 }

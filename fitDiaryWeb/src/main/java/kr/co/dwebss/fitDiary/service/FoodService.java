@@ -15,4 +15,6 @@ public interface FoodService extends Service<Food> {
 
 	int selectListCnt(Food food);
 
+	List<HashMap> selectFood(Food food);
+
 }

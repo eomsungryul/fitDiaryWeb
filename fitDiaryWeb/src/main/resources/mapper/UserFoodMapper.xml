@@ -65,6 +65,47 @@
 			ORDER BY REGIST_D
 		) A
     </select>
+    
+    <select id="selectInsertList" parameterType="kr.co.dwebss.fitDiary.model.UserFood" resultMap="userFoodVo">
+		SELECT 
+			uf.USER_FOOD_ID, 
+			USER_ID, 
+			REGIST_D, 
+			REGIST_TIME,
+			FILE_NM,
+			FILE_PATH ,
+			FIREBASE_STORAGE_PATH,
+			FIREBASE_DOWNLOAD_URL,
+			DEVICE_LOCAL_FILE_PATH
+		FROM 
+			USER_FOOD uf LEFT JOIN user_food_detail ufd
+		ON  
+			uf.USER_FOOD_ID = ufd.USER_FOOD_ID
+		WHERE 
+			ufd.USER_FOOD_ID IS NULL
+		ORDER BY REGIST_TIME ASC
+      	LIMIT 1
+    </select>
+    
+<!--     <select id="selectInsertList" parameterType="kr.co.dwebss.fitDiary.model.UserFood" resultMap="userFoodVo"> -->
+<!-- 		SELECT  -->
+<!-- 			uf.USER_FOOD_ID,  -->
+<!-- 			USER_ID,  -->
+<!-- 			REGIST_D,  -->
+<!-- 			REGIST_TIME, -->
+<!-- 			FILE_NM, -->
+<!-- 			FILE_PATH , -->
+<!-- 			FIREBASE_STORAGE_PATH, -->
+<!-- 			FIREBASE_DOWNLOAD_URL, -->
+<!-- 			DEVICE_LOCAL_FILE_PATH -->
+<!-- 		FROM  -->
+<!-- 			USER_FOOD uf LEFT JOIN user_food_detail ufd -->
+<!-- 		ON   -->
+<!-- 			uf.USER_FOOD_ID = ufd.USER_FOOD_ID -->
+<!-- 		WHERE  -->
+<!-- 			ufd.USER_FOOD_ID IS NULL -->
+<!-- 		ORDER BY REGIST_TIME DESC -->
+<!--     </select> -->
   
   
 </mapper>
