@@ -8,4 +8,6 @@ import kr.co.dwebss.fitDiary.model.UserHealth;
  */
 public interface UserHealthService extends Service<UserHealth> {
 
+	UserHealth selectInsertList(UserHealth userHealth);
+
 }

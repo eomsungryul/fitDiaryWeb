@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.dwebss.fitDiary.dao.UserHealthMapper">
-  <resultMap id="BaseResultMap" type="kr.co.dwebss.fitDiary.model.UserHealth">
+  <resultMap id="userHealthVo" type="kr.co.dwebss.fitDiary.model.UserHealth">
     <!--
       WARNING - @mbg.generated
     -->
@@ -12,5 +12,33 @@
     <result column="FAT" jdbcType="DECIMAL" property="fat" />
     <result column="MUSCLE" jdbcType="DECIMAL" property="muscle" />
     <result column="REGIST_D" jdbcType="DATE" property="registD" />
+    <result column="FIREBASE_STORAGE_PATH" jdbcType="VARCHAR" property="firebaseStoragePath" />
+    <result column="FIREBASE_DOWNLOAD_URL" jdbcType="VARCHAR" property="firebaseDownloadUrl" />
+    <result column="DEVICE_LOCAL_FILE_PATH" jdbcType="VARCHAR" property="deviceLocalFilePath" />
   </resultMap>
+  
+  
+    <select id="selectInsertList" parameterType="kr.co.dwebss.fitDiary.model.UserHealth" resultMap="userHealthVo">
+		SELECT 
+			USER_HEALTH_ID, 
+			USER_ID, 
+			DAY_KILOCALORIE,
+			WEIGHT,
+			FAT ,
+			MUSCLE ,
+			REGIST_D, 
+			FIREBASE_STORAGE_PATH,
+			FIREBASE_DOWNLOAD_URL,
+			DEVICE_LOCAL_FILE_PATH
+		FROM 
+			USER_HEALTH 
+		WHERE 
+			WEIGHT IS NULL 
+			or FAT IS NULL 
+			or MUSCLE IS NULL 
+		ORDER BY REGIST_D ASC
+      	LIMIT 1
+    </select>
+  
+  
 </mapper>

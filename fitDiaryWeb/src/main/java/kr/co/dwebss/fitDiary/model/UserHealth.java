@@ -48,8 +48,42 @@ public class UserHealth {
      */
     @Column(name = "REGIST_D")
     private Date registD;
+    
+    @Column(name = "FIREBASE_STORAGE_PATH")
+    private String firebaseStoragePath;
 
-    /**
+    @Column(name = "FIREBASE_DOWNLOAD_URL")
+    private String firebaseDownloadUrl;
+    
+    @Column(name = "DEVICE_LOCAL_FILE_PATH")
+    private String deviceLocalFilePath;
+    
+
+    public String getFirebaseStoragePath() {
+		return firebaseStoragePath;
+	}
+
+	public void setFirebaseStoragePath(String firebaseStoragePath) {
+		this.firebaseStoragePath = firebaseStoragePath;
+	}
+
+	public String getFirebaseDownloadUrl() {
+		return firebaseDownloadUrl;
+	}
+
+	public void setFirebaseDownloadUrl(String firebaseDownloadUrl) {
+		this.firebaseDownloadUrl = firebaseDownloadUrl;
+	}
+
+	public String getDeviceLocalFilePath() {
+		return deviceLocalFilePath;
+	}
+
+	public void setDeviceLocalFilePath(String deviceLocalFilePath) {
+		this.deviceLocalFilePath = deviceLocalFilePath;
+	}
+
+	/**
      * getter헬시포인트ID
      *
      * @return USER_HEALTH_ID - 헬시포인트ID
